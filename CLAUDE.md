@@ -49,7 +49,6 @@ tradl-alpha-website/
 │   └── styles/                 globals.css. The only global CSS.
 ├── scripts/                    The design-system generators. `npm run ds:build`.
 ├── docs/                       The brief (binding) + DECISIONS + DESIGN-SYSTEM + MOTION.
-├── reference/                  Prior artefacts. Not binding, and mostly stale.
 └── public/brand/               Logo SVGs, canvas rects stripped.
 ```
 
@@ -57,11 +56,22 @@ Import alias is `@/*` → `src/*`.
 
 ---
 
-## The brief binds
+## The brief binds, and it is not in this repository
 
-`docs/00-brief/` is the specification, dated 16 Aug 2026. Read `docs/README.md` for the tour.
-Before writing any page, read `03-website-content-structure.md` for that page's section spec and
-`04-website-design-guidelines.md` for how it should behave.
+The specification is confidential. `docs/00-brief/`, `docs/01-inspiration/`,
+`docs/02-product-context/` and `reference/` are gitignored and were removed from history before this
+repository was made public. **If they are not on your disk, ask for them before writing anything
+customer-facing.**
+
+Everything below cites them precisely, and the citations are load-bearing: doc 01 §7 is the lexicon,
+doc 01 §8 the compliance rails, doc 03 §3 the homepage section spec, doc 04 §5 the performance
+budget. Do not reconstruct a rule from its citation. The whole point of the lexicon and the SEBI
+perimeter is that they are exact, and an approximation of a compliance rail is worse than no rule at
+all.
+
+With the brief present: read `docs/README.md` for the tour, then, before writing any page,
+`03-website-content-structure.md` for that page's section spec and `04-website-design-guidelines.md`
+for how it should behave.
 
 **Precedence:** `00-README.md` supersedes `06-master-prompt-source` (the founder PDF). The PDF
 predates the package and carries a broking/licence narrative, a fundraise, and an F&O loss stat that

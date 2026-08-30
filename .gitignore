@@ -51,3 +51,17 @@ reference/**/.DS_Store
 # artefacts inside .next break `tsc` with duplicate-identifier errors that look
 # like real type failures. They are never wanted.
 * [0-9].*
+
+# Source material, deliberately not in this repository.
+#
+# The handover brief, the competitor teardowns, the product one-pagers and the
+# prior design artefacts are confidential: positioning, the SEBI compliance
+# rails, the naming freeze covering unreleased tools, and the founder document.
+# This repository is public, so they are kept on disk and out of every commit.
+# They were removed from history before the repository was made public.
+#
+# See docs/README.md for how to obtain them.
+/docs/00-brief/
+/docs/01-inspiration/
+/docs/02-product-context/
+/reference/
