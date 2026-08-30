@@ -28,6 +28,7 @@
 @import "../design-system/tokens/tokens.css";
 @import "../design-system/extensions/display-scale.css";
 @import "../design-system/extensions/motion.css";
+@import "../design-system/extensions/surface.css";
 @import "../design-system/marketing/ground.css";
 
 /* -----------------------------------------------------------------------------
@@ -114,6 +115,25 @@
   --shadow-glass: var(--ds-shadow-glass-surface);
   --blur-glass: var(--ds-blur-glass-surface);
 
+  /* --- Elevation stacks: shadow-card, shadow-window, … Pick a stack, not an
+         atom. The atoms stay reachable as plain properties for the rare case
+         that needs a custom composition. --- */
+  --shadow-card: var(--elevation-card);
+  --shadow-chrome: var(--elevation-chrome);
+  --shadow-window: var(--elevation-window);
+  --shadow-frame: var(--elevation-frame);
+  --shadow-inner: var(--elevation-inner);
+  --shadow-menu: var(--elevation-menu);
+  --shadow-spec: var(--spec-mid);
+  --shadow-aura: var(--aura-accent);
+
+  /* --- Glass tiers: backdrop-blur-chrome … backdrop-blur-bar. Semantic, not
+         decorative: how much of what is behind should survive. --- */
+  --blur-chrome: var(--glass-chrome);
+  --blur-panel: var(--glass-panel);
+  --blur-menu: var(--glass-menu);
+  --blur-window: var(--glass-window);
+  --blur-bar: var(--glass-bar);
 
   /* --- Curves: ease-house, ease-press. Mirrored from motion.ts and
          drift-checked by npm run check:motion. --- */
@@ -246,3 +266,301 @@
   }
 }
 
+/* =============================================================================
+   SURFACE TECHNIQUES
+
+   The construction language, as classes. Tokens live in
+   ../design-system/extensions/surface.css; this is how they get composed.
+
+   These sit in the `components` layer, so any Tailwind utility overrides them:
+   `.surface rounded-lg` gives you the surface with a 16px radius, because
+   utilities are emitted after components. That is deliberate. A class here sets
+   a sensible default, never a lock.
+
+   See docs/SURFACES.md for when to reach for each one.
+   ============================================================================= */
+
+@layer components {
+  /* ---------------------------------------------------------------------------
+     The pane
+
+     All four ingredients in order. Everything else in this file is a variation
+     on it. Hover moves the stroke, never the fill.
+     ------------------------------------------------------------------------- */
+  .surface {
+    position: relative;
+    border-radius: var(--ds-radius-card);
+    background-color: var(--ds-bg-surface);
+    border: 1px solid var(--stroke-faint);
+    box-shadow: var(--elevation-card);
+    overflow: hidden;
+    transition: border-color var(--motion-chrome) var(--motion-ease);
+  }
+
+  .surface-interactive:hover {
+    border-color: var(--stroke-visible);
+  }
+
+  /* The directional fill. Understated by design: Figma's two surface steps are
+     one percentage point apart. See the note in surface.css. */
+  .surface-lit {
+    background-image: var(--fill-lit);
+  }
+
+  /* ---------------------------------------------------------------------------
+     Glass
+
+     `transform: translate(0, 0)` is not decoration. Without its own compositing
+     layer Safari drops the backdrop-filter entirely and Chrome smears it during
+     scroll. Any element with a backdrop blur needs it, which is why it lives in
+     the class rather than being left to the call site.
+
+     `isolation: isolate` keeps a blended child from reaching the page behind.
+     ------------------------------------------------------------------------- */
+  .glass {
+    -webkit-backdrop-filter: blur(var(--glass-panel));
+    backdrop-filter: blur(var(--glass-panel));
+    transform: translate(0, 0);
+    isolation: isolate;
+  }
+
+  /* ---------------------------------------------------------------------------
+     Strokes beyond the plain hairline
+     ------------------------------------------------------------------------- */
+
+  /* Three-sided. The bottom border is omitted so the surface reads as lit from
+     above and resting on the ground rather than floating in a box. */
+  .stroke-top-lit {
+    border: 1px solid var(--stroke-faint);
+    border-bottom: none;
+    box-shadow: var(--spec-mid);
+  }
+
+  /* A gradient ring with no fill, via mask compositing. For when the border
+     itself must carry the gradient and the interior must stay transparent.
+     -webkit-mask-composite: xor and mask-composite: exclude are the same
+     operation under two different keywords; both lines are required. */
+  .ring-gradient {
+    position: relative;
+  }
+
+  .ring-gradient::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    border: 1px solid transparent;
+    background: linear-gradient(var(--ds-color-white), transparent) border-box;
+    opacity: 0.09;
+    pointer-events: none;
+    -webkit-mask:
+      linear-gradient(#fff 0 0) padding-box,
+      linear-gradient(#fff 0 0);
+    mask:
+      linear-gradient(#fff 0 0) padding-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+  }
+
+  /* ---------------------------------------------------------------------------
+     Dividers
+
+     border-image disables border-radius on the element it is applied to, so
+     these belong on straight rules only.
+     ------------------------------------------------------------------------- */
+  .divider-fade {
+    border-top: 1px solid;
+    border-image-source: var(--divider-fade);
+    border-image-slice: 1;
+  }
+
+  .divider-fade-soft {
+    border-bottom: 1px solid;
+    border-image-source: var(--divider-fade-soft);
+    border-image-slice: 1;
+  }
+
+  /* ---------------------------------------------------------------------------
+     Fills and texture
+     ------------------------------------------------------------------------- */
+
+  /* Light bleeding in from above. Pairs with .divider-fade on a section top. */
+  .spill-top {
+    background-image: var(--spill-top);
+  }
+
+  /* Top-anchored radial for controls under about 64px, so the light source
+     agrees with the specular. */
+  .fill-top-lit {
+    background-image: var(--fill-top-lit);
+  }
+
+  /* Panel texture. Survives backdrop-filter, costs nothing, needs no asset. */
+  .texture-scanline {
+    background-image: var(--texture-scanline);
+    background-size: var(--texture-scanline-size);
+  }
+
+  /* Starts the fill at the outer edge of the border rather than inside it,
+     which removes the 1px seam between a gradient and its stroke. */
+  .fill-to-edge {
+    background-origin: border-box;
+  }
+
+  /* ---------------------------------------------------------------------------
+     Hover overlays
+
+     Both are pseudo-elements, both inherit the radius, both are inert to the
+     pointer. The fill underneath never changes.
+     ------------------------------------------------------------------------- */
+  .hover-wash {
+    position: relative;
+  }
+
+  .hover-wash::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background-color: transparent;
+    transition: background-color var(--motion-chrome) var(--motion-ease);
+  }
+
+  .hover-wash:hover::after {
+    background-color: var(--wash-hover);
+  }
+
+  /* Darkens the edges and leaves the centre alone, so content stays readable
+     while the card still reacts. Needs its own stacking context or the blend
+     reaches the page. */
+  .hover-vignette {
+    position: relative;
+    isolation: isolate;
+  }
+
+  .hover-vignette::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    border-radius: inherit;
+    pointer-events: none;
+    background: radial-gradient(50% 50%, transparent 0%, var(--ds-color-black-60) 80%);
+    mix-blend-mode: soft-light;
+    opacity: 0;
+    transition: opacity var(--motion-chrome) var(--motion-ease);
+  }
+
+  .hover-vignette:hover::after {
+    opacity: 1;
+  }
+
+  /* ---------------------------------------------------------------------------
+     Edge fading
+
+     Content fades out rather than being clipped. This is most of why a page
+     reads as soft-edged rather than as a stack of rectangles.
+     ------------------------------------------------------------------------- */
+  .mask-fade-b {
+    -webkit-mask-image: linear-gradient(#000 60%, transparent 90%);
+    mask-image: linear-gradient(#000 60%, transparent 90%);
+  }
+
+  .mask-fade-x {
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent,
+      #000 64px,
+      #000 calc(100% - 64px),
+      transparent
+    );
+    mask-image: linear-gradient(
+      to right,
+      transparent,
+      #000 64px,
+      #000 calc(100% - 64px),
+      transparent
+    );
+  }
+
+  /* ---------------------------------------------------------------------------
+     Interactive control
+
+     The whole transition set for anything that answers a pointer, in one class,
+     because the alternative does not work: a Tailwind `transition-*` utility
+     replaces the `transition` property outright, so a separate press class and
+     a separate hover class silently cancel each other and whichever layer wins
+     is the only one that animates.
+
+     Two speeds on purpose. The press is 100ms on an overshooting curve so it
+     reads as caused by the finger. Everything else settles at chrome speed.
+
+     Chrome, not content: this never goes near GSAP.
+     ------------------------------------------------------------------------- */
+  .press {
+    transition:
+      transform var(--motion-press) var(--motion-ease-press),
+      border-color var(--motion-chrome) var(--motion-ease),
+      box-shadow var(--motion-chrome) var(--motion-ease),
+      background-color var(--motion-chrome) var(--motion-ease),
+      opacity var(--motion-chrome) var(--motion-ease);
+  }
+
+  .press:active {
+    transform: scale(0.97);
+  }
+
+  /* ---------------------------------------------------------------------------
+     Glow
+
+     A blurred sibling behind the target. Animating a filter on a large element
+     repaints it every frame; animating the opacity of an already-blurred layer
+     does not. Set --glow-image at the call site.
+     ------------------------------------------------------------------------- */
+  .glow-layer {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    filter: blur(32px);
+    opacity: 0;
+    pointer-events: none;
+    will-change: opacity;
+    transform: translate(0, 0);
+    background-image: var(--glow-image, none);
+    transition: opacity var(--motion-chrome) var(--motion-ease);
+  }
+
+  .glow-parent:hover > .glow-layer,
+  .glow-parent:focus-within > .glow-layer {
+    opacity: 0.8;
+  }
+
+  /* ---------------------------------------------------------------------------
+     Staggered entrance
+
+     For chrome that opens: menu rows, a dock's contents, a dropdown. Set
+     --delay inline per item.
+
+     NOT for scroll-triggered content. That belongs to <Reveal>, which owns the
+     trigger point, the register and the ScrollTrigger budget. Two systems
+     revealing content on scroll is the failure the motion layout prevents.
+     ------------------------------------------------------------------------- */
+  .stagger-item {
+    opacity: 0;
+    animation: surface-rise var(--motion-chrome) var(--delay, 0ms) var(--motion-ease) forwards;
+  }
+
+  @keyframes surface-rise {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+}

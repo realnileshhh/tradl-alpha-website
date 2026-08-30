@@ -23,9 +23,12 @@ import { cn } from "@/lib/utils";
 type Variant = "primary" | "secondary" | "tertiary";
 type Size = "sm" | "lg";
 
+/* `press` carries the full transition set and the tap feedback. Do not add a
+   Tailwind `transition-*` utility alongside it: the utility replaces the
+   property outright and the press would stop animating. */
 const BASE =
-  "inline-flex items-center justify-center whitespace-nowrap rounded-md " +
-  "transition-[opacity,background-color] duration-150 " +
+  "press relative inline-flex items-center justify-center whitespace-nowrap rounded-md " +
+  "shadow-spec " +
   "disabled:pointer-events-none disabled:opacity-30 aria-disabled:pointer-events-none aria-disabled:opacity-30";
 
 const VARIANT: Record<Variant, string> = {
@@ -33,11 +36,14 @@ const VARIANT: Record<Variant, string> = {
      for gradient variables, so its stops came from get_design_context on the
      button itself.
 
-*/
+     Hover adds a wash over the gradient rather than changing it. Recolouring a
+     brand gradient on hover is how a button ends up with two brand greens. */
   primary:
-    "border text-fg font-medium [background-image:var(--ds-accent-gradient)] [border-color:var(--ds-accent-primary)]",
-  secondary: "border border-line bg-surface text-fg-2",
-  tertiary: "border border-line text-fg-2",
+    "hover-wash border text-fg font-medium [background-image:var(--ds-accent-gradient)] [border-color:var(--ds-accent-primary)]",
+  /* Hover moves the stroke from the hairline to the visible step. Both are real
+     Figma borders, so this is a selection between two tokens, not a new value. */
+  secondary: "border border-line bg-surface text-fg-2 hover:border-line-2 hover:text-fg",
+  tertiary: "border border-line text-fg-2 hover:border-line-2 hover:text-fg",
 };
 
 const SIZE: Record<Size, string> = {
