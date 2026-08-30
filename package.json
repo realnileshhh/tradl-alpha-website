@@ -9,7 +9,13 @@
     "start": "next start --port 4100",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "verify": "npm run typecheck && npm run build"
+    "verify": "npm run typecheck && npm run build",
+    "ds:tokens": "node scripts/build-tokens.mjs",
+    "ds:icons": "node scripts/extract-icons.mjs && node scripts/verify-icons.mjs",
+    "ds:brand": "node scripts/build-brand.mjs",
+    "ds:build": "npm run ds:tokens && npm run ds:icons && npm run ds:brand",
+    "ds:contrast": "node scripts/check-contrast.mjs",
+    "ds:verify": "npm run ds:build && git diff --exit-code --stat src/design-system/tokens src/components/ui/icons src/components/ui/brand"
   },
   "dependencies": {
     "next": "^16",

@@ -1,95 +1,122 @@
-/* ============================================================
-   Tradl AI — global stylesheet. The only global CSS in the app.
+/* =============================================================================
+   Tradl AI, global stylesheet. The only global CSS in the app.
 
    Order matters:
    1. Tailwind, so its layers exist before anything registers into them.
-   2. The design-system tokens, verbatim from the Figma export.
-   3. fonts.css last, because it re-points the family tokens that
-      typography.css defines, and last declaration wins.
-   4. @theme inline, which exposes the tokens to Tailwind as utilities.
-   5. A minimal base layer. Nothing visual lives here beyond what a blank
-      page needs — the site has no UI yet, by design.
-   ============================================================ */
+   2. The generated Figma mirror. Every property in it is prefixed --ds-.
+   3. Our non-Figma buckets: the display scale and the ground.
+   4. @theme inline, exposing a curated subset to Tailwind as utilities.
+   5. A base layer that applies the ground and the accessibility floor.
+
+   Reading a custom property here: --ds-* is mirrored from Figma and may never be
+   invented or hand-edited. Anything else is ours, and there are now very few of
+   them. See docs/DESIGN-SYSTEM.md.
+
+   The site runs dark, which is the design system's own and only mode. There is
+   no theme switch and no inverted scale: the ink, borders, surfaces and accents
+   are all real tokens rendering exactly as drawn. See docs/DECISIONS.md 004.
+   ============================================================================= */
 
 @import "tailwindcss";
 
-@import "./tokens/colors.css";
-@import "./tokens/typography.css";
-@import "./tokens/spacing.css";
-@import "./tokens/effects.css";
-@import "./tokens/fonts.css";
+@import "../design-system/tokens/tokens.css";
+@import "../design-system/extensions/display-scale.css";
+@import "../design-system/marketing/ground.css";
 
-/* ------------------------------------------------------------
-   Tokens → Tailwind utilities.
+/* -----------------------------------------------------------------------------
+   Tokens into Tailwind.
 
-   `inline` makes each generated utility emit `var(--surface-l1)` rather
-   than the resolved value. That is what keeps `[data-theme="light"]`
-   working: flipping the attribute re-resolves every utility, with no
-   duplicate class output and no dark: variant sprawl.
+   `inline` makes each utility emit `var(--ds-bg-surface)` rather than the
+   resolved value, so a token change propagates without regenerating utilities.
 
-   NAMING RULE, and it is load-bearing: a @theme key must never repeat a
-   custom property the token files already declare. Tailwind emits its
-   theme keys back into :root, so `--radius-md: var(--radius-md)` would
-   land after effects.css and resolve to itself — the value collapses and
-   the utility silently emits nothing. That is why radii, shadows and
-   families below use distinct suffixes rather than mirroring the token
-   names. Colours and spacing are safe because the token names differ
-   from the Tailwind namespace already (--surface-l1 vs --color-*).
+   THE NAMING RULE, and it is load-bearing: a @theme key must never repeat a
+   custom property our own files declare. Tailwind emits its theme keys back
+   into :root, so `--radius-card: var(--radius-card)` would land after the token
+   import, resolve to itself, collapse, and the utility would silently emit
+   nothing. This is why every mirrored token carries the --ds- prefix: it moves
+   the whole design system clear of Tailwind's --color-*, --radius-*, --text-*,
+   --shadow-* and --font-weight-* namespaces, so the keys below are all free.
 
-   Only tokens that earn a utility are mapped. Anything unmapped is still
-   reachable as a plain custom property, e.g. `var(--surface-badge)`.
-   ------------------------------------------------------------ */
+   Only tokens that earn a utility are mapped. Everything else stays reachable
+   as a plain custom property, e.g. var(--ds-heatmap-positive-strong).
+   -------------------------------------------------------------------------- */
 @theme inline {
-  /* --- Text: text-primary, text-positive, … --- */
-  --color-primary: var(--text-primary);
-  --color-secondary: var(--text-secondary);
-  --color-tertiary: var(--text-tertiary);
-  --color-inverse: var(--text-inverse);
-  --color-positive: var(--text-positive);
-  --color-warning: var(--text-warning);
-  --color-negative: var(--text-negative);
+  /* --- Grounds and surfaces: bg-ground, bg-surface, bg-raised … --- */
+  --color-ground: var(--page-ground);
+  --color-surface: var(--ds-bg-surface);
+  --color-raised: var(--ds-bg-surface-raised);
+  --color-elevated: var(--ds-bg-elevated);
+  --color-toolbar: var(--ds-bg-toolbar);
 
-  /* --- Surfaces: bg-l1 … bg-l5 --- */
-  --color-l1: var(--surface-l1);
-  --color-l2: var(--surface-l2);
-  --color-l3: var(--surface-l3);
-  --color-l4: var(--surface-l4);
-  --color-l5: var(--surface-l5);
+  /* --- Text: text-fg, text-fg-2, … --- */
+  --color-fg: var(--ds-text-primary);
+  --color-fg-2: var(--ds-text-secondary);
+  --color-fg-3: var(--ds-text-tertiary);
+  --color-fg-muted: var(--ds-text-muted);
+  --color-fg-disabled: var(--ds-text-disabled);
+  --color-placeholder: var(--ds-placeholder);
 
-  /* --- Borders: border-strong, border-subtle, … --- */
-  --color-strong: var(--border-strong);
-  --color-medium: var(--border-medium);
-  --color-subtle: var(--border-subtle);
-  --color-faint: var(--border-faint);
+  /* --- Borders: border-line, border-line-strong, … --- */
+  --color-line: var(--ds-border-subtle);
+  --color-line-2: var(--ds-border-default);
+  --color-line-medium: var(--ds-border-medium);
+  --color-line-strong: var(--ds-border-strong);
 
-  /* --- Category accents: text-column, border-metric, … --- */
-  --color-column: var(--accent-column);
-  --color-metric: var(--accent-metric);
-  --color-rule: var(--accent-rule);
+  /* --- Accents. accent-2 is the bright green that reads on this ground; accent
+         is the deep green used as a fill, not as text on dark. --- */
+  --color-accent: var(--ds-accent-primary);
+  --color-accent-2: var(--ds-accent-secondary);
+  --color-negative: var(--ds-accent-negative);
 
-  /* --- Families: font-text (all prose), font-number (all figures) --- */
-  --font-text: var(--font-sans);
-  --font-number: var(--font-num);
+  /* --- Radii: rounded-sm … rounded-full --- */
+  --radius-sm: var(--ds-radius-sm);
+  --radius-6: var(--ds-radius-radius-6);
+  --radius-md: var(--ds-radius-md);
+  --radius-card: var(--ds-radius-card);
+  --radius-base: var(--ds-radius-base);
+  --radius-lg: var(--ds-radius-lg);
+  --radius-container: var(--ds-radius-container);
+  --radius-input: var(--ds-radius-input);
+  --radius-full: var(--ds-radius-full);
 
-  /* --- 4px rhythm, matching the export's --space-* scale --- */
+  /* --- Type. These override Tailwind's defaults so text-sm means what the
+         design system means by it, not what Tailwind ships. --- */
+  --text-xs: var(--ds-font-size-xs);
+  --text-xs--line-height: var(--ds-line-height-xs);
+  --text-sm: var(--ds-font-size-sm);
+  --text-sm--line-height: var(--ds-line-height-sm);
+  --text-base: var(--ds-font-size-md);
+  --text-base--line-height: var(--ds-line-height-md);
+  --text-lg: var(--ds-font-size-lg);
+  --text-lg--line-height: var(--ds-line-height-lg);
+  --text-display: var(--ds-font-size-display-xxxl);
+  --text-display--line-height: var(--section-line);
+  --text-statement: var(--statement-size);
+  --text-statement--line-height: var(--statement-line);
+
+  /* --- Weights. Note the system's "bold" styles are 500, not 700. Only the
+         display step is 700. --- */
+  --font-weight-regular: var(--ds-font-weight-regular);
+  --font-weight-medium: var(--ds-font-weight-medium);
+  --font-weight-bold: var(--ds-font-weight-bold);
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+
+  /* --- Effects. Figma's two glass styles. --- */
+  --shadow-glass: var(--ds-shadow-glass-surface);
+  --blur-glass: var(--ds-blur-glass-surface);
+
+
+  /* --- Measure: max-w-content --- */
+  --container-content: var(--content-max);
+
+  /* --- Spacing. Tailwind's numeric scale keeps its own 4px rhythm, so p-2 is
+         8px and NOT the design system's space/2. Where a component must match
+         a Figma value exactly, use var(--ds-space-N) directly. The two scales
+         are deliberately not aliased: silently redefining p-3 to mean 8px
+         would break every Tailwind habit a reader brings. --- */
   --spacing: 4px;
-
-  /* --- Radii: rounded-chip … rounded-container --- */
-  --radius-chip: var(--radius-xs);
-  --radius-control: var(--radius-sm);
-  --radius-card: var(--radius-md);
-  --radius-panel: var(--radius-lg);
-  --radius-container: var(--radius-xl);
-
-  /* --- Elevation: shadow-e1 … shadow-e5 --- */
-  --shadow-e1: var(--shadow-xs);
-  --shadow-e2: var(--shadow-sm);
-  --shadow-e3: var(--shadow-md);
-  --shadow-e4: var(--shadow-lg);
-  --shadow-e5: var(--shadow-xl);
-
-  /* --- Content frame: max-w-content (1040px, the specimen width) --- */
-  --container-content: var(--layout-max-width);
 }
 
 @layer base {
@@ -97,35 +124,69 @@
     /* Lenis owns scrolling; native smooth would fight it. */
     scroll-behavior: auto;
     -webkit-text-size-adjust: 100%;
+    /* One mode, and it is dark. This makes the browser render form controls,
+       scrollbars and the canvas behind the page to match, so there is no white
+       flash before paint and no light-on-light select menus. */
+    color-scheme: dark;
   }
 
   body {
-    background-color: var(--surface-l1);
-    color: var(--text-primary);
+    background-color: var(--page-ground);
+    color: var(--ds-text-primary);
     font-family: var(--font-sans);
-    font-size: var(--type-body-size);
-    line-height: var(--type-body-line);
+    font-size: var(--ds-font-size-md);
+    line-height: var(--ds-line-height-md);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
-  /* Numbers are Lato everywhere, per the design system. Opt-in rather
-     than global, so prose stays IBM Plex Sans. */
+  /* Numbers are tabular everywhere, so columns align. Since the system is one
+     family, this no longer switches typeface; it only fixes the figures. */
   .num {
-    font-family: var(--font-num);
     font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum" 1;
   }
 
-  /* Doc 04 §7: visible keyboard focus everywhere. */
+  /* Doc 04 §7: visible keyboard focus everywhere. The bright green scores
+     9.4:1 on this ground, so the ring is legible without a second indicator. */
   :focus-visible {
-    outline: 2px solid var(--border-positive);
+    outline: 2px solid var(--ds-accent-secondary);
     outline-offset: 2px;
   }
 
-  /* Doc 04 §5: prefers-reduced-motion is honoured globally. The JS side
-     reads the same query through useReducedMotion so animation code can
-     skip the work rather than run it invisibly. */
+  /* ---------------------------------------------------------------------------
+     Touch targets.
+
+     The design system's only button is 30px tall, which is right for a dense
+     product toolbar and below the 44px floor doc 04 §7 sets. Rather than
+     redraw the control, extend its hit area with a pseudo-element: the button
+     stays exactly the size the designer specified and the finger gets the area
+     the guideline asks for.
+
+     Coarse pointers only. On a mouse, a 44px strip over a 30px control in an
+     8px-gap toolbar would overlap its neighbours and steal their clicks.
+     ------------------------------------------------------------------------- */
+  @media (pointer: coarse) {
+    .touch-target {
+      position: relative;
+    }
+
+    .touch-target::after {
+      content: "";
+      position: absolute;
+      inset-inline: 0;
+      top: 50%;
+      min-height: 44px;
+      transform: translateY(-50%);
+    }
+  }
+
+
+  /* Doc 04 §5: prefers-reduced-motion is honoured globally. The JS side reads
+     the same query through useReducedMotion so animation code can skip the work
+     rather than run it invisibly. */
   @media (prefers-reduced-motion: reduce) {
+
     *,
     *::before,
     *::after {
@@ -137,11 +198,11 @@
   }
 }
 
-/* ------------------------------------------------------------
-   Lenis. Required for the virtual scroll to take over from native.
-   Inlined rather than importing lenis/dist/lenis.css so the whole global
-   surface stays readable in one file.
-   ------------------------------------------------------------ */
+/* -----------------------------------------------------------------------------
+   Lenis. Required for the virtual scroll to take over from native. Inlined
+   rather than importing lenis/dist/lenis.css so the whole global surface stays
+   readable in one file.
+   -------------------------------------------------------------------------- */
 html.lenis,
 html.lenis body {
   height: auto;

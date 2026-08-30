@@ -15,7 +15,7 @@ import dynamic from "next/dynamic";
 const DemoScene = dynamic(() => import("./scene").then((m) => m.DemoScene), {
   ssr: false,
   // Doc 04 §5: the placeholder is a painted static, never a spinner.
-  loading: () => <div className="h-full w-full bg-l2" />,
+  loading: () => <div className="h-full w-full bg-surface" />,
 });
 
 export function SceneMount() {

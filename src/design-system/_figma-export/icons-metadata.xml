@@ -1,0 +1,115 @@
+<!-- Verbatim get_metadata response for the Icons canvas (node 2:83) of the Tradl
+     Design System file, read 2026-08-30. INPUT, not generated output.
+
+     scripts/extract-icons.mjs derives the icon list, every viewBox and the
+     page-to-export coordinate offset from this file. Re-fetch it alongside
+     icons-page.svg whenever the Icons page changes, and the extractor picks up
+     additions with no code edit.
+
+     Coordinates on <symbol> nested inside a <frame> are relative to that frame. -->
+<canvas id="2:83" name="Icons" x="0" y="0" width="0" height="0">
+  <symbol id="10:257" name="icon-entry" x="-39" y="47" width="12" height="12" />
+  <symbol id="26:352" name="icon-filter" x="45" y="47" width="12" height="12" />
+  <symbol id="152:184" name="icon-play" x="-165" y="14" width="12" height="12" />
+  <symbol id="428:1033" name="icon-skip-forward" x="-125" y="14" width="12" height="12" />
+  <symbol id="428:1031" name="icon-pause" x="-39" y="14" width="12" height="12" />
+  <symbol id="428:1032" name="icon-skip-backward" x="-81" y="14" width="12" height="12" />
+  <symbol id="152:200" name="icon-asterisk" x="-39" y="89" width="12" height="12" />
+  <symbol id="157:224" name="icon-candlestick" x="3" y="89" width="12" height="12" />
+  <instance id="386:379" name="icon-candlestick" x="3" y="89" width="12" height="12" />
+  <symbol id="44:168" name="icon-arrow--point-right" x="87" y="47" width="12" height="12" />
+  <symbol id="44:170" name="icon-arrow--point-down" x="171" y="47" width="12" height="12" />
+  <symbol id="44:171" name="icon-arrow--point-up" x="213" y="47" width="12" height="12" />
+  <symbol id="44:169" name="icon-arrow--point-left" x="129" y="47" width="12" height="12" />
+  <symbol id="70:273" name="icon-Nest" x="415" y="288" width="51" height="12" />
+  <symbol id="10:270" name="icon-exit" x="3" y="47" width="12" height="12" />
+  <symbol id="452:3564" name="icon-lock" x="3" y="14" width="12" height="12" />
+  <symbol id="478:3581" name="icon-edit" x="45" y="14" width="12" height="12" />
+  <symbol id="81:285" name="icon-minus" x="255" y="47" width="12" height="12" />
+  <symbol id="2:111" name="icon-close" x="-123" y="47" width="12" height="12" />
+  <symbol id="2:104" name="icon-arrow-re-enter" x="-165" y="47" width="12" height="12" />
+  <symbol id="2:117" name="icon-arrow-ahead" x="-81" y="47" width="12" height="12" />
+  <frame id="28:368" name="checkmark" x="-169" y="280" width="42" height="24">
+    <symbol id="28:366" name="Property 1=icon-check" x="6" y="5" width="12" height="12" />
+    <symbol id="28:367" name="Property 1=icon-check-on" x="24" y="5" width="12" height="12" />
+  </frame>
+  <symbol id="31:9" name="icon-reorder" x="255" y="89" width="12" height="12" />
+  <symbol id="52:15" name="icon-arrow-navigate" x="297" y="89" width="12" height="12" />
+  <symbol id="49:12" name="icon-clock" x="381" y="47" width="12" height="12" />
+  <symbol id="49:27" name="icon-calendar" x="339" y="47" width="12" height="12" />
+  <frame id="59:87" name="icon-arrow" x="-34" y="280" width="148" height="52">
+    <symbol id="2:102" name="Property 1=icon-arrow-down" x="20" y="20" width="12" height="12" />
+    <symbol id="58:75" name="Property 1=icon-arrow-up" x="52" y="20" width="12" height="12" />
+    <symbol id="59:84" name="Property 1=icon-arrow-right" x="84" y="20" width="12" height="12" />
+    <symbol id="59:85" name="Property 1=icon-arrow-left" x="116" y="20" width="12" height="12" />
+  </frame>
+  <frame id="62:101" name="Checkbox" x="224" y="280" width="56" height="92">
+    <symbol id="62:102" name="Property 1=selective" x="20" y="20" width="14" height="14" />
+    <symbol id="62:106" name="Property 1=Non -selective" x="20" y="56" width="14" height="14" />
+  </frame>
+  <symbol id="73:217" name="icon-history" x="297" y="47" width="12" height="12" />
+  <frame id="104:57" name="Sort Icon" x="298" y="285" width="86" height="30">
+    <symbol id="104:58" name="Property 1=Default state" x="9" y="9" width="12" height="12" />
+    <symbol id="104:61" name="Property 1=Ascending" x="37" y="9" width="12" height="12" />
+    <symbol id="104:64" name="Property 1=Descending" x="65" y="9" width="12" height="12" />
+  </frame>
+  <frame id="122:54" name="icon-arrow-expand&amp;collpased" x="-111" y="280" width="54" height="88">
+    <symbol id="122:53" name="Property 1=Expand" x="20" y="20" width="14" height="14" />
+    <symbol id="122:55" name="Property 1=Collpased" x="20" y="54" width="14" height="14" />
+  </frame>
+  <symbol id="140:104" name="icon-Bookmark-save" x="-165" y="89" width="12" height="12" />
+  <symbol id="144:187" name="Icon-candle-chart" x="-123" y="89" width="12" height="12" />
+  <symbol id="144:188" name="Icon-table view" x="-81" y="89" width="12" height="12" />
+  <symbol id="160:59" name="Icon-file-upload" x="45" y="89" width="12" height="12" />
+  <symbol id="298:130" name="Icon-file-export" x="45" y="131" width="12" height="12" />
+  <symbol id="309:1731" name="Icon-info" x="87" y="131" width="12" height="12" />
+  <symbol id="161:67" name="icon-file-csv" x="87" y="89" width="12" height="12" />
+  <symbol id="163:73" name="icon-circle-check" x="129" y="89" width="12" height="12" />
+  <symbol id="185:186" name="icon-triangle" x="171" y="89" width="12" height="12" />
+  <symbol id="186:193" name="icon-circle-arrow-up" x="213" y="89" width="12" height="12" />
+  <symbol id="187:202" name="icon-share" x="-165" y="131" width="12" height="12" />
+  <symbol id="187:209" name="icon-download" x="-123" y="131" width="12" height="12" />
+  <symbol id="252:29" name="icon-histogram" x="-81" y="131" width="12" height="12" />
+  <frame id="193:231" name="icon-add&amp;Sub" x="145" y="280" width="52" height="84">
+    <symbol id="2:103" name="Property 1=Add" x="20" y="20" width="12" height="12" />
+    <symbol id="193:232" name="Property 1=subtract" x="20" y="52" width="12" height="12" />
+  </frame>
+  <symbol id="258:70" name="icon-bar-graph" x="-39" y="131" width="12" height="12" />
+  <symbol id="288:60" name="icon-alert" x="3" y="131" width="12" height="12" />
+  <frame id="330:1524" name="Layout-sidebars" x="298" y="326" width="94" height="52">
+    <symbol id="330:1507" name="Property 1=icon-Layout-sidebar-left" x="20" y="20" width="12" height="12" />
+    <symbol id="330:1523" name="Property 1=icon-Layout-sidebar-right" x="62" y="20" width="12" height="12" />
+  </frame>
+  <symbol id="330:1539" name="icon-search" x="129" y="131" width="12" height="12" />
+  <symbol id="330:1557" name="icon-dashboard" x="171" y="131" width="12" height="12" />
+  <instance id="330:1659" name="icon-dashboard" x="171" y="131" width="12" height="12" />
+  <symbol id="330:1591" name="icon-Explore" x="215" y="131" width="12" height="12" />
+  <symbol id="330:1630" name="icon-book" x="255" y="131" width="12" height="12" />
+  <symbol id="345:2062" name="icon-chart-line" x="297" y="131" width="12" height="12" />
+  <symbol id="357:2555" name="icon-adjustments" x="339" y="130" width="12" height="12" />
+  <symbol id="360:1197" name="icon-insights-feed" x="339" y="87" width="12" height="12" />
+  <symbol id="360:1199" name="icon-pattern-sniper" x="381" y="130" width="12" height="12" />
+  <symbol id="360:1200" name="icon-morning-decode" x="423" y="130" width="12" height="12" />
+  <symbol id="360:1209" name="icon-live-signals" x="423" y="87" width="12" height="12" />
+  <symbol id="360:1198" name="icon-sector-rotation" x="381" y="87" width="12" height="12" />
+  <symbol id="368:226" name="Icon-chat" x="423" y="47" width="12" height="12" />
+  <symbol id="387:896" name="Icon-nothing" x="464" y="47" width="12" height="12" />
+  <symbol id="386:1102" name="Icon-News" x="-165" y="177" width="12" height="12" />
+  <symbol id="386:1106" name="Icon-banking" x="-124" y="177" width="12" height="12" />
+  <symbol id="386:1105" name="Icon - IT" x="-80" y="178" width="12" height="12" />
+  <symbol id="386:1104" name="Icon- commodities" x="-39" y="178" width="12" height="12" />
+  <symbol id="386:1103" name="Icon - Auto" x="2" y="179" width="12" height="12" />
+  <symbol id="485:1034" name="icon - external" x="45" y="178" width="12" height="12" />
+  <symbol id="495:1099" name="Icon - compare" x="87" y="178" width="12" height="12" />
+  <frame id="500:3631" name="icon-screener quality" x="497" y="278" width="220" height="52">
+    <symbol id="500:3626" name="select state=icon-screener-Q" x="20" y="20" width="12" height="12" />
+    <symbol id="500:3627" name="select state=icon-screener-V" x="62" y="20" width="12" height="12" />
+    <symbol id="500:3628" name="select state=icon-screener-M" x="104" y="20" width="12" height="12" />
+    <symbol id="500:3629" name="select state=icon-screener-G" x="146" y="20" width="12" height="12" />
+    <symbol id="500:3630" name="select state=icon-screener-R" x="188" y="20" width="12" height="12" />
+  </frame>
+  <frame id="521:1176" name="icon-eye" x="-34" y="352" width="94" height="52">
+    <symbol id="521:1174" name="Property 1=icon-eye-on" x="20" y="20" width="12" height="12" />
+    <symbol id="521:1175" name="Property 1=icon-eye-off" x="62" y="20" width="12" height="12" />
+  </frame>
+</canvas>
