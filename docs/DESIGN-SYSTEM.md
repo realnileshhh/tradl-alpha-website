@@ -2,7 +2,7 @@
 
 How the Figma system gets into this repo, what is in it right now, and what each sync changed.
 
-The four non-negotiable rules live in `CLAUDE.md` because they must be in context every session.
+The five non-negotiable rules live in `CLAUDE.md` because they must be in context every session.
 Everything else is here.
 
 - [Source](#source)
@@ -88,13 +88,14 @@ read is indistinguishable from a deletion, and step 4 would then strip live toke
 
 | | |
 |---|---|
-| `npm run ds:build` | Regenerate tokens, icons and the wordmark from the recorded export |
+| `npm run ds:build` | Regenerate everything: tokens, icons, wordmark, favicons and the share card |
 | `npm run ds:tokens` | Tokens only |
 | `npm run ds:icons` | Icons, then verify every viewBox frames its geometry |
 | `npm run ds:brand` | The wordmark component |
+| `npm run ds:app-icons` | Favicon, app icons, manifest icons and the share card |
 | `npm run ds:contrast` | WCAG report for every pairing the site actually uses |
 | `npm run ds:verify` | Regenerate, then fail if the working tree moved. Catches hand edits to generated files. |
-| `npm run verify` | typecheck + build |
+| `npm run verify` | typecheck + copy + motion + build |
 
 `ds:verify` is the one that matters in CI. The generators are deterministic, so a non-empty diff
 after a rebuild means someone edited a generated file by hand and their change is about to be lost.
@@ -130,6 +131,27 @@ that cannot sit on a surface, a tint or anything but that exact colour.
 **Known inconsistency, recorded not reconciled:** the lockup, wordmark and app mark use `#00AF79`;
 the glyph uses `#3FCF8E`. `#3FCF8E` is the `color/green-400` primitive. `#00AF79` exists nowhere in
 the variable system. Raised 30 Aug 2026, awaiting a design call. Do not "fix" either file.
+
+### Derived app icons
+
+`npm run ds:app-icons` rasterises those vectors with `sharp`. Nothing is redrawn: the only
+operations are rasterise, resize and compose onto a ground. Outputs land on Next's file conventions,
+so the `<link>` and `<meta>` tags are emitted by the framework with correct sizes and types rather
+than hand-written and left to rot.
+
+| Output | From | Notes |
+|---|---|---|
+| `src/app/icon.svg` | app mark | Vector favicon, 1.2KB, sharpest at every size |
+| `src/app/favicon.ico` | app mark | 16/32/48. The ICO container is written by hand: `sharp` has no ICO encoder, and modern ICO takes PNG payloads, so each entry is a PNG behind a 16-byte directory record |
+| `src/app/apple-icon.png` | app mark | 180, iOS home screen |
+| `public/icons/icon-{192,512}.png` | app mark | Web app manifest |
+| `public/icons/icon-maskable-512.png` | app mark | Inset to 62% on its own ink, because Android crops maskable icons to a circle and the mark is a rounded square that would lose its corners |
+| `src/app/opengraph-image.png` | wordmark + tagline | 1200x630, on the page ground |
+
+The share card carries **no live text**. Rendering a headline would mean bundling a font or fetching
+one at build time, and the tagline vector already carries the "AI TRADING INTELLIGENCE" descriptor as
+outlined paths. It also keeps the card to one tagline, which doc 01 §10 requires: the
+headline and the doctrine line live in the meta tags, where copy belongs and stays selectable.
 
 ## Icons
 
@@ -304,6 +326,22 @@ First read. No prior state to diff against.
 - Wordmark generated as a component with `currentColor` ink so it works in both registers.
 
 
+**app icons and metadata**
+- Favicon, apple icon, manifest icons and the 1200x630 share card rasterised from the brand vectors.
+  Verified byte-stable across runs, so `ds:verify` covers them.
+- Full metadata wired in `src/app/layout.tsx`, with the strings held in `src/lib/site.ts` taken
+  verbatim from the copy library in doc 05 §5. Includes Open Graph, X card, canonical, robots,
+  manifest, `format-detection` (Safari would otherwise turn figures in a ledger into tel: links),
+  and Organization plus WebSite JSON-LD.
+- JSON-LD asserts only known facts. `legalName`, `sameAs`, postal address and the SEBI RA
+  registration number are omitted rather than invented; they land with the footer compliance block.
+- `scripts/check-copy.mjs` lints customer-facing strings against doc 01 §7 and runs in
+  `npm run verify`. Hard bans fail the build; context-dependent words ("alpha" as a release stage
+  versus a returns promise) warn for a human instead of crying wolf.
+- Fixed `src/lib/env.ts`, which claimed in its own comment to fail the build on a missing site URL
+  but silently fell back to `http://localhost:4100`. A deploy would have published localhost
+  canonicals, Open Graph URLs and JSON-LD entity ids. It now resolves explicit env, then Vercel's
+  URL, and throws on a deployed build rather than shipping. Previews are `noindex`.
 
 **app**
 - Token layer replaced wholesale. `src/styles/tokens/` (the old Bento copy) deleted; nothing
