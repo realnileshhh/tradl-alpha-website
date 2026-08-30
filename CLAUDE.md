@@ -10,16 +10,14 @@ Everything below is the rule layer and the map — read it before building, not 
 
 ## Task management
 
-For any prompt containing more than one task or a multi-step task,
-always use the TodoWrite tool to create a checklist before starting.
+For any prompt containing more than one task or a multi-step task, create a checklist before
+starting, using whichever task tool the session has: `TaskCreate` / `TaskUpdate` / `TaskList`, or
+`TodoWrite` where that is what is available. The rule is the checklist discipline, not the tool name.
+
 - Break the work into discrete, verifiable items.
 - Mark exactly one item as in_progress at a time.
 - Mark each item completed immediately after finishing it.
 - Do not batch completions or skip the checklist for multi-step work.
-
-If `TodoWrite` is not available in the session, use the equivalent task tools
-(`TaskCreate` / `TaskUpdate` / `TaskList`) under the same rules. The rule is the checklist
-discipline, not the tool name.
 
 ---
 
@@ -44,12 +42,15 @@ tradl-alpha-website/
 │   │   ├── three/              R3F canvas wrapper + post-processing chain
 │   │   ├── motion/             reveal + split-words (GSAP), fade-in (Motion)
 │   │   └── ui/                 Ported components, generated icons/ and brand/
-│   ├── lib/                    gsap registration, scroll control, reduced motion, env, utils
+│   ├── lib/                    gsap, scroll control, reduced motion, env, site copy, utils
 │   ├── store/                  Zustand
 │   └── styles/                 globals.css. The only global CSS.
 ├── scripts/                    The design-system generators. `npm run ds:build`.
-├── docs/                       The brief (binding) + DECISIONS + DESIGN-SYSTEM + MOTION.
-└── public/brand/               Logo SVGs, canvas rects stripped.
+├── docs/                       DECISIONS · DESIGN-SYSTEM · MOTION · SURFACES.
+│                               The brief is gitignored. See docs/README.md.
+└── public/
+    ├── brand/                  Logo SVGs, Figma canvas rects stripped.
+    └── icons/                  GENERATED. Web app manifest icons.
 ```
 
 Import alias is `@/*` → `src/*`.
@@ -173,39 +174,41 @@ from a big drop shadow.
 | File | `Tradl Design System` |
 | File key | `ZRYpUf3iulUMH0Rbdb68hk` |
 | Pages | Components - General · Components - Tradl Guide · Components - Backtesting · Typography · Icons · Logos |
-| Variable collections | `Primitives` · `Semantics` · `Shadows` |
+| Variable collections | `Charts colors` · `Heatmap` · `Highlights` · `Primitives` · `Semantics` · `Shadows` · `Typography` |
 
 The system is still evolving. It is read through the Figma MCP and regenerated into this repo. See
 **Design system sync** below for the procedure and the rules that keep the mirror honest.
 
-`reference/design-system/` is a **stale earlier export** from a different Figma file (the "Bento"
-one). Its `--surface-l1…l5` / `--radius-xs…xl` naming does not exist in the live file. Treat it as
-history. It is not a source, and values are never copied forward from it.
-
-Dark is canonical (`:root`); light lives behind `[data-theme="light"]` on `<html>`.
-
-> **The table below is stale.** It describes `src/styles/tokens/`, which came from the superseded
-> "Bento" export. None of those custom property names (`--surface-l1`, `--radius-xs`, `--tradl-green`)
-> exist in the live Figma file. It is kept only because it still accurately describes the code as it
-> stands today, and it goes away when `src/design-system/tokens/` is generated. The `@theme` naming
-> rule underneath it is permanent and applies to the new layer too.
+`reference/design-system/` was a **stale earlier export** from a different Figma file (the "Bento"
+one). Its `--surface-l1…l5` / `--radius-xs…xl` naming does not exist in the live file. It is
+gitignored and not in this repository. If you have it locally, it is history: never a source, and
+values are never copied forward from it.
 
 `globals.css` maps tokens into Tailwind through `@theme inline`. **A `@theme` key must never repeat a
-custom property the token files declare.** Tailwind emits its theme keys back into `:root`, so
-`--radius-md: var(--radius-md)` lands after `effects.css` and resolves to itself — the value
-collapses and the utility silently emits nothing. That is why the theme uses distinct suffixes:
+custom property our own files declare.** Tailwind emits its theme keys back into `:root`, so
+`--radius-card: var(--radius-card)` would land after the token import and resolve to itself: the
+value collapses and the utility silently emits nothing, with no error anywhere. This is why every
+mirrored token carries the `--ds-` prefix, which moves the whole design system clear of Tailwind's
+`--color-*`, `--radius-*`, `--text-*`, `--shadow-*`, `--blur-*` and `--ease-*` namespaces.
 
-| Token | Utility |
+The prefix does a second job: `var(--ds-bg-surface)` is mirrored from Figma and may never be
+invented, `var(--ink-primary)`-style names are ours. Provenance is readable at the point of use.
+
+| Utility | Reads |
 |---|---|
-| `--surface-l1` … `--surface-l5` | `bg-l1` … `bg-l5` |
-| `--text-primary`, `--text-positive`, … | `text-primary`, `text-positive`, … |
-| `--border-subtle`, `--border-strong`, … | `border-subtle`, `border-strong`, … |
-| `--radius-xs` … `--radius-xl` | `rounded-chip`, `rounded-control`, `rounded-card`, `rounded-panel`, `rounded-container` |
-| `--shadow-xs` … `--shadow-xl` | `shadow-e1` … `shadow-e5` |
-| `--font-sans` / `--font-num` | `font-text` / `font-number` |
-| `--layout-max-width` | `max-w-content` (1040px) |
+| `bg-ground` | the page ground (ours) |
+| `bg-surface`, `bg-raised`, `bg-elevated`, `bg-toolbar` | `--ds-bg-*` |
+| `text-fg`, `text-fg-2`, `text-fg-3`, `text-fg-muted`, `text-fg-disabled` | `--ds-text-*` |
+| `border-line`, `border-line-2`, `border-line-medium`, `border-line-strong` | `--ds-border-*` |
+| `text-accent`, `text-accent-2`, `text-negative` | `--ds-accent-*` |
+| `rounded-sm` … `rounded-full` | `--ds-radius-*` |
+| `text-xs` … `text-lg`, `text-display`, `text-statement` | `--ds-font-size-*` plus the display scale |
+| `shadow-card`, `shadow-window`, `shadow-frame`, `shadow-menu`, `shadow-spec` | the elevation stacks |
+| `backdrop-blur-chrome` … `backdrop-blur-bar` | the glass tiers |
+| `ease-house`, `ease-press` | the motion curves |
+| `max-w-content` | `--content-max` (1200px, doc 04 §2) |
 
-Anything unmapped is still reachable as a plain custom property: `var(--surface-badge)`.
+Anything unmapped is still reachable as a plain custom property: `var(--ds-heatmap-positive-strong)`.
 
 Type: **Inter drives everything**, text and numbers both, because that is what every type variable in
 the live Figma file says. The old IBM Plex Sans + Lato split came from the superseded "Bento" export;
@@ -344,22 +347,26 @@ popup. Touch targets at least 44px.
 ## Commands
 
 ```bash
-npm run dev          # localhost:4100, Turbopack
-npm run typecheck    # tsc --noEmit
-npm run check:copy   # lexicon rules (doc 01 §7) over customer-facing strings
-npm run check:motion # fails if motion.css drifted from motion.ts
+npm run dev            # localhost:4100, Turbopack
+npm run typecheck      # tsc --noEmit
+npm run lint           # eslint, flat config, generated output excluded
+npm run check:copy     # lexicon rules (doc 01 §7) over customer-facing strings
+npm run check:motion   # fails if motion.css drifted from motion.ts
 npm run check:surfaces # raw colour, uncomposited blur, click-eating overlays, layout transitions
-npm run build        # production build
-npm run verify       # typecheck + copy + motion + surfaces + build. Before every commit.
+npm run build          # production build
+npm run verify         # typecheck + lint + copy + motion + surfaces + build. Before every commit.
 
-npm run ds:build     # regenerate tokens, icons, wordmark, favicons and share card
-npm run ds:verify    # regenerate, then fail if the tree moved. Catches hand edits.
-npm run ds:contrast  # WCAG report for every pairing the site actually uses
+npm run ds:build       # regenerate tokens, icons, wordmark, favicons and share card
+npm run ds:verify      # regenerate, then fail if the tree moved. Catches hand edits.
+npm run ds:contrast     # WCAG report for every pairing the site actually uses
 ```
 
-The design-system generators are documented in `docs/DESIGN-SYSTEM.md`. `ds:verify` is the one that
-belongs in CI: the generators are deterministic, so a dirty tree after a rebuild means someone edited
-a generated file by hand and is about to lose the change.
+`verify`, `ds:verify` and `ds:contrast` all run in CI on every pull request and every push to `main`
+(`.github/workflows/verify.yml`), and `verify` is a required check. `ds:verify` is the one that
+matters most there: the generators are deterministic, so a dirty tree after a rebuild means someone
+edited a generated file by hand and is about to lose the change.
+
+The design-system generators are documented in `docs/DESIGN-SYSTEM.md`.
 
 ## Removing what does not ship
 
