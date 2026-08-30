@@ -23,10 +23,15 @@ jobs:
     env:
       # env.ts refuses to fall back to localhost when CI or VERCEL is set, so a
       # build here must be given an origin. Any absolute URL satisfies
-      # metadataBase; the real one comes from the deploy environment, and the
-      # artefact this job produces is thrown away. Set a repository variable to
-      # override it.
-      NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL || 'https://ci.example.com' }}
+      # metadataBase: nothing in this job is deployed and the artefact is thrown
+      # away. Change this line when the real domain exists.
+      #
+      # Deliberately a literal rather than ${{ vars.* }}: the vars context
+      # cannot be resolved by editors or by a fork without repository access, so
+      # it lints as a possibly-invalid context and silently resolves to empty in
+      # a fork, where the failure would look like a code error rather than a
+      # missing setting.
+      NEXT_PUBLIC_SITE_URL: https://ci.example.com
 
     steps:
       - uses: actions/checkout@v4

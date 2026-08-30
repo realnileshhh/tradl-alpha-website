@@ -73,9 +73,10 @@ With the brief present: read `docs/README.md` for the tour, then, before writing
 `03-website-content-structure.md` for that page's section spec and `04-website-design-guidelines.md`
 for how it should behave.
 
-**Precedence:** `00-README.md` supersedes `06-master-prompt-source` (the founder PDF). The PDF
-predates the package and carries a broking/licence narrative, a fundraise, and an F&O loss stat that
-the package explicitly locks out. Use the PDF for market framing and reasoning; never for copy.
+**Precedence:** the package README supersedes the earlier founder document. That document predates
+the package and carries positioning the package explicitly locks out. Use it for market framing and
+reasoning; never for copy. What it locks out, and why, is stated in the brief itself. This file does
+not repeat it, because this file is public.
 
 ---
 
