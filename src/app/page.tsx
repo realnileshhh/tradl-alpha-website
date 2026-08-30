@@ -39,6 +39,7 @@
 import { AnnouncementBar } from "@/components/site/announcement-bar";
 import { Hero } from "@/components/site/hero";
 import { CloseSection } from "@/components/site/close-section";
+import { EngineeringSection } from "@/components/site/engineering-section";
 import { FaqSection } from "@/components/site/faq-section";
 import { FoundersSection } from "@/components/site/founders-section";
 import { PeekSection } from "@/components/site/peek-section";
@@ -56,6 +57,7 @@ export default function HomePage() {
         <ToolkitSection />
         <PeekSection />
         <FoundersSection />
+        <EngineeringSection />
         <FaqSection />
         <CloseSection />
       </main>
