@@ -3,10 +3,11 @@
 
    Order matters:
    1. Tailwind, so its layers exist before anything registers into them.
-   2. The generated Figma mirror. Every property in it is prefixed --ds-.
-   3. Our non-Figma buckets: the display scale and the ground.
-   4. @theme inline, exposing a curated subset to Tailwind as utilities.
-   5. A base layer that applies the ground and the accessibility floor.
+   2. Lenis, whose stylesheet the virtual scroll needs to take over from native.
+   3. The generated Figma mirror. Every property in it is prefixed --ds-.
+   4. Our non-Figma buckets: the display scale, the motion vocabulary, the ground.
+   5. @theme inline, exposing a curated subset to Tailwind as utilities.
+   6. A base layer that applies the ground, the reveal pre-hide and the a11y floor.
 
    Reading a custom property here: --ds-* is mirrored from Figma and may never be
    invented or hand-edited. Anything else is ours, and there are now very few of
@@ -19,8 +20,14 @@
 
 @import "tailwindcss";
 
+/* Lenis's own stylesheet, imported rather than copied. An earlier hand-copy of it
+   sat at the bottom of this file and had already drifted three selectors behind
+   the installed version, which is the whole argument against copying it. */
+@import "lenis/dist/lenis.css";
+
 @import "../design-system/tokens/tokens.css";
 @import "../design-system/extensions/display-scale.css";
+@import "../design-system/extensions/motion.css";
 @import "../design-system/marketing/ground.css";
 
 /* -----------------------------------------------------------------------------
@@ -108,6 +115,11 @@
   --blur-glass: var(--ds-blur-glass-surface);
 
 
+  /* --- Curves: ease-house, ease-press. Mirrored from motion.ts and
+         drift-checked by npm run check:motion. --- */
+  --ease-house: var(--motion-ease);
+  --ease-press: var(--motion-ease-press);
+
   /* --- Measure: max-w-content --- */
   --container-content: var(--content-max);
 
@@ -181,11 +193,47 @@
     }
   }
 
+  /* ---------------------------------------------------------------------------
+     Reveal pre-hide.
+
+     <Reveal> and <SplitWords> animate from opacity 0. Setting that start state
+     in JavaScript means the element paints visible for the frame before GSAP
+     runs and then blinks out, so it is set in CSS instead and GSAP takes it
+     from there.
+
+     Gated on `scripting: enabled` rather than on a class an inline script adds:
+     no extra bytes, nothing to hydrate, and the failure mode is right. In a
+     browser too old for the media query the content is simply visible and
+     reveals still work, whereas a class-based gate whose script never ran would
+     leave the page permanently blank.
+     ------------------------------------------------------------------------- */
+  @media (scripting: enabled) {
+    [data-reveal],
+    [data-reveal-group] > * {
+      opacity: 0;
+      will-change: opacity, transform;
+    }
+  }
+
+  /* Fallback for @/lib/scroll's lockScroll() when there is no Lenis instance to
+     stop. Lenis's own .lenis-stopped rule covers the normal path. */
+  html.scroll-locked,
+  html.scroll-locked body {
+    overflow: clip;
+  }
 
   /* Doc 04 §5: prefers-reduced-motion is honoured globally. The JS side reads
      the same query through useReducedMotion so animation code can skip the work
      rather than run it invisibly. */
   @media (prefers-reduced-motion: reduce) {
+    /* Belt and braces with the JS guard in <Reveal>: if the reduced-motion
+       branch ever fails to run, content must still be readable rather than
+       hidden behind a start state nothing will clear. */
+    [data-reveal],
+    [data-reveal-group] > * {
+      opacity: 1;
+      will-change: auto;
+    }
 
     *,
     *::before,
@@ -198,20 +246,3 @@
   }
 }
 
-/* -----------------------------------------------------------------------------
-   Lenis. Required for the virtual scroll to take over from native. Inlined
-   rather than importing lenis/dist/lenis.css so the whole global surface stays
-   readable in one file.
-   -------------------------------------------------------------------------- */
-html.lenis,
-html.lenis body {
-  height: auto;
-}
-
-.lenis:not(.lenis-autoToggle).lenis-stopped {
-  overflow: clip;
-}
-
-.lenis.lenis-smooth [data-lenis-prevent] {
-  overscroll-behavior: contain;
-}

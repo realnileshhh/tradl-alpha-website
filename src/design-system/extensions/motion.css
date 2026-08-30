@@ -1,0 +1,23 @@
+/* =============================================================================
+   MOTION VOCABULARY, CSS half. Not from Figma. PROPOSED.
+
+   Chrome only. CSS owns the transitions that answer an input directly: a nav
+   bar changing height, a chip lighting on hover, a dock sliding out. Content
+   reveals belong to GSAP through <Reveal>, and nothing in this file should ever
+   be used to animate one, because two libraries transforming the same element
+   is the failure this whole layout exists to prevent.
+
+   MIRRORED FROM motion.ts. Every value here is a copy, and `npm run check:motion`
+   fails the build if the two drift. Change motion.ts, then change this, or the
+   check catches it.
+
+   Added 30 Aug 2026.
+   ============================================================================= */
+
+:root {
+  /* mirrors EASE_POINTS */
+  --motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* mirrors DURATION.chrome */
+  --motion-chrome: 300ms;
+}

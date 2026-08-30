@@ -61,7 +61,7 @@ regulatory framing and density conventions the global set does not.
 
 ## What we author
 
-Everything above is **received** material, copied in verbatim and never edited. The two files below
+Everything above is **received** material, copied in verbatim and never edited. The three files below
 are **ours**, written during the build. They are separate from the brief so it stays a clean record
 of what arrived rather than what we decided afterwards.
 
@@ -69,14 +69,16 @@ of what arrived rather than what we decided afterwards.
 |---|---|---|
 | `DECISIONS.md` | Append-only log of choices that constrain future work, with the reasoning | Onboarding, or when questioning why something is the way it is |
 | `DESIGN-SYSTEM.md` | How the Figma system mirrors into the repo, what is in it, and every sync's diff | Any time you touch tokens, icons, or brand assets |
+| `MOTION.md` | What owns each kind of movement, the numbers, and what was discarded from the source spec | Any time you animate anything, or touch scroll |
 
-Three surfaces total, split by **lifecycle and reader**, not by topic:
+Four surfaces total, split by **lifecycle and reader**, not by topic:
 
 - **`CLAUDE.md`** is loaded into context every session, so it carries rules only. No procedure, no
   history. Every line there costs tokens on every single request, which is the discipline that keeps
   it short.
 - **`docs/DECISIONS.md`** is append-only and rarely re-read in full.
 - **`docs/DESIGN-SYSTEM.md`** is a handbook plus a log, read on demand.
+- **`docs/MOTION.md`** is a handbook, read on demand.
 
 Machine-written state lives in `src/design-system/provenance.json` and never in prose, because prose
 records of machine state go stale silently.

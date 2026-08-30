@@ -6,10 +6,13 @@
  *   Icons .................. 84 components in @/components/ui/icons
  *   Brand marks ............ public/brand/*.svg
  *   Smooth scroll .......... active app-wide via components/providers/lenis-provider
+ *   Scroll control ......... scrollTo, lockScroll, unlockScroll from "@/lib/scroll"
+ *   Scroll reveals ......... <Reveal> and <SplitWords> in components/motion
+ *   Motion vocabulary ...... design-system/extensions/motion.ts. Never retype a duration.
  *   Scroll choreography .... import { gsap, ScrollTrigger, useGSAP } from "@/lib/gsap"
  *   3D ..................... <SceneCanvas> in components/three/scene-canvas
  *   Post-processing ........ <Effects> in components/three/effects
- *   Micro-interaction ...... <FadeIn> in components/motion/fade-in
+ *   Mount entrance ......... <FadeIn> in components/motion/fade-in
  *   Cross-tree state ....... useAppStore in store/use-app-store
  *
  * The site runs dark, on the design system's own and only mode. There is no
@@ -24,7 +27,10 @@
  *               bg-surface, border-line, text-fg-2, .num on every figure.
  *               Identical to product surfaces on purpose.
  *
- * See docs/DECISIONS.md 004 and docs/DESIGN-SYSTEM.md.
+ * The hero does not animate in. Doc 04 §5 wants the first screen painted as a
+ * finished static, and everything <Reveal> touches starts at opacity 0.
+ *
+ * See docs/DECISIONS.md 004 and 005, docs/DESIGN-SYSTEM.md and docs/MOTION.md.
  *
  * Browse the system at /dev/design-system. See /dev/stack for the animation
  * stack, and CLAUDE.md for the rules that bind the copy and the budget.
