@@ -162,6 +162,14 @@
     color-scheme: dark;
   }
 
+  /* Held back while a reload is being put back where it was. The canvas keeps
+     the ground colour, because a background set on <body> paints the canvas
+     whatever the body's own visibility is, so this is a beat of the page's own
+     black rather than a white flash. See src/lib/scroll-restoration.ts. */
+  html[data-restoring] body {
+    visibility: hidden;
+  }
+
   body {
     background-color: var(--page-ground);
     color: var(--ds-text-primary);
@@ -1170,6 +1178,184 @@
     /* The text catches up a beat after the panel starts opening, so it reads as
        arriving in the space rather than being stretched into view with it. */
     transition-delay: 0s, 0s, 80ms;
+  }
+}
+
+/* =============================================================================
+   THE PEEK CARRIAGE
+
+   Four windows on a rail, one centred and its neighbours pushed out past the
+   page edges, with a four-dot meter underneath.
+
+   THE GEOMETRY IS THE EARLIER BUILD'S, VALUE FOR VALUE. A window is
+   `min(1000px, 100vw - 100px)` wide with a 40px gap and a
+   `clamp(400px, 42vw, 620px)` height, which is narrower than this site's 1200px
+   measure on purpose: the surfaces inside were drawn at that width, and a
+   miniature stretched 20 per cent wider than it was composed for loses its
+   density, which is the only thing it is showing.
+
+   The height is fixed rather than an aspect ratio, and that is also the earlier
+   build's finding: four surfaces of four different densities meant four
+   different heights, so the section grew and shrank as it advanced and the
+   controls moved under the pointer. Every window is the same size and each
+   surface fills it and clips what runs past. The clip is the intended reading.
+   A product screen that runs past the bottom of its window says there is more
+   of it, which is what a peek is.
+
+   ONE TRANSFORM MOVES EVERYTHING. The track is a full-width flex row, so the
+   `50%` in its transform is half the page: centre, less half a window, less one
+   step per index. Layout never runs; only transform and opacity move.
+
+   THE METER IS THE CLOCK, AND THE CLOCK IS THE SLIDESHOW. The current dot's
+   fill is a `--motion-dwell-slide` animation from empty to full, and the
+   carriage advances off that animation's end rather than off a timer of its
+   own. A bar and a timer that are two things drift apart the moment anything
+   pauses one of them. Keyboard focus sets `data-peek-hold`, which pauses the
+   keyframe, and because the keyframe is the clock the slideshow holds exactly
+   where the bar holds and resumes from there. A pointer resting on the section
+   holds nothing: this is a timed peek, not something to read in place.
+
+   REDUCED MOTION NEEDS NO RULE HERE. `data-peek-auto` is never set, so the
+   animation is never applied, the fill falls back to the filled state below,
+   and the section is a plain set of four buttons. That matters more than it
+   looks: the global floor collapses animations to 0.01ms, and an advance fired
+   off the end of a 0.01ms animation would run four windows inside a frame.
+   ============================================================================= */
+
+@layer components {
+  .peek-viewport {
+    --peek-w: min(1000px, 100vw - 100px);
+    --peek-gap: 40px;
+    --peek-h: clamp(400px, 42vw, 620px);
+    height: var(--peek-h);
+    /* Clipped across, open up and down, and the axis matters. The windows are
+       exactly as tall as this box, and `overflow: hidden` cut the 40px bloom
+       every frame carries off its top and bottom edges while leaving it visible
+       at the sides, where the gap between windows gave it room. A frame lit
+       down two edges only reads as a seam rather than as a lit surface.
+       `clip` on one axis is what lets the other stay visible: `hidden` on x
+       would force y to scroll. The section's own overflow is the fallback in a
+       browser without `clip`. */
+    overflow-x: clip;
+  }
+
+  .peek-track {
+    display: flex;
+    height: 100%;
+    gap: var(--peek-gap);
+    transform: translateX(
+      calc(50% - var(--peek-w) / 2 - var(--peek-index, 0) * (var(--peek-w) + var(--peek-gap)))
+    );
+    transition: transform 600ms var(--motion-ease-travel);
+  }
+
+  /* The wrap. When the carriage runs off the end of the middle copy it is
+     moved back a whole copy with the transition off, which is invisible
+     because the window it lands on is the identical window. */
+  .peek-track[data-peek-snap="true"],
+  /* The slides too, and this is the half that is easy to miss: the wrap makes a
+     different element the live one in the same place on screen, so leaving the
+     opacity transition on cross-fades two identical windows and the whole
+     carriage dips for 600ms. */
+  .peek-track[data-peek-snap="true"] .peek-slide {
+    transition: none;
+  }
+
+  .peek-slide {
+    width: var(--peek-w);
+    height: 100%;
+    flex: 0 0 auto;
+    opacity: 0.4;
+    transform: scale(0.94);
+    transition:
+      opacity 600ms var(--motion-ease-travel),
+      transform 600ms var(--motion-ease-travel);
+  }
+
+  .peek-slide[data-active="true"] {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* ---------------------------------------------------------------------------
+     The meter. Two stacked shapes rather than one that changes width: a dot
+     that fades out and a track that fades in. Width is a layout property and
+     this site does not animate those, so the crossfade is what buys the same
+     movement on the compositor.
+     ------------------------------------------------------------------------ */
+
+  .peek-dot {
+    position: relative;
+    display: block;
+    width: 22px;
+    height: 6px;
+  }
+
+  .peek-dot-idle,
+  .peek-dot-track {
+    position: absolute;
+    border-radius: var(--ds-radius-full);
+    background-color: var(--ds-border-default);
+    transition: opacity 300ms var(--motion-ease);
+  }
+
+  .peek-dot-idle {
+    inset-block: 0;
+    left: 8px;
+    width: 6px;
+  }
+
+  .peek-dot-track {
+    inset: 0;
+    overflow: hidden;
+    opacity: 0;
+  }
+
+  .peek-dot-button:hover .peek-dot-idle {
+    background-color: var(--ds-border-strong);
+  }
+
+  [data-peek-dot][data-current="true"] .peek-dot-idle {
+    opacity: 0;
+  }
+
+  [data-peek-dot][data-current="true"] .peek-dot-track {
+    opacity: 1;
+  }
+
+  .peek-fill {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background-color: var(--ds-accent-secondary);
+    /* Empty until the clock starts. The dot opens as soon as the carriage is
+       on it, so a meter sitting full before the section has been reached would
+       read as a lap that already ran. */
+    transform: scaleX(0);
+    transform-origin: left center;
+  }
+
+  /* Motion off, and only then: painted whole, because a bar that will never
+     move reads better full than permanently empty. */
+  [data-peek-still="true"] .peek-fill {
+    transform: scaleX(1);
+  }
+
+  [data-peek-auto="true"] .peek-fill {
+    animation: peek-progress var(--motion-dwell-slide) linear both;
+  }
+
+  [data-peek-hold="true"] .peek-fill {
+    animation-play-state: paused;
+  }
+
+  @keyframes peek-progress {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
   }
 }
 

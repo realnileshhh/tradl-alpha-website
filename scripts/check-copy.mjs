@@ -30,6 +30,14 @@ const SCAN_DIRS = ["src/app", "src/components"];
 const EXCLUDE = ["src/app/dev", "src/components/ui/icons", "src/components/ui/brand"];
 const EXTENSIONS = [".tsx", ".ts", ".txt"];
 
+/**
+ * Files where EVERY string literal is customer copy, not just the JSX text.
+ * site.ts is the copy module; peek-data.ts is the staged data behind the sneak
+ * peek surfaces, and a symbol, a screen name and a column head are read by a
+ * visitor exactly as a meta description is.
+ */
+const COPY_MODULES = ["src/lib/site.ts", "src/lib/peek-data.ts"];
+
 /** Doc 01 §7, hard bans. No judgement required. */
 const ERRORS = [
   { re: /—/, why: "em-dash is banned in customer-facing copy" },
@@ -100,8 +108,8 @@ function extractCopy(source, file) {
     if (text && /[a-z]{3}/i.test(text)) found.push({ line: lineOf(m.index), text });
   }
 
-  // String literals only in the declared copy module, where every string is copy.
-  if (file.endsWith("src/lib/site.ts")) {
+  // String literals only in the declared copy modules, where every string is copy.
+  if (COPY_MODULES.some((m) => file.endsWith(m))) {
     for (const m of withoutComments.matchAll(/"((?:[^"\\]|\\.)*)"/g)) {
       const text = m[1].trim();
       if (text && /[a-z]{3}/i.test(text)) found.push({ line: lineOf(m.index), text });
@@ -111,7 +119,10 @@ function extractCopy(source, file) {
   return found;
 }
 
-const files = [...SCAN_DIRS.flatMap((d) => walk(join(ROOT, d))), join(ROOT, "src/lib/site.ts")];
+const files = [
+  ...SCAN_DIRS.flatMap((d) => walk(join(ROOT, d))),
+  ...COPY_MODULES.map((m) => join(ROOT, m)),
+];
 
 let errors = 0;
 let warnings = 0;

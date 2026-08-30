@@ -407,6 +407,91 @@ export const TOOL_PREVIEW_PLACEHOLDER = "Interface preview lands here.";
 
 
 /* -----------------------------------------------------------------------------
+   H6 · The sneak peek.
+
+   Four product surfaces, shown as windows, one at a time. The home prototype
+   calls this the Sneak Peek and carries all four with live-looking data in
+   them; this ships the frames and says plainly that the captures are not made
+   yet, because doc 05 §6 lists the interface recordings as assets that do not
+   exist and a fabricated leaderboard is a claim about the product.
+
+   NEW COPY, needs sign-off. None of it is in the library at doc 05 §5. Every
+   line below is the prototype's own, repunctuated where it used an em-dash
+   (doc 01 §7) and trimmed to one idea a sentence. Nothing is invented about
+   what a surface does.
+
+   Compliance, doc 01 §8: no surface here names a recommendation, a price
+   target or a direction. The rotation line deliberately says "reading" rather
+   than the prototype's "trade", which is the one word in this block that would
+   have crossed the RA perimeter.
+   -------------------------------------------------------------------------- */
+
+export const PEEK_EYEBROW = "SNEAK PEEK";
+
+/**
+ * The headline, with the accent word carrying the brand gradient like every
+ * other section title on the page. The full stop is the page's rule rather than
+ * the prototype's: the hero lands on "here.", the toolkit on "zero.", the
+ * founders on "exist.", and a title without one in the middle of those reads as
+ * a dropped character rather than as a choice.
+ */
+export const PEEK_TITLE_LEAD = "Inside the";
+export const PEEK_TITLE_BEAT = "terminal.";
+
+/**
+ * The prototype's dek runs on into "Illustrative frames, live data wires in at
+ * launch". That half is dropped: the frames on this page are visibly empty and
+ * each one says so inside itself, so the sentence would be apologising for
+ * something the design already admits.
+ */
+export const PEEK_DEK = "Four surfaces from the build, exactly as they land.";
+
+export type PeekSurface = {
+  /** The rail label under the carriage. Uppercase, doc 01 §7. */
+  name: string;
+  /** The window's own title bar: the surface, then what it claims. */
+  chrome: string;
+  /** One sentence, under the well. */
+  caption: string;
+};
+
+export const PEEK_SURFACES: PeekSurface[] = [
+  {
+    name: "EXPLORE HOME",
+    chrome: "EXPLORE · YOUR LOGGED-IN HOME",
+    caption:
+      "What passed your screens overnight, the Morning Decode, and the day's sector heat, on one page.",
+  },
+  {
+    name: "SCREENS LIBRARY",
+    chrome: "SCREENS · THEY RUN THEMSELVES",
+    caption:
+      "Take ours and make it yours. Edit a threshold in place and the count moves as you type.",
+  },
+  {
+    name: "AI BACKTESTING",
+    chrome: "AI BACKTESTING · HONEST BY ARCHITECTURE",
+    caption:
+      "Replay an idea across history. The drawdowns are drawn at full weight, never smoothed.",
+  },
+  {
+    name: "SECTOR ROTATION",
+    chrome: "SECTOR ROTATION · SEE IT, DON'T GUESS IT",
+    caption:
+      "Leading, improving, weakening, lagging. Where a sector is heading is the reading, not where it sits.",
+  },
+];
+
+/* The carriage's controls. Read out rather than shown, except the surface name
+   in the middle, which is both. */
+export const PEEK_GROUP_LABEL = "Product surfaces";
+export const PEEK_PREV_LABEL = "Previous surface";
+export const PEEK_NEXT_LABEL = "Next surface";
+export const PEEK_SHOW_LABEL = "Show";
+
+
+
+/* -----------------------------------------------------------------------------
    H8 · Why we're building this, doc 03 §3.
 
    The quotes are the home prototype's, with one punctuation edit each: the

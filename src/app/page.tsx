@@ -41,6 +41,7 @@ import { Hero } from "@/components/site/hero";
 import { CloseSection } from "@/components/site/close-section";
 import { FaqSection } from "@/components/site/faq-section";
 import { FoundersSection } from "@/components/site/founders-section";
+import { PeekSection } from "@/components/site/peek-section";
 import { SiteFooter } from "@/components/site/site-footer";
 import { SiteHeader } from "@/components/site/site-header";
 import { ToolkitSection } from "@/components/site/toolkit-section";
@@ -53,6 +54,7 @@ export default function HomePage() {
       <main>
         <Hero />
         <ToolkitSection />
+        <PeekSection />
         <FoundersSection />
         <FaqSection />
         <CloseSection />
