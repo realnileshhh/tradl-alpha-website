@@ -9,13 +9,17 @@
     "start": "next start --port 4100",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "verify": "npm run typecheck && npm run build",
+    "check:motion": "node scripts/check-motion.mjs",
+    "check:copy": "node scripts/check-copy.mjs",
+    "check:surfaces": "node scripts/check-surfaces.mjs",
+    "verify": "npm run typecheck && npm run check:motion && npm run build",
     "ds:tokens": "node scripts/build-tokens.mjs",
     "ds:icons": "node scripts/extract-icons.mjs && node scripts/verify-icons.mjs",
     "ds:brand": "node scripts/build-brand.mjs",
-    "ds:build": "npm run ds:tokens && npm run ds:icons && npm run ds:brand",
+    "ds:build": "npm run ds:tokens && npm run ds:icons && npm run ds:brand && npm run ds:app-icons",
     "ds:contrast": "node scripts/check-contrast.mjs",
-    "ds:verify": "npm run ds:build && git diff --exit-code --stat src/design-system/tokens src/components/ui/icons src/components/ui/brand"
+    "ds:verify": "npm run ds:build && git diff --exit-code --stat src/design-system/tokens src/components/ui/icons src/components/ui/brand src/app/icon.svg src/app/apple-icon.png src/app/opengraph-image.png public/icons",
+    "ds:app-icons": "node scripts/build-app-icons.mjs"
   },
   "dependencies": {
     "next": "^16",

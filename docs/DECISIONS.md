@@ -11,6 +11,65 @@ one greppable file is worth more than tidy folders until then.
 
 ---
 
+## 005 · Motion is a vocabulary, and the transport is always mounted
+
+`30 Aug 2026` · Nilesh · **accepted** · amends the reduced-motion rule in CLAUDE.md
+
+Four choices taken together while building the scroll system. The full handbook is `docs/MOTION.md`;
+this records the reasoning that will not be recoverable from the code.
+
+**One. The scroll feel is `lerp: 0.12`, not `duration`.** The provider used to pass
+`duration: 1.1` with an easing function, which puts Lenis in fixed-time mode: every throw takes the
+same wall-clock time regardless of distance. Short flicks feel slow, long throws feel slow in a
+different way, and the code comment claiming it was "roughly one screen of travel per gesture" was
+describing something the option does not do. `lerp` is exponential damping instead, so distance and
+time relate the way a physical object does, and the settle time is the same on a 60Hz and a 120Hz
+display because the per-frame factor derives from `deltaTime`.
+
+0.12 rather than the 0.10 that agency sites run at. At 0.10 the rendered position trails the pointer
+by roughly 85 to 170px during a continuous scroll, which is the "magnetic" quality people are
+describing when they like this effect. It is also lag, and the thing under the pointer on this site
+is a table of numbers someone is trying to read. 0.12 keeps the tail and gives back about 20 per
+cent of the trail. Below 0.075 on a page with this much text, visitors report the page as broken.
+
+**Two. Lenis is constructed under `prefers-reduced-motion`, not skipped.** CLAUDE.md said the
+provider does not construct it at all. That was right when it was written and is not any more:
+Lenis 1.3 has `respectReducedMotion`, on by default, which forces the interpolation to 1 so scroll
+tracks the input device with no smoothing and makes programmatic scrolls instant.
+
+Skipping construction cost more than it bought. With no instance there is no `scrollTo`, no `stop`
+and no `start`, so every overlay, anchor and back-to-top control needed a branch, and the branch that
+only runs for reduced-motion visitors is the branch nobody tests. `@/lib/scroll` now carries native
+fallbacks anyway, so the always-mounted instance is a convenience rather than a load-bearing
+assumption: if a reduced-motion visitor ever reports discomfort, the provider can go back to
+skipping construction and no call site changes.
+
+**Three. `<Reveal>` owns scroll entrance, and Motion gives up `whileInView`.** `FadeIn` used
+Motion's `whileInView`, which made it a second scroll-reveal system beside GSAP with its own trigger
+point, its own curve and no shared budget. CLAUDE.md's stack table already assigns scroll
+choreography to GSAP; this makes the code agree. `FadeIn` is now a mount entrance, and both read
+their duration and curve from the same vocabulary, so the two libraries move with one hand.
+
+**Four. Statement text splits by word, not by character.** The reference implementation this was
+drawn from wraps one `<div>` per character: 148 of them on a page, each holding a compositor layer,
+staggered fast enough that the effect stops reading, and the text destroyed for anyone using a
+screen reader or selecting to copy. Word masks carry the same idea at a twentieth of the cost, and
+`aria-label` on the wrapper keeps one readable string where the DOM has many.
+
+**The numbers live in `src/design-system/extensions/motion.ts`, as an extension and not a token.**
+Figma was not read for motion variables in this session, so this is recorded as a gap rather than as
+a claim that the system has none. If motion variables exist or land later, the Figma values win and
+the extension is deleted. The CSS half is hand-kept and drift-checked by `npm run check:motion`,
+which now runs in `verify`.
+
+**Rejected:** a scroll-reveal hook instead of a component (every call site then re-declares the
+trigger point and the curve, which is the problem the vocabulary exists to solve); a third register
+between instrument and statement (a request for a third register is a design decision, not a prop);
+generating `motion.css` from `motion.ts` through `ds:build` (two values do not justify a generator,
+and the drift check is nine lines).
+
+---
+
 ## 004 · The site runs dark, on the system's own mode
 
 `30 Aug 2026` · Nilesh · **accepted** · supersedes 001

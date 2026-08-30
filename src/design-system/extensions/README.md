@@ -10,6 +10,7 @@ until a designer signs it off.
 | Entry | File | Status | Added |
 |---|---|---|---|
 | Display scale above 42px | `display-scale.css` | **proposed**, awaiting sign-off | 30 Aug 2026 |
+| Motion vocabulary | `motion.ts` + `motion.css` | **proposed**, awaiting sign-off | 30 Aug 2026 |
 | Serif italic for the warm beat | not written | **proposed**, not wired | 30 Aug 2026 |
 
 ---
@@ -28,6 +29,27 @@ a parallel type system.
 reports line height in px, which would make this 100px on a 42px face. The superseded Bento export
 recorded the equivalent as `100%`. Until that is confirmed, `--line-height-display-xxxl` is withheld
 from `tokens/` and the statement scale sets its own leading.
+
+---
+
+## Motion vocabulary
+
+**Why.** Doc 04 §4 describes how the site should move and doc 04 §5 caps what that may cost, but
+neither names a curve, a duration or a distance. Without a named set, every component invents its
+own, and a site whose whole positioning is instrument-grade consistency ends up with nine easing
+curves in it.
+
+**What.** One house curve as control points, three durations split by what is moving (chrome,
+instrument content, statement content), two reveal presets keyed to the two registers in doc 04 §1,
+and a per-page ScrollTrigger budget. `motion.ts` is the source; `motion.css` carries the two values
+CSS needs and is drift-checked by `npm run check:motion`.
+
+**Gap, not a claim.** Figma was not queried for motion variables when this was written. The seven
+collections recorded in `provenance.json` carry no motion names and `get_motion_context` was not
+run, so this is reported as unread rather than as absent. Every value here is a promotion candidate.
+
+**Open question for design.** Whether the product surfaces already move to a defined curve. If they
+do, the marketing site should use it rather than this one, and the whole entry is deleted.
 
 ---
 

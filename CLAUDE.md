@@ -42,9 +42,9 @@ tradl-alpha-website/
 │   ├── components/
 │   │   ├── providers/          Client providers, mounted once in layout
 │   │   ├── three/              R3F canvas wrapper + post-processing chain
-│   │   ├── motion/             Component-level transitions
+│   │   ├── motion/             reveal + split-words (GSAP), fade-in (Motion)
 │   │   └── ui/                 Ported components, generated icons/ and brand/
-│   ├── lib/                    gsap registration, reduced motion, env, utils
+│   ├── lib/                    gsap registration, scroll control, reduced motion, env, utils
 │   ├── store/                  Zustand
 │   └── styles/                 globals.css. The only global CSS.
 ├── scripts/                    The design-system generators. `npm run ds:build`.
@@ -226,8 +226,12 @@ failure mode this layout exists to prevent.
 | Concern | Owner | Entry point |
 |---|---|---|
 | Scroll choreography: pinning, scrubbing, timelines | **GSAP + ScrollTrigger** | `@/lib/gsap` |
-| Smooth scroll | **Lenis** | mounted app-wide in `providers/lenis-provider` |
-| Component transitions, hover, page transitions | **Motion** | `components/motion/` |
+| Scroll reveals: content entering the viewport | **GSAP**, through one primitive | `components/motion/reveal` |
+| Smooth scroll transport | **Lenis** | mounted app-wide in `providers/lenis-provider` |
+| Moving, stopping, resuming the page | ours, over Lenis | `@/lib/scroll` |
+| Mount entrance, hover, page transitions | **Motion** | `components/motion/fade-in` |
+| Chrome that answers an input | **CSS transitions** | `--motion-chrome`, `--motion-ease` |
+| Durations, easing, distances, budgets | ours | `design-system/extensions/motion.ts` |
 | 3D scenes | **React Three Fiber + three** | `components/three/scene-canvas` |
 | 3D helpers: cameras, loaders, environments, controls | **drei** | import directly |
 | Bloom, grain, aberration, vignette | **@react-three/postprocessing** | `components/three/effects` |
@@ -249,6 +253,22 @@ Rules that are easy to violate once and expensive to find later:
   `"always"` explicitly, so the battery cost is a decision rather than a default.
 - **Read the store inside `useFrame` with `useAppStore.getState()`**, not the hook. A component that
   runs 60 times a second should not also re-render on store changes.
+- **Content enters through `<Reveal>`, never a hand-rolled ScrollTrigger.** One trigger per group,
+  `once: true`, `yPercent` and not pixels, pre-hidden in CSS. `<SplitWords>` is the statement-register
+  variant, roughly once per page. A hand-rolled reveal re-declares the trigger point and the curve,
+  which is the thing the vocabulary exists to prevent.
+- **Never wrap the hero in `<Reveal>`.** It starts at `opacity: 0`, so it would make the LCP element
+  wait for hydration. Development warns; treat the warning as an error.
+- **Never retype a duration, curve or distance.** They come from
+  `@/design-system/extensions/motion`. Motion values are an extension and not a token: Figma has not
+  been read for them.
+- **Move the page through `@/lib/scroll`**, never `scrollIntoView`, `scroll-behavior: smooth` or the
+  Lenis instance. Overlays call `lockScroll()` / `unlockScroll()` in one effect, paired.
+- **`data-lenis-prevent` on every iframe and third-party embed.** Ordinary nested scrollers are
+  handled by `allowNestedScroll`.
+
+Full handbook, with the numbers and what was deliberately discarded: **`docs/MOTION.md`**.
+
 ## Performance budget · doc 04 §5, and it is in tension with the stack
 
 - **LCP under 2.0s on 4G mid-range Android.** This is the binding constraint, and the 3D stack is the
@@ -260,9 +280,14 @@ Rules that are easy to violate once and expensive to find later:
 - Base64-embedded heavy assets are banned. All media through optimised static assets.
 - Below-fold charts and video lazy-load. Video is muted and poster-first, never autoplaying with
   sound.
-- `prefers-reduced-motion` is honoured globally, in CSS and in JS. `SceneCanvas` does not mount WebGL
-  at all under it; `LenisProvider` does not construct Lenis; auto-advancing components render as
-  static tabbed states.
+- Per page: at most 40 ScrollTriggers and at most 4 of them scrubbed. `<Reveal>` warns in
+  development when either is passed.
+- `prefers-reduced-motion` is honoured in three independent places, because any one can fail.
+  `SceneCanvas` does not mount WebGL at all. `<Reveal>` and `<SplitWords>` set the final state and
+  create no tween. Lenis is still constructed and honours the setting itself, forcing interpolation
+  to 1 so scroll tracks the input device with nothing smoothed, which is what lets `@/lib/scroll`
+  work without a branch (see `docs/DECISIONS.md` 005). Auto-advancing components render as static
+  tabbed states.
 
 ## Accessibility floor · doc 04 §7
 
@@ -276,8 +301,9 @@ popup. Touch targets at least 44px.
 ```bash
 npm run dev          # localhost:4100, Turbopack
 npm run typecheck    # tsc --noEmit
+npm run check:motion # fails if motion.css drifted from motion.ts
 npm run build        # production build
-npm run verify       # typecheck + build. Run before every commit.
+npm run verify       # typecheck + motion + build. Run before every commit.
 
 npm run ds:build     # regenerate tokens, icons, wordmark, favicons and share card
 npm run ds:verify    # regenerate, then fail if the tree moved. Catches hand edits.
