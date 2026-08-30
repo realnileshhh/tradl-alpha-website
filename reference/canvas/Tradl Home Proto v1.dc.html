@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/tradl-ai-design-system-7cfe07d6-17cb-4bad-a8b6-de87b3ea902d/tokens/fonts.css">
+<link rel="stylesheet" href="_ds/tradl-ai-design-system-7cfe07d6-17cb-4bad-a8b6-de87b3ea902d/tokens/colors.css">
+<link rel="stylesheet" href="_ds/tradl-ai-design-system-7cfe07d6-17cb-4bad-a8b6-de87b3ea902d/tokens/typography.css">
+<link rel="stylesheet" href="_ds/tradl-ai-design-system-7cfe07d6-17cb-4bad-a8b6-de87b3ea902d/tokens/spacing.css">
+<link rel="stylesheet" href="_ds/tradl-ai-design-system-7cfe07d6-17cb-4bad-a8b6-de87b3ea902d/tokens/effects.css">
+<link rel="stylesheet" href="_ds/tradl-ai-design-system-7cfe07d6-17cb-4bad-a8b6-de87b3ea902d/styles.css">
+<script src="_ds/tradl-ai-design-system-7cfe07d6-17cb-4bad-a8b6-de87b3ea902d/_ds_bundle.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#000;color:#E8E6E0;font-family:'IBM Plex Sans',system-ui,sans-serif}
+a{color:#3FCF8E;text-decoration:none}a:hover{color:#6FE3AE}
+@keyframes tk{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@keyframes blink{0%,49%{opacity:1}50%,100%{opacity:0}}
+@keyframes rowin{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@keyframes isoSpin{from{transform:rotateX(58deg) rotateZ(0deg)}to{transform:rotateX(58deg) rotateZ(360deg)}}
+@media (prefers-reduced-motion:reduce){.iso{animation:none !important}}
+@media (prefers-reduced-motion:reduce){.tkwrap{animation:none !important}}
+</style>
+</helmet>
+
+<div style="min-height:100vh;background:#000">
+
+<div style="position:sticky;top:0;z-index:50;background:rgba(0,0,0,.85);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.12)">
+<div style="max-width:1160px;margin:0 auto;padding:0 24px;height:60px;display:flex;align-items:center;gap:28px">
+<div style="font:700 17px 'IBM Plex Sans',sans-serif;color:#fff;letter-spacing:-.01em">trad<span style="color:#3FCF8E">l/</span><span style="color:#3FCF8E">.</span></div>
+<div style="display:flex;gap:22px;font-size:13px">
+<a href="Tradl Edge Proto v1.dc.html" style="color:rgba(255,255,255,.72)">The Edge</a>
+<a href="Tradl Stock Page Proto v1.dc.html" style="color:rgba(255,255,255,.72)">Stocks</a>
+<a href="Tradl Decode Proto v1.dc.html" style="color:rgba(255,255,255,.72)">Decode</a>
+<span style="color:rgba(255,255,255,.72);cursor:pointer">Manifesto</span>
+</div>
+<div style="margin-left:auto;display:flex;gap:10px;align-items:center">
+<span style="font:600 11px Lato,sans-serif;letter-spacing:.08em;color:#3FCF8E">COHORT {{ cohortNumber }} · {{ seatsLeft }}/1,000 SEATS LEFT</span>
+<button style="background:none;border:1px solid rgba(255,255,255,.35);color:#E8E6E0;border-radius:6px;padding:7px 16px;font:600 13px 'IBM Plex Sans',sans-serif;cursor:pointer" style-hover="border-color:#fff;color:#fff">Log in</button>
+<a href="Tradl Start Proto v1.dc.html" style="background:#3FCF8E;color:#06130D;border-radius:6px;padding:8px 18px;font:600 13px 'IBM Plex Sans',sans-serif">Start free</a>
+</div>
+</div>
+<div style="border-top:1px solid rgba(255,255,255,.06);overflow:hidden;background:#0A0A0A">
+<div class="tkwrap" style="display:flex;gap:0;width:max-content;animation:tk 42s linear infinite">
+<sc-for list="{{ tickerLoop }}" as="t" hint-placeholder-count="8">
+<div style="display:flex;gap:8px;align-items:center;padding:6px 22px;border-right:1px solid rgba(255,255,255,.07);white-space:nowrap">
+<span style="font:600 11px Lato,sans-serif;letter-spacing:.06em;color:rgba(255,255,255,.55)">{{ t.sym }}</span>
+<span style="font:600 12px Lato,sans-serif;font-variant-numeric:tabular-nums;color:#fff">{{ t.px }}</span>
+<span style="font:600 11px Lato,sans-serif;color:{{ t.col }}">{{ t.chg }}</span>
+</div>
+</sc-for>
+</div>
+</div>
+</div>
+
+<section data-screen-label="Hero" style="position:relative;overflow:hidden;border-bottom:1px solid rgba(255,255,255,.1)">
+<canvas ref="{{ fieldRef }}" width="1600" height="720" style="position:absolute;inset:0;width:100%;height:100%"></canvas>
+<div style="position:absolute;inset:0;background:radial-gradient(ellipse 62% 52% at 50% 44%,rgba(0,0,0,.62),rgba(0,0,0,0) 72%)"></div>
+<div style="position:relative;max-width:1160px;margin:0 auto;padding:110px 24px 120px;text-align:center">
+<div style="display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(63,207,142,.45);border-radius:999px;padding:5px 14px;font:600 10.5px Lato,sans-serif;letter-spacing:.16em;color:#3FCF8E;background:rgba(63,207,142,.06)">◈ WE COMPUTE, WE DON'T PREDICT</div>
+<h1 style="font:600 56px/1.12 'IBM Plex Serif',Georgia,serif;color:#fff;margin:26px auto 0;max-width:820px;letter-spacing:-.01em">The market has never had an intelligence on your side. <em style="color:#3FCF8E;font-style:italic">Until now.</em></h1>
+<p style="font:400 17px/1.65 'IBM Plex Sans',sans-serif;color:rgba(255,255,255,.62);max-width:560px;margin:20px auto 0">Tradl watches all 3,000 NSE stocks, writes real analysis as code, and grades its own calls in public. This is trading, AI-native.</p>
+<div style="margin-top:30px;display:flex;gap:12px;justify-content:center">
+<a href="Tradl Start Proto v1.dc.html" style="background:#3FCF8E;color:#06130D;border-radius:6px;padding:13px 30px;font:600 15px 'IBM Plex Sans',sans-serif;display:inline-block">Start free</a>
+<button style="background:none;border:1px solid rgba(255,255,255,.35);color:#E8E6E0;border-radius:6px;padding:13px 26px;font:600 15px 'IBM Plex Sans',sans-serif;cursor:pointer" style-hover="border-color:#fff;color:#fff">See it compute ↓</button>
+</div>
+<div style="margin-top:14px;font:400 12px Lato,sans-serif;letter-spacing:.05em;color:rgba(255,255,255,.4)">alpha open · free while in alpha · no card</div>
+</div>
+</section>
+
+<section data-screen-label="The Shift" style="border-bottom:1px solid rgba(255,255,255,.1);background:#0A0A0A">
+<div style="max-width:1160px;margin:0 auto;padding:88px 24px">
+<div style="font:600 10.5px Lato,sans-serif;letter-spacing:.18em;color:#3FCF8E">THE SHIFT</div>
+<h2 style="font:600 32px/1.25 'IBM Plex Serif',Georgia,serif;color:#fff;margin:14px 0 0;max-width:720px">Every era of trading was unlocked by new infrastructure. This one is unlocked by intelligence.</h2>
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1.2fr;gap:14px;margin-top:44px">
+<sc-for list="{{ waves }}" as="w" hint-placeholder-count="4">
+<div style="border:1px solid {{ w.border }};border-radius:10px;padding:22px 20px;background:{{ w.bg }}">
+<div style="font:700 26px Lato,sans-serif;color:{{ w.era }};font-variant-numeric:tabular-nums">{{ w.years }}</div>
+<div style="font:600 12px Lato,sans-serif;letter-spacing:.14em;color:{{ w.title }};margin-top:8px">{{ w.name }}</div>
+<div style="font:400 13px/1.55 'IBM Plex Sans',sans-serif;color:rgba(255,255,255,.6);margin-top:8px">{{ w.copy }}</div>
+</div>
+</sc-for>
+</div>
+<div style="margin-top:26px;font:italic 400 16px 'IBM Plex Serif',Georgia,serif;color:rgba(255,255,255,.55)">Access made you a participant. Intelligence makes you early.</div>
+</div>
+</section>
+
+<section data-screen-label="The Receipt" style="border-bottom:1px solid rgba(255,255,255,.1)">
+<div style="max-width:1160px;margin:0 auto;padding:88px 24px;display:grid;grid-template-columns:.85fr 1.15fr;gap:48px;align-items:center">
+<div>
+<div style="font:600 10.5px Lato,sans-serif;letter-spacing:.18em;color:#3FCF8E">◈ NOT A CONCEPT — A DATED RUN</div>
+<h2 style="font:600 34px/1.2 'IBM Plex Serif',Georgia,serif;color:#fff;margin:14px 0 0">Ask it something.<br>Watch it compute.</h2>
+<p style="font:400 15px/1.65 'IBM Plex Sans',sans-serif;color:rgba(255,255,255,.6);margin:16px 0 0;max-width:380px">Three real questions, real code, real NSE data, real elapsed time. The only demo on this page.</p>
+<div style="margin-top:22px;font:600 13px Lato,sans-serif;color:#3FCF8E;font-variant-numeric:tabular-nums">{{ resultCount }} · every number computed, none predicted.</div>
+<div style="margin-top:6px;font:400 11px Lato,sans-serif;color:rgba(255,255,255,.35)">illustrative sample data — live feed wires in at build</div>
+</div>
+<div>
+<div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+<sc-for list="{{ presetChips }}" as="c" hint-placeholder-count="3">
+<button onClick="{{ c.pick }}" style="background:{{ c.bg }};border:1px solid {{ c.border }};color:{{ c.color }};border-radius:999px;padding:6px 14px;font:500 12px 'IBM Plex Sans',sans-serif;cursor:pointer;text-align:left" style-hover="border-color:#3FCF8E">{{ c.label }}</button>
+</sc-for>
+</div>
+<div style="border:1px solid rgba(255,255,255,.16);border-radius:12px;background:#111;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.55)">
+<div style="display:flex;align-items:center;gap:7px;padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.1);background:#161616">
+<span style="width:9px;height:9px;border-radius:50%;background:#2a2a2a"></span>
+<span style="width:9px;height:9px;border-radius:50%;background:#2a2a2a"></span>
+<span style="margin-left:auto;font:600 10px Lato,sans-serif;letter-spacing:.12em;color:#3FCF8E;border:1px solid rgba(63,207,142,.4);border-radius:999px;padding:3px 10px">LIVE · NSE</span>
+</div>
+<div style="padding:16px 18px;min-height:64px;border-bottom:1px solid rgba(255,255,255,.08)">
+<span style="font:400 12px Lato,sans-serif;color:rgba(255,255,255,.4)">tradl&gt;&nbsp;</span>
+<span style="font:400 14px 'IBM Plex Sans',sans-serif;color:#fff">{{ typedPrompt }}</span><span style="display:inline-block;width:8px;height:16px;background:#3FCF8E;vertical-align:-2px;animation:blink 1s step-end infinite"></span>
+</div>
+<div style="padding:14px 18px;min-height:132px;border-bottom:1px solid rgba(255,255,255,.08);background:#0D0D0D">
+<sc-for list="{{ shownCode }}" as="ln" hint-placeholder-count="3">
+<div style="font:400 12px/1.75 ui-monospace,Menlo,monospace;color:#8FD9B6;white-space:pre">{{ ln }}</div>
+</sc-for>
+<sc-if value="{{ showElapsed }}" hint-placeholder-val="{{ true }}">
+<div style="font:400 11px Lato,sans-serif;color:rgba(255,255,255,.4);margin-top:8px;font-variant-numeric:tabular-nums">running · {{ elapsedStr }}s</div>
+</sc-if>
+</div>
+<div style="padding:14px 18px;min-height:168px">
+<sc-if value="{{ showResults }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;justify-content:space-between;font:600 10px Lato,sans-serif;letter-spacing:.12em;color:rgba(255,255,255,.4);padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.08)"><span>{{ resultHead }}</span><span>{{ asOf }}</span></div>
+<sc-for list="{{ shownResults }}" as="r" hint-placeholder-count="4">
+<div style="display:flex;align-items:center;gap:12px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.05);animation:rowin .35s ease both">
+<span style="font:600 12px Lato,sans-serif;color:#fff;width:110px">{{ r.sym }}</span>
+<span style="font:400 12px 'IBM Plex Sans',sans-serif;color:rgba(255,255,255,.55);flex:1">{{ r.note }}</span>
+<span style="font:600 12px Lato,sans-serif;font-variant-numeric:tabular-nums;color:{{ r.col }}">{{ r.delta }}</span>
+</div>
+</sc-for>
+<div style="margin-top:10px;font:400 12px 'IBM Plex Sans',sans-serif;color:rgba(255,255,255,.5)">{{ summaryLine }}</div>
+</sc-if>
+<sc-if value="{{ showWaiting }}" hint-placeholder-val="{{ false }}">
+<div style="font:400 12px Lato,sans-serif;color:rgba(255,255,255,.3);padding-top:24px;text-align:center">results land here…</div>
+</sc-if>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<section data-screen-label="The Gap" style="border-bottom:1px solid rgba(255,255,255,.1);background:#0A0A0A">
+<div style="max-width:1160px;margin:0 auto;padding:80px 24px">
+<h2 style="font:600 28px/1.3 'IBM Plex Serif',Georgia,serif;color:#fff;max-width:640px;margin:0">Your edge is scattered across five apps that don't know each other exist.</h2>
+<div style="display:flex;align-items:center;gap:10px;margin-top:36px;flex-wrap:wrap">
+<sc-for list="{{ gapApps }}" as="g" hint-placeholder-count="4">
+<div style="border:1px dashed rgba(255,255,255,.3);border-radius:8px;padding:16px 18px;min-width:118px">
+<div style="font:600 12px 'IBM Plex Sans',sans-serif;color:rgba(255,255,255,.75)">{{ g.name }}</div>
+<div style="font:400 11px 'IBM Plex Sans',sans-serif;color:rgba(255,255,255,.4);margin-top:3px">{{ g.flaw }}</div>
+</div>
+<span style="color:rgba(255,120,120,.6);font:600 14px Lato,sans-serif">{{ g.sep }}</span>
+</sc-for>
+<div style="border:1px solid rgba(63,207,142,.55);border-radius:8px;padding:16px 22px;background:rgba(63,207,142,.05)">
+<div style="font:600 12px 'IBM Plex Sans',sans-serif;color:#3FCF8E">ONE TRADL SURFACE</div>
+<div style="font:400 11px 'IBM Plex Sans',sans-serif;color:rgba(255,255,255,.55);margin-top:3px">one memory — ask once, every tool knows the context</div>
+</div>
+</div>
+</div>
+</section>
+
+<section data-screen-label="How It Works" style="border-bottom:1px solid rgba(255,255,255,.1)">
+<div style="max-width:1160px;margin:0 auto;padding:80px 24px">
+<div style="font:600 10.5px Lato,sans-serif;letter-spacing:.18em;color:#3FCF8E">HOW IT WORKS</div>
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:24px">
+<sc-for list="{{ hiw }}" as="h" hint-placeholder-count="3">
+<div style="border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:24px;background:#111">
+<div style="font:700 24px Lato,sans-serif;color:#3FCF8E">{{ h.n }}</div>
+<div style="font:600 15px 'IBM Plex Sans',sans-serif;color:#fff;margin-top:10px">{{ h.t }}</div>
+<div style="font:400 13px/1.6 'IBM Plex Sans',sans-serif;color:rgba(255,255,255,.58);margin-top:8px">{{ h.c }}</div>
+</div>
+</sc-for>
+</div>
+<div style="display:flex;gap:8px;margin-top:20px;flex-wrap:wrap">
+<sc-for list="{{ hiwChips }}" as="c" hint-placeholder-count="4">
+<span style="border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:5px 14px;font:500 12px Lato,sans-serif;color:rgba(255,255,255,.7)">{{ c }}</span>
+</sc-for>
+</div>
+</div>
+</section>
+
+<section data-screen-label="Toolkit" style="border-bottom:1px solid rgba(255,255,255,.1);background:#0A0A0A">
+<div style="max-width:1160px;margin:0 auto;padding:88px 24px">
+<div style="font:600 10.5px Lato,sans-serif;letter-spacing:.18em;color:#3FCF8E">◈ THE TOOLKIT</div>
+<h2 style="font:600 30px/1.25 'IBM Plex Serif',Georgia,serif;color:#fff;margin:12px 0 0">Discover · Analyse · Act</h2>
+<div style="display:grid;grid-template-columns:220px 1fr;gap:28px;margin-top:36px;align-items:stretch">
+<div style="display:flex;flex-direction:column;gap:10px">
+<sc-for list="{{ stageRail }}" as="st" hint-placeholder-count="3">
+<div onClick="{{ st.pick }}" style="border:1px solid {{ st.border }};border-left:3px solid {{ st.railCol }};border-radius:10px;padding:16px 16px;background:{{ st.bg }};cursor:pointer;flex:1" style-hover="border-color:rgba(63,207,142,.6)">
+<div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px"><span style="font:600 12px Lato,sans-serif;letter-spacing:.14em;color:{{ st.nameCol }}">{{ st.name }}</span><span style="font:600 11px Lato,sans-serif;color:rgba(255,255,255,.4);white-space:nowrap">{{ st.count }}</span></div>
+<div style="font:400 12px/1.5 'IBM Plex Sans',sans-serif;color:rgba(255,255,255,.5);margin-top:6px">{{ st.desc }}</div>
+</div>
+</sc-for>
+<div style="font:400 11px Lato,sans-serif;color:rgba(255,255,255,.35);padding:2px 4px">12 tools · one memory · autoplays, or click a stage</div>
+</div>
+<div onMouseEnter="{{ pauseCar }}" onMouseLeave="{{ resumeCar }}" style="position:relative;overflow:hidden;border-radius:12px">
+<div style="display:flex;gap:20px;transform:{{ carX }};transition:transform .55s cubic-bezier(.4,0,.2,1)">
+<sc-for list="{{ stageTools }}" as="t" hint-placeholder-count="3">
+<div style="min-width:420px;max-width:420px;border:1px solid {{ t.border }};border-radius:14px;background:#0E0E0E;overflow:hidden">
+<div style="position:relative;height:216px;background:radial-gradient(ellipse at 50% 60%,rgba(63,207,142,.07),transparent 65%)">
+<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;perspective:900px">
+<div class="iso" style="width:150px;height:150px;position:relative;transform-style:preserve-3d;animation:isoSpin 26s linear infinite">
+<sc-for list="{{ t.faces }}" as="f">
+<div style="position:absolute;left:50%;top:50%;width:{{ f.w }}px;height:{{ f.h }}px;background:{{ f.bg }};border:{{ f.bd }};border-radius:{{ f.r }}px;transform:{{ f.tf }};transform-origin:{{ f.org }};opacity:{{ f.o }};box-shadow:{{ f.sh }}"></div>
+</sc-for>
+</div>
+</div>
+<span style="position:absolute;top:14px;right:14px;font:600 9px Lato,sans-serif;letter-spacing:.1em;border:1px solid {{ t.pillBorder }};border-radius:999px;padding:3px 10px;color:{{ t.pillColor }};background:{{ t.pillBg }}">{{ t.status }}</span>
+<span style="position:absolute;top:14px;left:14px;font:600 9.5px Lato,sans-serif;letter-spacing:.14em;color:rgba(255,255,255,.35)">{{ t.stage }}</span>
+</div>
+<div style="padding:18px 20px 20px;border-top:1px solid rgba(255,255,255,.08)">
+<div style="font:600 16px 'IBM Plex Sans',sans-serif;color:#fff">{{ t.name }}</div>
+<div style="font:italic 400 13px 'IBM Plex Serif',Georgia,serif;color:#3FCF8E;margin-top:4px">{{ t.tagline }}</div>
+<div style="font:400 12.5px/1.6 'IBM Plex Sans',sans-serif;color:rgba(255,255,255,.58);margin-top:8px;min-height:40px">{{ t.desc }}</div>
+<div style="font:600 11.5px 'IBM Plex Sans',sans-serif;color:{{ t.ctaCol }};margin-top:8px">{{ t.cta }}</div>
+</div>
+</div>
+</sc-for>
+</div>
+<div style="display:flex;align-items:center;gap:12px;margin-top:16px">
+<button onClick="{{ prevTool }}" style="background:#111;border:1px solid rgba(255,255,255,.25);color:#fff;border-radius:8px;width:34px;height:34px;font:600 14px Lato,sans-serif;cursor:pointer" style-hover="border-color:#3FCF8E">‹</button>
+<button onClick="{{ nextTool }}" style="background:#111;border:1px solid rgba(255,255,255,.25);color:#fff;border-radius:8px;width:34px;height:34px;font:600 14px Lato,sans-serif;cursor:pointer" style-hover="border-color:#3FCF8E">›</button>
+<div style="display:flex;gap:6px">
+<sc-for list="{{ toolDots }}" as="d">
+<span onClick="{{ d.pick }}" style="width:{{ d.w }}px;height:6px;border-radius:3px;background:{{ d.bg }};cursor:pointer;display:inline-block;transition:all .3s"></span>
+</sc-for>
+</div>
+<span style="margin-left:auto;font:400 11px/1.4 Lato,sans-serif;color:rgba(255,255,255,.35);text-align:right;max-width:340px">Private Access tools ship to alpha users first — never greyed out</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<section data-screen-label="Graded In Public" style="border-bottom:1px solid rgba(255,255,255,.1)">
+<div style="max-width:1160px;margin:0 auto;padding:88px 24px">
+<div style="font:600 10.5px Lato,sans-serif;letter-spacing:.18em;color:#3FCF8E">◈ GRADED IN PUBLIC</div>
+<h2 style="font:600 30px/1.3 'IBM Plex Serif',Georgia,serif;color:#fff;margin:14px 0 0;max-width:700px">Every morning we publish our read. Every evening the market grades it. Misses included.</h2>
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:36px">
+<div style="border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:22px;background:#111">
+<div style="font:600 10px Lato,sans-serif;letter-spacing:.14em;color:rgba(255,255,255,.45)">ED. {n} · TODAY 07:45 IST</div>
+<div style="font:600 15px 'IBM Plex Sans',sans-serif;color:#fff;margin-top:10px">Six stocks the machine is watching today</div>
+<div style="font:400 12px Lato,sans-serif;color:rgba(255,255,255,.45);margin-top:8px">frozen before the open · audio + text · WhatsApp at 07:45</div>
+</div>
+<div style="border:1px solid rgba(255,120,120,.45);border-radius:10px;padding:22px;background:rgba(255,120,120,.04)">
+<div style="font:600 10px Lato,sans-serif;letter-spacing:.14em;color:rgba(255,255,255,.45)">ED. {71} · {30 JUL} · GRADED</div>
+<div style="font:600 15px 'IBM Plex Sans',sans-serif;color:#fff;margin-top:10px">✗ Read {SYMBOL} long into results — closed <span style="color:#FF7878;font-family:Lato,sans-serif">{−3.2}%</span> against us.</div>
+<div style="font:400 12px 'IBM Plex Sans',sans-serif;color:rgba(255,255,255,.55);margin-top:8px">It stays on the record. Full weight, never dimmed.</div>
+</div>
+<div style="border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:22px;background:#111">
+<div style="font:600 10px Lato,sans-serif;letter-spacing:.14em;color:rgba(255,255,255,.45)">THE ARCHIVE · PUBLIC</div>
+<div style="font:700 28px Lato,sans-serif;color:#fff;margin-top:8px;font-variant-numeric:tabular-nums">{x}% <span style="font:400 12px Lato,sans-serif;color:rgba(255,255,255,.45)">hit rate over {n} graded calls</span></div>
+<div style="margin-top:10px;font:600 13px 'IBM Plex Sans',sans-serif"><a href="Tradl Decode Proto v1.dc.html">Browse every edition →</a></div>
+</div>
+</div>
+<div style="margin-top:22px;font:italic 400 16px 'IBM Plex Serif',Georgia,serif;color:rgba(255,255,255,.55)">Trust isn't claimed. It's graded.</div>
+</div>
+</section>
+
+<section data-screen-label="Humans" style="border-bottom:1px solid rgba(255,255,255,.1);background:#0A0A0A">
+<div style="max-width:1160px;margin:0 auto;padding:80px 24px;display:grid;grid-template-columns:1.2fr 1fr;gap:40px">
+<div style="border-left:2px solid #3FCF8E;padding-left:26px">
+<div style="font:600 10.5px Lato,sans-serif;letter-spacing:.18em;color:#3FCF8E">A NOTE FROM THE FOUNDERS</div>
+<p style="font:400 17px/1.75 'IBM Plex Serif',Georgia,serif;color:rgba(255,255,255,.85);margin:14px 0 0">"A generation of Indian traders got faster apps and cheaper trades — and no better answers. The tools got slicker; the edge stayed with the institutions. Tradl is our attempt to move it. Not with predictions — with computation you can read, on a record we grade whether it flatters us or not. If we're wrong, you'll see it on this very site. That's the point."</p>
+<div style="margin-top:14px;font:600 13px 'IBM Plex Sans',sans-serif;color:rgba(255,255,255,.6)">— {Founder name}, co-founder</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:14px">
+<sc-for list="{{ voices }}" as="v" hint-placeholder-count="2">
+<div style="border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:20px;background:#111">
+<p style="font:400 14px/1.6 'IBM Plex Sans',sans-serif;color:rgba(255,255,255,.75);margin:0">"{{ v.q }}"</p>
+<div style="margin-top:10px;font:600 12px Lato,sans-serif;color:rgba(255,255,255,.5)">{{ v.who }}</div>
+</div>
+</sc-for>
+</div>
+</div>
+</section>
+
+<section data-screen-label="FAQ" style="border-bottom:1px solid rgba(255,255,255,.1)">
+<div style="max-width:820px;margin:0 auto;padding:80px 24px">
+<h2 style="font:600 24px 'IBM Plex Serif',Georgia,serif;color:#fff;margin:0 0 22px">Before you ask</h2>
+<sc-for list="{{ faqs }}" as="f" hint-placeholder-count="5">
+<div onClick="{{ f.toggle }}" style="border-bottom:1px solid rgba(255,255,255,.1);padding:16px 4px;cursor:pointer">
+<div style="display:flex;justify-content:space-between;gap:12px;align-items:center">
+<span style="font:600 15px 'IBM Plex Sans',sans-serif;color:#fff">{{ f.q }}</span>
+<span style="font:400 18px Lato,sans-serif;color:#3FCF8E">{{ f.mark }}</span>
+</div>
+<sc-if value="{{ f.open }}" hint-placeholder-val="{{ false }}">
+<p style="font:400 14px/1.65 'IBM Plex Sans',sans-serif;color:rgba(255,255,255,.6);margin:10px 0 0;max-width:640px">{{ f.a }}</p>
+</sc-if>
+</div>
+</sc-for>
+</div>
+</section>
+
+<section data-screen-label="Close" style="border-bottom:1px solid rgba(255,255,255,.1);position:relative;overflow:hidden">
+<div style="max-width:1160px;margin:0 auto;padding:110px 24px;text-align:center">
+<h2 style="font:600 42px/1.2 'IBM Plex Serif',Georgia,serif;color:#fff;margin:0">The intelligence is already watching.<br>You are early.</h2>
+<div style="font:italic 400 17px 'IBM Plex Serif',Georgia,serif;color:rgba(255,255,255,.5);margin-top:12px">the market, finally <em style="color:#3FCF8E">intelligent</em>.</div>
+<div style="margin-top:28px"><a href="Tradl Start Proto v1.dc.html" style="background:#3FCF8E;color:#06130D;border-radius:6px;padding:14px 34px;font:600 15px 'IBM Plex Sans',sans-serif;display:inline-block">Claim your seat · {{ seatsLeft }} left</a></div>
+<div style="margin-top:12px;font:400 12px Lato,sans-serif;letter-spacing:.05em;color:rgba(255,255,255,.4)">◈ Morning Decode graded daily · 3,000+ stocks · alpha open</div>
+</div>
+</section>
+
+<footer style="background:#060606;padding:48px 24px 60px">
+<div style="max-width:1160px;margin:0 auto">
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:24px;padding-bottom:32px;border-bottom:1px solid rgba(255,255,255,.08)">
+<div>
+<div style="font:700 15px 'IBM Plex Sans',sans-serif;color:#fff">trad<span style="color:#3FCF8E">l/.</span></div>
+<div style="font:400 12px 'IBM Plex Sans',sans-serif;color:rgba(255,255,255,.4);margin-top:8px">AI trading intelligence for Indian markets.</div>
+</div>
+<div style="font:400 13px/2 'IBM Plex Sans',sans-serif;color:rgba(255,255,255,.55)"><span style="font:600 10px Lato,sans-serif;letter-spacing:.14em;color:rgba(255,255,255,.35)">PRODUCT</span><br>The Edge · AI Screener · Backtesting · Stock Pages · Charts</div>
+<div style="font:400 13px/2 'IBM Plex Sans',sans-serif;color:rgba(255,255,255,.55)"><span style="font:600 10px Lato,sans-serif;letter-spacing:.14em;color:rgba(255,255,255,.35)">MARKETS</span><br>Stocks A–Z · Sectors · Events · Morning Decode archive</div>
+<div style="font:400 13px/2 'IBM Plex Sans',sans-serif;color:rgba(255,255,255,.55)"><span style="font:600 10px Lato,sans-serif;letter-spacing:.14em;color:rgba(255,255,255,.35)">COMPANY</span><br>Manifesto · Founding users · Contact</div>
+</div>
+<p style="font:400 11px/1.8 'IBM Plex Sans',sans-serif;color:rgba(255,255,255,.35);margin:24px 0 0;max-width:900px">Tradl AI publishes computed and historical analytics on listed securities. Nothing on this platform is investment advice, a research recommendation, or a solicitation to trade. Registration granted by SEBI and certification from NISM in no way guarantee the performance of the intermediary or provide any assurance of returns to investors. Investments in the securities market are subject to market risks; read all related documents carefully before investing. SEBI Research Analyst Reg. No. {INH000000000}. Market data: CMOTS, NSE, BSE — quotes delayed up to 15 minutes. Past performance, including published Decode grades, does not guarantee future results.</p>
+</div>
+</footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;seatsLeft&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:412,&quot;min&quot;:0,&quot;max&quot;:1000,&quot;section&quot;:&quot;Cohort&quot;,&quot;tsType&quot;:&quot;number&quot;},&quot;cohortNumber&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:1,&quot;min&quot;:1,&quot;max&quot;:9,&quot;section&quot;:&quot;Cohort&quot;,&quot;tsType&quot;:&quot;number&quot;},&quot;autoplayDemo&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;section&quot;:&quot;Playground&quot;,&quot;tsType&quot;:&quot;boolean&quot;}}">
+class Component extends DCLogic {
+  state = { pi: 0, phase: 'typing', typed: 0, codeShown: 0, elapsed: 0, openFaq: 0, tstage: 0, tidx: 0, tpause: false };
+
+  presets = [
+    { label: 'Midcaps breaking 52-week highs on 2× volume',
+      prompt: 'Midcaps breaking 52-week highs on 2× average volume',
+      code: ["universe = nse.midcaps()                # 743 stocks", "hits = universe.filter(lambda s:", "    s.close >= s.high_52w and", "    s.volume >= 2 * s.avg_volume_20d)", "hits.rank_by('volume_ratio')"],
+      head: 'SYMBOL · 7 MATCHES', asOf: 'AS OF {DATE} 09:41 IST',
+      results: [
+        { sym: '{SYM-A}', note: 'new 52W high · vol 3.1× avg', delta: '+4.2%', col: '#3FCF8E' },
+        { sym: '{SYM-B}', note: 'breakout above ₹{—} · vol 2.8×', delta: '+3.5%', col: '#3FCF8E' },
+        { sym: '{SYM-C}', note: 'second session above high', delta: '+2.1%', col: '#3FCF8E' },
+        { sym: '{SYM-D}', note: 'vol 2.2× · sector leading', delta: '+1.8%', col: '#3FCF8E' } ],
+      summary: '7 matches · 1.9s — plus 3 more inside. Every match, never a sample.',
+      count: '{7} matches · {1.9}s · as of {date}' },
+    { label: 'Backtest RSI-oversold bounce · Bank Nifty, 5y',
+      prompt: 'Backtest an RSI-oversold bounce on Bank Nifty — 5 years',
+      code: ["setup = rsi(14) < 30, exit = +5d", "trades = backtest('BANKNIFTY',", "    setup, period='5y')", "trades.stats()"],
+      head: 'BACKTEST · 5 YEARS', asOf: 'AS OF {DATE}',
+      results: [
+        { sym: 'Trades', note: 'signals fired over 5 years', delta: '{41}', col: '#fff' },
+        { sym: 'Win rate', note: 'closed higher after 5 sessions', delta: '{63}%', col: '#3FCF8E' },
+        { sym: 'Avg win / loss', note: 'per trade, gross', delta: '+{2.4}% / −{1.6}%', col: '#fff' },
+        { sym: 'Worst run', note: 'consecutive losses — shown, not hidden', delta: '{4}', col: '#FF7878' } ],
+      summary: 'The whole distribution, misses included. Tap any stat for its code.',
+      count: '{41} trades tested · {2.3}s · as of {date}' },
+    { label: 'What changed in RELIANCE today?',
+      prompt: 'What changed in RELIANCE today?',
+      code: ["s = stock('RELIANCE')", "diff = s.today().vs(s.yesterday())", "diff.significant(threshold=2.0)"],
+      head: 'RELIANCE · 3 CHANGES', asOf: 'AS OF {DATE} {TIME} IST',
+      results: [
+        { sym: 'Volume', note: 'running {2.4}× the 20-day average', delta: '▲', col: '#3FCF8E' },
+        { sym: 'Delivery %', note: 'up {—} pts vs yesterday', delta: '▲', col: '#3FCF8E' },
+        { sym: 'Sector gap', note: 'moving {1.2}% ahead of energy index', delta: '+{1.2}%', col: '#3FCF8E' } ],
+      summary: 'Three computed changes — each carries its basis ◈.',
+      count: '{3} significant changes · {0.8}s · as of {date}' } ];
+
+  stages = [
+    { name: 'DISCOVER', desc: 'Find what the market is hiding' },
+    { name: 'ANALYSE', desc: 'Test it before you believe it' },
+    { name: 'ACT', desc: 'Turn a read into a plan' } ];
+  toolList = [
+    { st: 0, name: 'AI Screener', status: 'LIVE', scene: 'screener', tagline: '3,000 stocks funnel down to the ones that match your sentence.', desc: 'Scan all 3,000 NSE stocks in plain language. Every match, never a sample.' },
+    { st: 0, name: 'Morning Decode', status: 'LIVE', scene: 'decode', tagline: 'Six reads at dawn, graded at dusk.', desc: 'Published 07:45, frozen before the open, graded after the close.' },
+    { st: 0, name: 'Events Calendar', status: 'LIVE', scene: 'events', tagline: 'The calendar that knows what usually moves.', desc: 'Results, expiries, macro — with the machine\u2019s read on the usual reaction.' },
+    { st: 0, name: 'Pattern Sniper', status: 'PRIVATE ACCESS', scene: 'sniper', tagline: 'Crosshairs on every chart, so you don\u2019t stare at 3,000.', desc: 'Watches every chart for the setups you care about, on every timeframe.' },
+    { st: 0, name: 'Insights Engine', status: 'PRIVATE ACCESS', scene: 'insights', tagline: 'The anomaly stands out because everything else is measured.', desc: 'Cross-stock anomalies surfaced daily: volume, delivery, options flow.' },
+    { st: 0, name: 'F&O Discovery', status: 'PRIVATE ACCESS', scene: 'fno', tagline: 'Call and put flow, crossing where it matters.', desc: 'Unusual chain activity, computed and explained — not just flagged.' },
+    { st: 1, name: 'AI Backtesting', status: 'LIVE', scene: 'backtest', tagline: 'Your setup, replayed across every slice of history.', desc: 'Say the setup, get the distribution — wins, losses, worst runs, all of it.' },
+    { st: 1, name: 'Smart Stock Pages', status: 'LIVE', scene: 'stockpages', tagline: 'One stock, seven watchers in orbit.', desc: 'Every stock with a computed read, a watching field, and a graded record.' },
+    { st: 1, name: 'Charts', status: 'PREVIEW', scene: 'charts', tagline: 'Candles that carry their own annotations.', desc: 'One Charts surface, two states: preview now, the advanced annotating layer in Private Access.' },
+    { st: 1, name: 'Smart Chain', status: 'PRIVATE ACCESS', scene: 'chain', tagline: 'The strike ladder, climbing with open interest.', desc: 'The option chain that explains itself — OI shifts, PCR, max pain, in sentences.' },
+    { st: 2, name: 'Strategy Copilot', status: 'PRIVATE ACCESS', scene: 'strategy', tagline: 'A read becomes a route: entry, invalidation, size.', desc: 'Turns a read into a plan — you decide, it computes.' },
+    { st: 2, name: 'Position Co-pilot', status: 'PRIVATE ACCESS', scene: 'position', tagline: 'Your position, recomputed on its axis every session.', desc: 'Re-runs your open positions against your actual entry, every session.' } ];
+  skin(k) {
+    k = k || {};
+    if (k.b) return { bg: 'rgba(63,207,142,.28)', bd: '1px solid rgba(63,207,142,.9)', sh: '0 0 18px rgba(63,207,142,.45)', o: k.o ?? 1 };
+    if (k.red) return { bg: 'rgba(255,120,120,.22)', bd: '1px solid rgba(255,120,120,.8)', sh: '0 0 14px rgba(255,120,120,.3)', o: k.o ?? 1 };
+    return { bg: k.bg || 'rgba(63,207,142,.06)', bd: '1px solid rgba(63,207,142,.4)', sh: 'none', o: k.o ?? 1 };
+  }
+  pl(x, y, z, w, h, k) { k = k || {}; return { tf: `translate(-50%,-50%) translate3d(${x}px,${y}px,${z}px)`, org: '50% 50%', w, h, r: k.r ?? 6, ...this.skin(k) }; }
+  bar(x, y, h, w, k) { k = k || {}; return { tf: `translate(-50%,-100%) translate3d(${x}px,${y}px,0) rotateX(-90deg)`, org: '50% 100%', w: w || 12, h, r: 2, ...this.skin(k) }; }
+  sceneFor(name) {
+    const base = this.pl(0, 0, 0, 130, 130, { r: 12 });
+    switch (name) {
+      case 'screener': return [base, this.pl(0, 0, 26, 96, 96, { o: .8 }), this.pl(0, 0, 52, 62, 62, { o: .9 }), this.pl(0, 0, 78, 32, 32, { b: 1 })];
+      case 'decode': return [base, ...[-44, -22, 0, 22, 44].map((x, i) => this.bar(x, 26, [14, 28, 40, 22, 32][i], 12, { o: .85 })), this.pl(0, -34, 62, 34, 34, { b: 1, r: 17 })];
+      case 'events': { const f = [base]; for (let cx = 0; cx < 4; cx++) for (let cy = 0; cy < 4; cy++) { const hot = cx === 2 && cy === 1; f.push(this.pl(-45 + cx * 30, -45 + cy * 30, hot ? 26 : 3, 22, 22, hot ? { b: 1, r: 4 } : { o: .6, r: 4 })); } return f; }
+      case 'sniper': return [base, this.pl(0, 0, 10, 104, 104, { r: 52, o: .8 }), this.pl(0, 0, 34, 62, 62, { r: 31, o: .9 }), this.pl(0, 0, 56, 12, 12, { b: 1, r: 6 })];
+      case 'insights': { const f = [base]; const hs = [16, 24, 18, 22, 56, 20, 26, 14, 22]; let i = 0; for (const x of [-34, 0, 34]) for (const y of [-34, 0, 34]) { const hot = x === 0 && y === 0; f.push(this.bar(x, y, hs[i++], 14, hot ? { b: 1 } : { o: .7 })); } return f; }
+      case 'fno': return [base,
+        { tf: 'translate(-50%,-100%) translate3d(0,0,0) rotateX(-90deg)', org: '50% 100%', w: 104, h: 54, r: 4, ...this.skin({ o: .75 }) },
+        { tf: 'translate(-50%,-100%) translate3d(0,0,0) rotateZ(90deg) rotateX(-90deg)', org: '50% 100%', w: 104, h: 54, r: 4, ...this.skin({ red: 1, o: .6 }) }];
+      case 'backtest': return [base, ...[44, 22, 0, -22, -44].map((y, i) => ({ tf: `translate(-50%,-100%) translate3d(0,${y}px,0) rotateX(-90deg)`, org: '50% 100%', w: 92, h: 22 + i * 11, r: 3, ...this.skin(i === 4 ? { b: 1 } : { o: .25 + i * .16 }) }))];
+      case 'stockpages': { const f = [base, this.pl(0, 0, 30, 110, 110, { r: 55, o: .7 }), this.bar(0, 0, 52, 34, { o: .95 })]; [0, 2.1, 4.2].forEach((a) => f.push(this.pl(Math.cos(a) * 55, Math.sin(a) * 55, 30, 11, 11, { b: 1, r: 6 }))); return f; }
+      case 'charts': return [base, ...[-50, -30, -10, 10, 30, 50].map((x, i) => this.bar(x, 0, [22, 36, 28, 48, 38, 62][i], 13, i % 2 ? { red: 1, o: .8 } : { o: .95, bg: 'rgba(63,207,142,.2)' })), this.pl(50, 0, 70, 14, 14, { b: 1, r: 7 })];
+      case 'chain': return [base, ...[0, 1, 2, 3, 4].map((i) => this.pl(-44 + i * 22, 44 - i * 22, 8 + i * 15, 34, 34, i === 4 ? { b: 1 } : { o: .45 + i * .12 }))];
+      case 'strategy': return [base, this.pl(-40, 40, 10, 26, 26, { o: .7 }), this.pl(0, 20, 26, 26, 26, { o: .8 }), this.pl(-8, -12, 42, 26, 26, { o: .9 }), this.pl(28, -34, 58, 26, 26, { b: 1 })];
+      case 'position': return [base, this.pl(0, 0, 28, 100, 100, { r: 50, o: .75 }), { tf: 'translate(-50%,-50%) translate3d(0,0,28) rotateX(70deg)', org: '50% 50%', w: 100, h: 100, r: 50, ...this.skin({ o: .55 }) }, this.pl(0, 0, 46, 18, 18, { b: 1, r: 9 })];
+      default: return [base];
+    }
+  }
+  advanceTool(dir) {
+    const cur = this.toolList.filter((t) => t.st === this.state.tstage);
+    let i = this.state.tidx + (dir || 1);
+    if (i >= cur.length) this.setState({ tstage: (this.state.tstage + 1) % 3, tidx: 0 });
+    else if (i < 0) { const ps = (this.state.tstage + 2) % 3; this.setState({ tstage: ps, tidx: this.toolList.filter((t) => t.st === ps).length - 1 }); }
+    else this.setState({ tidx: i });
+  }
+
+  faqData = [
+    ['Is this investment advice?', 'No. Tradl publishes computed and historical analytics. What you do with them is your call — and your broker\u2019s execution.'],
+    ['Is the AI guessing the numbers?', 'Never. Code computes every figure; the AI only understands your question and explains the result.'],
+    ['What does Private Access mean?', 'Tools still in the workshop. Alpha users get them first, in full colour — nothing on this site is greyed out.'],
+    ['What does alpha cost?', 'Nothing. Pricing is announced before alpha ends, and alpha users keep alpha pricing for life.'],
+    ['Do I need to move my broker account?', 'No. Tradl analyses; your broker executes.'] ];
+
+  componentDidMount() {
+    const reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduced) { this.setState({ phase: 'results', typed: 999, codeShown: 99 }); }
+    else if (this.props.autoplayDemo ?? true) { this.timer = setInterval(() => this.tick(), 85); }
+    if (!reduced) this.carTimer = setInterval(() => { if (!this.state.tpause) this.advanceTool(1); }, 4200);
+    this.startField();
+  }
+  componentWillUnmount() { clearInterval(this.timer); clearInterval(this.carTimer); cancelAnimationFrame(this.raf); }
+
+  tick() {
+    const p = this.presets[this.state.pi];
+    const s = this.state;
+    if (s.phase === 'typing') {
+      if (s.typed < p.prompt.length) this.setState({ typed: s.typed + 2 });
+      else this.setState({ phase: 'code', codeShown: 0, elapsed: 0 });
+    } else if (s.phase === 'code') {
+      const next = s.elapsed + 0.085;
+      if (s.codeShown < p.code.length) this.setState({ codeShown: s.codeShown + (Math.random() < 0.45 ? 1 : 0), elapsed: next });
+      else if (next < p.code.length * 0.4 + 1.2) this.setState({ elapsed: next });
+      else this.setState({ phase: 'results', hold: 0 });
+    } else if (s.phase === 'results') {
+      const h = (s.hold || 0) + 0.085;
+      if (h > 6.5) this.setState({ pi: (s.pi + 1) % this.presets.length, phase: 'typing', typed: 0, codeShown: 0, elapsed: 0, hold: 0 });
+      else this.setState({ hold: h });
+    }
+  }
+  pick(i) { this.setState({ pi: i, phase: 'typing', typed: 0, codeShown: 0, elapsed: 0, hold: 0 }); }
+
+  startField() {
+    const cv = this._cv; if (!cv) return;
+    const ctx = cv.getContext('2d');
+    const W = cv.width, H = cv.height, hy = H * 0.76, vp = { x: W / 2, y: hy };
+    this.dots = Array.from({ length: 240 }, () => ({
+      x: Math.random() * W, y: Math.random() * hy * 0.98,
+      vx: (Math.random() - 0.5) * 0.1, vy: (Math.random() - 0.5) * 0.1,
+      r: Math.random() * 1.5 + 0.5, g: Math.random() < 0.07, ph: Math.random() * Math.PI * 2, hot: 0 }));
+    this.paths = []; this.lastSpawn = 0;
+    const spawnPath = (t) => {
+      const y0 = H * (0.18 + Math.random() * 0.45);
+      this.paths.push({ pts: [{ x: -20, y: y0 }], born: t, trend: (Math.random() - 0.35) * 0.9, life: 0 });
+    };
+    const reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const draw = (t) => {
+      ctx.clearRect(0, 0, W, H);
+      // perspective grid floor
+      ctx.lineWidth = 1;
+      for (let i = -13; i <= 13; i++) {
+        ctx.beginPath(); ctx.moveTo(vp.x, hy); ctx.lineTo(vp.x + i * (W / 13), H + 20);
+        ctx.strokeStyle = `rgba(63,207,142,${0.05 + (Math.abs(i) < 2 ? 0.02 : 0)})`; ctx.stroke();
+      }
+      for (let k = 0; k < 11; k++) {
+        const p = (((t * 0.018) + k * 34) % 340) / 340, y = hy + p * p * (H - hy);
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y);
+        ctx.strokeStyle = `rgba(63,207,142,${p * 0.11})`; ctx.stroke();
+      }
+      // horizon line + glow
+      const hg = ctx.createLinearGradient(0, hy - 40, 0, hy + 8);
+      hg.addColorStop(0, 'rgba(63,207,142,0)'); hg.addColorStop(1, 'rgba(63,207,142,.10)');
+      ctx.fillStyle = hg; ctx.fillRect(0, hy - 40, W, 41);
+      ctx.beginPath(); ctx.moveTo(0, hy); ctx.lineTo(W, hy);
+      ctx.strokeStyle = 'rgba(63,207,142,.28)'; ctx.stroke();
+      // radar sweep from the horizon's center
+      const a = Math.PI - ((t * 0.00021) % Math.PI);
+      const ex = vp.x + Math.cos(a) * H * 1.3, ey = vp.y - Math.sin(a) * H * 1.3;
+      if (!reduced) {
+        const sg = ctx.createLinearGradient(vp.x, vp.y, ex, ey);
+        sg.addColorStop(0, 'rgba(63,207,142,.22)'); sg.addColorStop(1, 'rgba(63,207,142,0)');
+        ctx.beginPath(); ctx.moveTo(vp.x, vp.y); ctx.lineTo(ex, ey);
+        ctx.strokeStyle = sg; ctx.lineWidth = 2; ctx.stroke(); ctx.lineWidth = 1;
+      }
+      // price paths drawing themselves
+      if (!reduced && t - this.lastSpawn > 5200 && this.paths.length < 2) { spawnPath(t); this.lastSpawn = t; }
+      this.paths = this.paths.filter((p) => p.pts[p.pts.length - 1].x < W + 30 || p.life < 1);
+      for (const p of this.paths) {
+        const last = p.pts[p.pts.length - 1];
+        if (last.x < W + 30) p.pts.push({ x: last.x + 2.4, y: Math.max(30, Math.min(hy - 20, last.y + (Math.random() - 0.5) * 6 - p.trend)) });
+        else p.life = Math.min(1, p.life + 0.012);
+        const alpha = 0.20 * (1 - p.life);
+        ctx.beginPath(); p.pts.forEach((pt, i) => i ? ctx.lineTo(pt.x, pt.y) : ctx.moveTo(pt.x, pt.y));
+        ctx.strokeStyle = `rgba(63,207,142,${alpha})`; ctx.stroke();
+        const tip = p.pts[p.pts.length - 1];
+        ctx.beginPath(); ctx.arc(tip.x, tip.y, 2.4, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(63,207,142,${alpha * 3})`; ctx.fill();
+      }
+      // particle field; dots ignite as the sweep passes
+      for (const d of this.dots) {
+        if (!reduced) {
+          d.x += d.vx; d.y += d.vy;
+          if (d.x < 0) d.x = W; if (d.x > W) d.x = 0;
+          if (d.y < 0) d.y = hy; if (d.y > hy) d.y = 0;
+          const da = Math.atan2(vp.y - d.y, d.x - vp.x);
+          if (da > 0 && Math.abs(da - a) < 0.04) d.hot = 1;
+          d.hot = Math.max(0, d.hot - 0.012);
+        }
+        const pulse = d.g ? (Math.sin(t / 900 + d.ph) + 1) / 2 : 0;
+        const glow = Math.max(pulse * 0.5, d.hot);
+        ctx.beginPath(); ctx.arc(d.x, d.y, d.r + glow * 1.6, 0, Math.PI * 2);
+        ctx.fillStyle = (d.g || d.hot > 0.02) ? `rgba(63,207,142,${0.25 + glow * 0.6})` : 'rgba(255,255,255,0.10)';
+        ctx.fill();
+      }
+      if (!reduced) this.raf = requestAnimationFrame(draw);
+    };
+    if (reduced) draw(0); else this.raf = requestAnimationFrame(draw);
+  }
+
+  renderVals() {
+    const seats = this.props.seatsLeft ?? 412;
+    const p = this.presets[this.state.pi];
+    const ticker = [
+      { sym: 'NIFTY 50', px: '{24,812}', chg: '▲ +0.6%', col: '#3FCF8E' }, { sym: 'BANKNIFTY', px: '{51,240}', chg: '▲ +0.4%', col: '#3FCF8E' },
+      { sym: 'SENSEX', px: '{81,655}', chg: '▲ +0.5%', col: '#3FCF8E' }, { sym: 'RELIANCE', px: '{2,981}', chg: '▲ +1.2%', col: '#3FCF8E' },
+      { sym: 'HDFCBANK', px: '{1,714}', chg: '▼ −0.3%', col: '#FF7878' }, { sym: 'TCS', px: '{4,102}', chg: '▲ +0.8%', col: '#3FCF8E' },
+      { sym: 'INFY', px: '{1,866}', chg: '▼ −0.2%', col: '#FF7878' }, { sym: 'INDIA VIX', px: '{13.4}', chg: '▼ −2.1%', col: '#FF7878' } ];
+    const statusStyle = (st) => st === 'LIVE'
+      ? { pillColor: '#3FCF8E', pillBorder: 'rgba(63,207,142,.5)', pillBg: 'rgba(6,19,13,.85)' }
+      : st === 'PREVIEW'
+      ? { pillColor: '#E8C56A', pillBorder: 'rgba(232,197,106,.5)', pillBg: 'rgba(20,16,6,.85)' }
+      : { pillColor: 'rgba(255,255,255,.8)', pillBorder: 'rgba(255,255,255,.35)', pillBg: 'rgba(10,10,10,.85)' };
+    const curTools = this.toolList.filter((t) => t.st === this.state.tstage);
+    const stageRail = this.stages.map((s, i) => {
+      const active = i === this.state.tstage;
+      return { name: s.name, desc: s.desc, count: this.toolList.filter((t) => t.st === i).length + ' tools',
+        border: active ? 'rgba(63,207,142,.5)' : 'rgba(255,255,255,.12)',
+        railCol: active ? '#3FCF8E' : 'rgba(255,255,255,.15)',
+        bg: active ? 'rgba(63,207,142,.05)' : '#0E0E0E',
+        nameCol: active ? '#3FCF8E' : 'rgba(255,255,255,.6)',
+        pick: () => this.setState({ tstage: i, tidx: 0 }) };
+    });
+    const stageTools = curTools.map((t) => ({
+      ...t, stage: this.stages[t.st].name, faces: this.sceneFor(t.scene), ...statusStyle(t.status),
+      border: t.status === 'LIVE' ? 'rgba(63,207,142,.3)' : 'rgba(255,255,255,.14)',
+      cta: t.status === 'LIVE' ? 'Open the tool →' : 'Ships to alpha users first — claim a seat →',
+      ctaCol: t.status === 'LIVE' ? '#3FCF8E' : 'rgba(255,255,255,.6)' }));
+    return {
+      cohortNumber: this.props.cohortNumber ?? 1,
+      seatsLeft: seats.toLocaleString('en-IN'),
+      tickerLoop: [...ticker, ...ticker],
+      fieldRef: (el) => { if (el && el !== this._cv) { this._cv = el; if (this.dots === undefined && this._mounted !== false) this.startField(); } },
+      waves: [
+        { years: "1990s", name: 'ACCESS', copy: 'Markets reached retail.', era: 'rgba(255,255,255,.35)', title: 'rgba(255,255,255,.6)', border: 'rgba(255,255,255,.12)', bg: '#111' },
+        { years: "2000s", name: 'COST', copy: 'Discount broking made every trade cheap.', era: 'rgba(255,255,255,.35)', title: 'rgba(255,255,255,.6)', border: 'rgba(255,255,255,.12)', bg: '#111' },
+        { years: "2010s", name: 'CONVENIENCE', copy: 'An account in minutes, a market in your pocket.', era: 'rgba(255,255,255,.35)', title: 'rgba(255,255,255,.6)', border: 'rgba(255,255,255,.12)', bg: '#111' },
+        { years: 'now', name: 'INTELLIGENCE', copy: 'Analysis that works while you sleep.', era: '#3FCF8E', title: '#3FCF8E', border: 'rgba(63,207,142,.55)', bg: 'rgba(63,207,142,.05)' } ],
+      presetChips: this.presets.map((pp, i) => ({
+        label: pp.label, pick: () => this.pick(i),
+        bg: i === this.state.pi ? 'rgba(63,207,142,.1)' : '#111',
+        border: i === this.state.pi ? 'rgba(63,207,142,.6)' : 'rgba(255,255,255,.2)',
+        color: i === this.state.pi ? '#3FCF8E' : 'rgba(255,255,255,.65)' })),
+      typedPrompt: p.prompt.slice(0, this.state.typed),
+      shownCode: this.state.phase === 'typing' ? [] : p.code.slice(0, this.state.codeShown),
+      showElapsed: this.state.phase === 'code',
+      elapsedStr: this.state.elapsed.toFixed(1),
+      showResults: this.state.phase === 'results',
+      showWaiting: this.state.phase !== 'results',
+      shownResults: p.results, resultHead: p.head, asOf: p.asOf,
+      summaryLine: p.summary, resultCount: p.count,
+      gapApps: [
+        { name: 'Screener app', flaw: 'forgets your question', sep: '✕' },
+        { name: 'Chart app', flaw: "doesn't listen", sep: '✕' },
+        { name: 'Tips group', flaw: 'no memory, no record', sep: '✕' },
+        { name: 'Chain', flaw: 'you read it alone', sep: '⟶' } ],
+      hiw: [
+        { n: '1', t: 'ASK', c: 'Say it the way you\u2019d say it to a colleague. Plain language in.' },
+        { n: '2', t: 'COMPUTE', c: 'The quant engine writes the analysis as code and runs it on live NSE data. The LLM never does the math.' },
+        { n: '3', t: 'ACT', c: 'Every output carries its basis ◈. Tap any number to see the code that made it.' } ],
+      hiwChips: ['3,000+ NSE stocks', 'every timeframe, intraday included', 'scans in ~{2}s', 'no hallucinated numbers'],
+      stageRail, stageTools,
+      carX: `translateX(${-this.state.tidx * 440}px)`,
+      prevTool: () => this.advanceTool(-1),
+      nextTool: () => this.advanceTool(1),
+      pauseCar: () => this.setState({ tpause: true }),
+      resumeCar: () => this.setState({ tpause: false }),
+      toolDots: curTools.map((_, i) => ({
+        w: i === this.state.tidx ? 22 : 6,
+        bg: i === this.state.tidx ? '#3FCF8E' : 'rgba(255,255,255,.25)',
+        pick: () => this.setState({ tidx: i }) })),
+      voices: [
+        { q: '{Quote from the 21-quote set — select at build.}', who: '{Name} · {role}' },
+        { q: '{Quote from the 21-quote set — select at build.}', who: '{Name} · {role}' } ],
+      faqs: this.faqData.map(([q, a], i) => ({
+        q, a, open: this.state.openFaq === i, mark: this.state.openFaq === i ? '−' : '+',
+        toggle: () => this.setState({ openFaq: this.state.openFaq === i ? null : i }) }))
+    };
+  }
+}
+</script>
+</body>
+</html>

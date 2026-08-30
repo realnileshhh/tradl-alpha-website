@@ -1,0 +1,35 @@
+/* ============================================================
+   Tradl AI — Effects: radius, elevation/shadow, blur.
+   Shadow steps derived from the source's low-alpha black stack
+   (0.016 → 0.898) — a restrained, dark-UI elevation scale.
+   ============================================================ */
+
+:root {
+  /* Corner radii — panels use 10px in the source specimens */
+  --radius-xs: 3px;    /* chips / swatches */
+  --radius-sm: 6px;    /* buttons / inputs */
+  --radius-md: 8px;    /* cards */
+  --radius-lg: 10px;   /* panels (source default) */
+  --radius-xl: 14px;   /* large containers */
+  --radius-pill: 999px;
+
+  /* Stroke weights */
+  --stroke-1: 1px;
+
+  /* Elevation — subtle in dark UI; each step layers faint black.
+     xs subtle lift → xl floating (matches specimen labels). */
+  --shadow-xs: 0 1px 2px rgba(0,0,0,0.16);
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.12), 0 2px 6px rgba(0,0,0,0.16);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.22), 0 1px 3px rgba(0,0,0,0.12);
+  --shadow-lg: 0 10px 24px rgba(0,0,0,0.35), 0 2px 6px rgba(0,0,0,0.16);
+  --shadow-xl: 0 24px 60px rgba(0,0,0,0.55), 0 8px 20px rgba(0,0,0,0.22);
+
+  /* Inset hairline used on swatches / dense cells */
+  --shadow-inset-hairline: inset 0 0 0 1px rgba(255,255,255,0.06);
+
+  /* Panel gradient fill seen on shadow-specimen swatches */
+  --gradient-panel: linear-gradient(145.19deg, #1D1D20 -0.13%, #141417 100.13%); /* @kind color */
+
+  /* Blur — AI search / overlays */
+  --blur-overlay: 24px;
+}

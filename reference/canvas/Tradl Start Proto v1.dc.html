@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/tradl-ai-design-system-7cfe07d6-17cb-4bad-a8b6-de87b3ea902d/tokens/fonts.css">
+<link rel="stylesheet" href="_ds/tradl-ai-design-system-7cfe07d6-17cb-4bad-a8b6-de87b3ea902d/tokens/colors.css">
+<link rel="stylesheet" href="_ds/tradl-ai-design-system-7cfe07d6-17cb-4bad-a8b6-de87b3ea902d/tokens/typography.css">
+<link rel="stylesheet" href="_ds/tradl-ai-design-system-7cfe07d6-17cb-4bad-a8b6-de87b3ea902d/tokens/spacing.css">
+<link rel="stylesheet" href="_ds/tradl-ai-design-system-7cfe07d6-17cb-4bad-a8b6-de87b3ea902d/tokens/effects.css">
+<link rel="stylesheet" href="_ds/tradl-ai-design-system-7cfe07d6-17cb-4bad-a8b6-de87b3ea902d/styles.css">
+<script src="_ds/tradl-ai-design-system-7cfe07d6-17cb-4bad-a8b6-de87b3ea902d/_ds_bundle.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#000;color:#E8E6E0;font-family:'IBM Plex Sans',system-ui,sans-serif}
+a{color:#3FCF8E;text-decoration:none}a:hover{color:#6FE3AE}
+</style>
+</helmet>
+
+<div style="min-height:100vh;background:#000;display:flex;flex-direction:column">
+
+<div style="border-bottom:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.85)">
+<div style="max-width:1160px;margin:0 auto;padding:0 24px;height:60px;display:flex;align-items:center">
+<a href="Tradl Home Proto v2.dc.html" style="font:700 17px 'IBM Plex Sans',sans-serif;color:#fff">trad<span style="color:#3FCF8E">l/.</span></a>
+<div style="margin-left:auto;display:flex;gap:14px;align-items:center">
+<span style="font:600 11px Lato,sans-serif;letter-spacing:.08em;color:#3FCF8E">COHORT {{ cohortNumber }} · {{ seatsLeft }}/1,000 SEATS LEFT</span>
+<span style="border:1px solid rgba(255,255,255,.35);color:#E8E6E0;border-radius:6px;padding:7px 16px;font:600 13px 'IBM Plex Sans',sans-serif;cursor:pointer">Log in</span>
+</div>
+</div>
+</div>
+
+<div data-screen-label="Claim Seat" style="flex:1;display:grid;grid-template-columns:1fr 1.15fr;max-width:1160px;margin:0 auto;width:100%;box-sizing:border-box">
+
+<div style="padding:64px 44px 64px 24px;border-right:1px dashed rgba(255,255,255,.14);background:#060606">
+<div style="display:inline-flex;border:1px solid rgba(63,207,142,.45);border-radius:999px;padding:5px 14px;font:600 10.5px Lato,sans-serif;letter-spacing:.16em;color:#3FCF8E;background:rgba(63,207,142,.06)">◈ ALPHA COHORT {{ cohortNumber }}</div>
+<h1 style="font:600 36px/1.2 'IBM Plex Serif',Georgia,serif;color:#fff;margin:20px 0 0">You don't sign up.<br>You claim a seat.</h1>
+<div style="display:flex;flex-direction:column;gap:9px;margin-top:24px">
+<sc-for list="{{ perks }}" as="p" hint-placeholder-count="4">
+<div style="display:flex;gap:10px;align-items:baseline">
+<span style="color:#3FCF8E;font:600 12px Lato,sans-serif">◈</span>
+<span style="font:400 14px/1.5 'IBM Plex Sans',sans-serif;color:rgba(255,255,255,.75)">{{ p }}</span>
+</div>
+</sc-for>
+</div>
+<div style="margin-top:28px;border:1px solid rgba(255,255,255,.12);border-radius:10px;background:#0D0D0D;padding:16px">
+<div style="display:flex;justify-content:space-between;font:600 10px Lato,sans-serif;letter-spacing:.12em;color:rgba(255,255,255,.4)"><span>SEATS CLAIMED · LIVE</span><span>{{ claimedPct }}%</span></div>
+<div style="height:6px;border-radius:3px;background:rgba(255,255,255,.08);margin-top:10px;overflow:hidden">
+<div style="height:100%;width:{{ claimedPct }}%;background:linear-gradient(90deg,#2AA871,#3FCF8E);border-radius:3px"></div>
+</div>
+<div style="display:flex;gap:14px;margin-top:12px;font:400 11.5px Lato,sans-serif;color:rgba(255,255,255,.45)">
+<span>@{handle} claimed a seat · {2}m ago</span><span>@{handle} · {7}m ago</span>
+</div>
+</div>
+</div>
+
+<div style="padding:64px 24px 64px 44px">
+<h2 style="font:600 24px 'IBM Plex Serif',Georgia,serif;color:#fff;margin:0">Claim your seat</h2>
+<p style="font:400 14px 'IBM Plex Sans',sans-serif;color:rgba(255,255,255,.55);margin:8px 0 0">One field now. Everything else after you're in.</p>
+<div style="display:flex;gap:10px;margin-top:22px">
+<div style="display:flex;align-items:center;border:1px solid rgba(255,255,255,.3);border-radius:8px;background:#111;overflow:hidden;flex:1;max-width:340px">
+<span style="padding:14px 12px;font:500 14px Lato,sans-serif;color:rgba(255,255,255,.5);border-right:1px solid rgba(255,255,255,.15)">+91</span>
+<input placeholder="mobile number" style="background:none;border:none;outline:none;color:#fff;font:500 14px Lato,sans-serif;padding:14px;width:100%">
+</div>
+</div>
+<button style="background:#3FCF8E;border:none;color:#06130D;border-radius:8px;padding:14px 30px;font:600 15px 'IBM Plex Sans',sans-serif;cursor:pointer;margin-top:12px" style-hover="background:#6FE3AE">Claim seat · {{ seatsLeft }} left</button>
+<div style="margin-top:10px;font:400 12px Lato,sans-serif;color:rgba(255,255,255,.4)">OTP next · no password ever · by continuing you accept the <a href="#">terms</a></div>
+<div style="margin-top:22px;border-left:2px solid rgba(63,207,142,.5);padding-left:14px;font:400 13px/1.7 'IBM Plex Sans',sans-serif;color:rgba(255,255,255,.6)">2 steps · under a minute · you land in the Playground with your first scan pre-loaded.</div>
+
+<div style="margin-top:34px">
+<div style="font:600 10.5px Lato,sans-serif;letter-spacing:.16em;color:rgba(255,255,255,.4)">BEFORE YOU CLAIM</div>
+<sc-for list="{{ faqs }}" as="f" hint-placeholder-count="4">
+<div onClick="{{ f.toggle }}" style="border-bottom:1px solid rgba(255,255,255,.08);padding:12px 2px;cursor:pointer">
+<div style="display:flex;justify-content:space-between;gap:10px"><span style="font:600 13.5px 'IBM Plex Sans',sans-serif;color:#fff">{{ f.q }}</span><span style="font:400 16px Lato,sans-serif;color:#3FCF8E">{{ f.mark }}</span></div>
+<sc-if value="{{ f.open }}" hint-placeholder-val="{{ false }}"><p style="font:400 13px/1.6 'IBM Plex Sans',sans-serif;color:rgba(255,255,255,.58);margin:8px 0 0">{{ f.a }}</p></sc-if>
+</div>
+</sc-for>
+</div>
+</div>
+</div>
+
+<footer style="background:#060606;border-top:1px solid rgba(255,255,255,.08);padding:20px 24px">
+<div style="max-width:1160px;margin:0 auto;font:400 11px/1.7 'IBM Plex Sans',sans-serif;color:rgba(255,255,255,.35)">Computed and historical analytics — not investment advice. SEBI RA Reg. No. {INH000000000} · <a href="#">Privacy</a> · <a href="#">Terms</a> · <a href="Tradl Home Proto v2.dc.html">Back to home</a></div>
+</footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;seatsLeft&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:412,&quot;min&quot;:0,&quot;max&quot;:1000,&quot;section&quot;:&quot;Cohort&quot;,&quot;tsType&quot;:&quot;number&quot;},&quot;cohortNumber&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:1,&quot;min&quot;:1,&quot;max&quot;:9,&quot;section&quot;:&quot;Cohort&quot;,&quot;tsType&quot;:&quot;number&quot;}}">
+class Component extends DCLogic {
+  state = { openFaq: null };
+  faqData = [
+    ['Do I need to change my broker?', 'No — Tradl analyses, your broker executes.'],
+    ['What does the seat cost?', 'Free in alpha. Alpha pricing is locked for life when plans launch.'],
+    ['Is the counter real?', 'Yes — live signups. We don\u2019t fake scarcity. ◈ We compute, we don\u2019t predict.'],
+    ['What happens to my number?', 'OTP and, if you opt in, the Morning Decode on WhatsApp. Nothing else.'] ];
+  renderVals() {
+    const seats = this.props.seatsLeft ?? 412;
+    return {
+      cohortNumber: this.props.cohortNumber ?? 1,
+      seatsLeft: seats.toLocaleString('en-IN'),
+      claimedPct: Math.round(((1000 - seats) / 1000) * 100),
+      perks: [
+        'Alpha pricing locked for life',
+        'Free-form prompts ship to you first',
+        'Your handle on the founding-users wall',
+        'Every answer shows its code ◈ · graded in public' ],
+      faqs: this.faqData.map(([q, a], i) => ({
+        q, a, open: this.state.openFaq === i, mark: this.state.openFaq === i ? '−' : '+',
+        toggle: () => this.setState({ openFaq: this.state.openFaq === i ? null : i }) }))
+    };
+  }
+}
+</script>
+</body>
+</html>

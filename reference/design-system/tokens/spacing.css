@@ -1,0 +1,24 @@
+/* ============================================================
+   Tradl AI — Spacing & layout tokens
+   4px base rhythm. Content max-width 1040px matches the source
+   specimen frame width (Figma Variable: width/1040).
+   ============================================================ */
+
+:root {
+  --space-0: 0;
+  --space-1: 2px;
+  --space-2: 4px;
+  --space-3: 6px;
+  --space-4: 8px;
+  --space-5: 12px;
+  --space-6: 16px;
+  --space-7: 18px;   /* specimen row gap */
+  --space-8: 22px;   /* specimen grid gap */
+  --space-9: 26px;
+  --space-10: 32px;  /* specimen panel padding */
+  --space-11: 40px;
+
+  /* Layout */
+  --layout-max-width: 1040px;   /* source Variable width/1040 */
+  --layout-gutter: 32px;
+}

@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics><meta name="design_doc_mode" content="canvas"><style>body{margin:0;background:#f0eee9;font-family:system-ui,sans-serif}a{color:#2a78d6}a:hover{color:#1a5cab}.dv-turn{padding:40px 44px 32px;border-bottom:1px solid rgba(0,0,0,.08);scroll-margin-top:16px}.dv-thd{display:flex;align-items:baseline;gap:10px;margin:0 0 20px}.dv-tid{font:600 10px ui-monospace,Menlo,monospace;padding:3px 7px;background:#1a1a1a;color:#fff;border-radius:4px;text-decoration:none}.dv-tname{font:600 13px/1.2 system-ui,sans-serif;color:#1a1a1a}.dv-opts{display:flex;flex-wrap:wrap;gap:28px;align-items:flex-start}.dv-opt{flex:none;display:flex;flex-direction:column;gap:9px;scroll-margin-top:16px}.dv-oid{font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1a1a1a;border-radius:5px;text-decoration:none}.dv-olabel{display:flex;align-items:baseline;gap:8px;font:400 11px/1.3 system-ui,sans-serif;color:rgba(0,0,0,.55)}.dv-card{max-width:100%;background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.06);overflow:hidden}.dv-opt:target .dv-oid{background:#2a78d6;color:#fff}.dv-next{margin:22px 0 0;font:12px/1.5 system-ui,sans-serif;color:rgba(0,0,0,.5)}
+.wf{font-family:system-ui,sans-serif;color:#1a1a1a}.wf .tag{position:absolute;left:-118px;top:0;width:104px;text-align:right;font:600 10px/1.5 ui-monospace,Menlo,monospace;color:#8a8578}.wf .tag b{display:block;color:#1a1a1a;font-size:11px}.wf .sec{position:relative;border-bottom:1px dashed rgba(0,0,0,.18);padding:26px 30px}.wf .stmt{background:#f7f6f2}.wf .ph{border:1.5px dashed rgba(0,0,0,.35);border-radius:4px;display:flex;align-items:center;justify-content:center;color:rgba(0,0,0,.45);font:11px/1.4 ui-monospace,Menlo,monospace;text-align:center;padding:8px}.wf .chip{border:1px solid rgba(0,0,0,.4);border-radius:999px;padding:3px 10px;font:10.5px ui-monospace,Menlo,monospace;white-space:nowrap}.wf .pill{border:1px solid rgba(0,0,0,.5);border-radius:999px;padding:1px 7px;font:600 8.5px ui-monospace,Menlo,monospace;letter-spacing:.05em}.wf .pill.pa{border-style:dashed;background:rgba(0,0,0,.05)}.wf .eyebrow{font:600 10px ui-monospace,Menlo,monospace;letter-spacing:.14em;color:#55503f;margin:0 0 8px}.wf .btn{border:1.5px solid #1a1a1a;border-radius:5px;padding:7px 16px;font:600 12px/1.2 system-ui;display:inline-block;white-space:nowrap}.wf .note{white-space:normal}.wf .btn.pri{background:#1a1a1a;color:#fff}.wf h2{font:600 26px/1.15 Georgia,serif;margin:0 0 8px;letter-spacing:-.01em}.wf .dek{font:13px/1.5 system-ui;color:rgba(0,0,0,.55);margin:0}.wf .note{font:10px/1.5 ui-monospace,Menlo,monospace;color:#a35e2a;margin-top:10px}.wf .mono{font:11px ui-monospace,Menlo,monospace}.wf td,.wf th{font:11px ui-monospace,Menlo,monospace;padding:5px 10px;border-top:1px solid rgba(0,0,0,.15);text-align:left}
+.wfk{background:#141414;color:#e8e6e0}.wfk .sec{border-color:rgba(255,255,255,.16)}.wfk .stmt{background:#0d0d0d}.wfk .ph{border-color:rgba(255,255,255,.32);color:rgba(255,255,255,.5)}.wfk .chip{border-color:rgba(255,255,255,.38);color:#ddd}.wfk .pill{border-color:rgba(255,255,255,.5);color:#ddd}.wfk .pill.pa{background:rgba(255,255,255,.08)}.wfk h2{color:#fff}.wfk .dek{color:rgba(255,255,255,.55)}.wfk .eyebrow{color:#7ec9a4}.wfk .note{color:#e0a06a}.wfk .mono{color:rgba(255,255,255,.6)}.wfk .btn{border-color:#e8e6e0;color:#e8e6e0}.wfk .btn.pri{background:#3FCF8E;border-color:#3FCF8E;color:#101010}.wfk td,.wfk th{border-color:rgba(255,255,255,.18)}.wfk .hd{font:600 11px ui-monospace,Menlo,monospace;letter-spacing:.1em;color:#7ec9a4;padding:10px 22px;border-bottom:1px dashed rgba(255,255,255,.16)}.wfk .row{display:flex;justify-content:space-between;gap:10px;font:11px ui-monospace,Menlo,monospace;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.08)}</style></helmet>
+<section class="dv-turn" id="t11">
+<div class="dv-thd"><a class="dv-tid" href="#t11">11</a><span class="dv-tname">/start LOCKED · <a class="dv-oid" href="#9a">9a</a> structure × <a class="dv-oid" href="#10b">10b</a> Earned Access strategy · final wireframe of the round</span></div>
+<div class="dv-opts">
+<div class="dv-opt" id="11a"><div class="dv-olabel"><a class="dv-oid" href="#11a">11a</a>CLAIM YOUR SEAT · cohort-gated /start · wireframe round complete</div>
+<div class="dv-card wf wfk" style="width:1080px;margin-left:118px">
+
+<div class="sec" style="display:flex;align-items:center;gap:18px;padding:12px 30px">
+<div class="tag"><b>G0 · NAV</b>logo + log in only</div>
+<div style="font:700 14px system-ui;color:#fff">tradl<span style="color:#3FCF8E">/.</span></div>
+<div style="margin-left:auto;display:flex;gap:12px;align-items:center"><span class="mono" style="color:#3FCF8E">COHORT {k} · {n}/500 SEATS LEFT</span><span class="btn" style="padding:5px 13px;font-size:11px">Log in</span></div>
+</div>
+
+<div class="sec" style="padding:0;display:grid;grid-template-columns:1fr 1.2fr;border-bottom:none">
+<div class="tag"><b>G1 · SPLIT PANEL</b>cohort story left,<br>claim right</div>
+<div style="padding:38px 30px;background:#0d0d0d;border-right:1px dashed rgba(255,255,255,.16)">
+<p class="eyebrow">◈ ALPHA COHORT {k}</p>
+<h2 style="font:600 24px/1.2 Georgia,serif">You don't sign up.<br>You claim a seat.</h2>
+<div style="display:flex;flex-direction:column;gap:8px;margin-top:16px">
+<span class="chip">alpha pricing locked for life</span>
+<span class="chip">free-form prompts ship to you first</span>
+<span class="chip">your handle on the founding-users wall</span>
+<span class="chip">every answer shows its code ◈ · graded in public</span>
+</div>
+<div class="ph" style="height:64px;margin-top:14px">live cohort strip: seat counter (REAL data, decrements on signups) + latest founding-user handles joining</div>
+</div>
+<div style="padding:38px 30px">
+<h2 style="font:600 20px/1.2 Georgia,serif">Claim your seat</h2>
+<p class="dek" style="margin-top:4px">One field now. Everything else after you're in.</p>
+<div class="ph" style="height:44px;margin-top:14px">+91 ▾ | mobile number</div>
+<div class="mono" style="margin:8px 0;color:rgba(255,255,255,.4)">OTP next · no password ever · T&C line</div>
+<span class="btn pri" style="display:block;text-align:center">Claim seat · {n} left</span>
+<div class="note">G2 · expectations before the ask: "2 steps · under a minute · you land in the Playground with your first scan pre-loaded." Cohort full state: waitlist position number + jump-the-queue referral link.</div>
+</div>
+</div>
+
+<div class="sec" style="padding:22px 30px">
+<div class="tag"><b>G3 · OBJECTIONS</b>at the decision point</div>
+<div class="mono" style="line-height:2">▸ Do I need to change my broker? (No — Tradl analyses, your broker executes)<br>▸ What does the seat cost? (Free in alpha · alpha pricing locked for life when plans launch)<br>▸ Is the counter real? (Yes — live signups; we don't fake scarcity. ◈ We compute, we don't predict.)<br>▸ What happens to my number? (OTP + optional Decode delivery · nothing else)</div>
+</div>
+
+<div class="sec" style="padding:14px 30px;border-bottom:none;background:#0d0d0d">
+<div class="tag"><b>G4 · FOOTER</b>slim legal only</div>
+<div class="mono" style="color:rgba(255,255,255,.4)">compliance line + SEBI RA reg. + privacy/T&C</div>
+</div>
+
+</div></div>
+</div>
+<p class="dv-next">WIREFRAME ROUND LOCKED: home <a class="dv-oid" href="#4b">4b</a> · /edge <a class="dv-oid" href="#5a">5a</a> · tools <a class="dv-oid" href="#6a">6a</a> · /decode <a class="dv-oid" href="#7a">7a</a> · stock <a class="dv-oid" href="#8a">8a</a> · /start <a class="dv-oid" href="#11a">11a</a>. Next: content lock (form in chat), then prototype.</p>
+</section>
+<section class="dv-turn" id="t10">
+<div class="dv-thd"><a class="dv-tid" href="#t10">10</a><span class="dv-tname">/start conversion strategy · 3 bold positioning plays (replaces <a class="dv-oid" href="#9a">9a</a>'s neutral split-panel) — pick one</span></div>
+<div class="dv-opts">
+
+<div class="dv-opt" id="10a"><div class="dv-olabel"><a class="dv-oid" href="#10a">10a</a>PROVE IT FIRST · the signup page IS a live run · you convert to keep what you just made</div>
+<div class="dv-card wf wfk" style="width:620px">
+<div class="hd">STRATEGY · value handed over before any field. Visitor runs a real scan on the page; the result is theirs — signing up is how they KEEP it. Endowment effect as the conversion engine.</div>
+<div class="sec stmt" style="padding:28px 22px">
+<h2 style="font-size:22px">Run your first scan.<br>No account yet.</h2>
+<div class="ph" style="height:74px;margin-top:12px">full W2 Playground, 6 presets · visitor picks, code streams, 7 results land — REAL, dated</div>
+</div>
+<div class="sec" style="padding:16px 22px">
+<div class="mono" style="color:#3FCF8E;margin-bottom:8px">→ results on screen · now the ask appears UNDER them:</div>
+<div class="ph" style="height:48px">"This scan is yours. Save it + get tomorrow's re-run at 09:20." → +91 field · Get OTP</div>
+<div class="note">The ask is framed as keeping/continuing, never as registering. Post-OTP you land IN the app with this exact scan pre-loaded — zero cold start. Risk: heaviest engineering; needs the Playground rock-solid. Payoff: highest intent quality — every signup has already used the product.</div>
+</div>
+</div></div>
+
+<div class="dv-opt" id="10b"><div class="dv-olabel"><a class="dv-oid" href="#10b">10b</a>EARNED ACCESS · alpha as a scarce cohort · you don't sign up, you claim a seat</div>
+<div class="dv-card wf wfk" style="width:620px">
+<div class="hd">STRATEGY · manufactured scarcity, honestly run (Public "Request access"). Alpha is framed as a numbered cohort with visible capacity — conversion driven by fear of missing the early tier, not by product trial.</div>
+<div class="sec stmt" style="padding:28px 22px">
+<p class="eyebrow">◈ ALPHA COHORT {k} · {n} OF 500 SEATS LEFT</p>
+<h2 style="font-size:22px">Claim your seat.<br>Early users keep early privileges.</h2>
+<div style="display:flex;flex-direction:column;gap:6px;margin-top:12px">
+<span class="chip">alpha pricing locked for life</span><span class="chip">free-form prompts ship to you first</span><span class="chip">your handle on the founding-users wall</span>
+</div>
+</div>
+<div class="sec" style="padding:16px 22px">
+<div class="ph" style="height:48px">+91 field · "Claim seat" · live counter decrements on real signups (never faked — doctrine)</div>
+<div class="note">Cohort full → waitlist with position number + jump-the-queue referral (Upstox loop). Risk: scarcity must be REAL or it corrodes the honesty brand; counter must be live data. Payoff: urgency + identity ("founding user"), strongest for a pre-hype alpha.</div>
+</div>
+</div></div>
+
+<div class="dv-opt" id="10c"><div class="dv-olabel"><a class="dv-oid" href="#10c">10c</a>DECODE FIRST · the number buys tomorrow morning, not an account · product converts you daily</div>
+<div class="dv-card wf wfk" style="width:620px">
+<div class="hd">STRATEGY · lowest possible ask: your number gets you tomorrow's graded Decode on WhatsApp at 07:45. The account is auto-provisioned silently behind it — the daily artifact does the converting over a week, not the page in a minute.</div>
+<div class="sec stmt" style="padding:28px 22px">
+<h2 style="font-size:22px">Tomorrow, 07:45.<br>See what the machine sees.</h2>
+<div class="ph" style="height:56px;margin-top:12px">preview: today's Decode card + yesterday graded (✗ visible) — you're subscribing to a record, not a promise</div>
+</div>
+<div class="sec" style="padding:16px 22px">
+<div class="ph" style="height:48px">+91 field · "Get tomorrow's Decode" · sub-line: "your Tradl account comes with it — open it whenever you're ready"</div>
+<div class="note">Every Decode ends with one tappable deep-link ("ask the machine why") → first product session. Risk: slower to activation, WhatsApp dependency, measures subscribers not users. Payoff: biggest top-of-funnel in the Indian retail context; the 6× WhatsApp engagement multiplier is already your data.</div>
+</div>
+</div></div>
+
+</div>
+<p class="dv-next">Hybrids welcome: "<a class="dv-oid" href="#10a">10a</a> page + <a class="dv-oid" href="#10b">10b</a> seat counter in the corner" · "<a class="dv-oid" href="#10c">10c</a> as the Decode page CTA, <a class="dv-oid" href="#10a">10a</a> as /start"</p>
+</section>
+<section class="dv-turn" id="t9">
+<div class="dv-thd"><a class="dv-tid" href="#t9">9</a><span class="dv-tname">/start — signup entry (Public split-panel × smallcase single-field × Upstox expectation-setting) · G0–G4 · the last wireframe of the round</span></div>
+<div class="dv-opts">
+<div class="dv-opt" id="9a"><div class="dv-olabel"><a class="dv-oid" href="#9a">9a</a>START FREE · one field, trust restated at the decision point, friction disclosed before the ask</div>
+<div class="dv-card wf wfk" style="width:1080px;margin-left:118px">
+
+<div class="sec" style="display:flex;align-items:center;gap:18px;padding:12px 30px">
+<div class="tag"><b>G0 · NAV</b>minimal — logo +<br>log in only, no menu</div>
+<div style="font:700 14px system-ui;color:#fff">tradl<span style="color:#3FCF8E">/.</span></div>
+<div style="margin-left:auto"><span class="btn" style="padding:5px 13px;font-size:11px">Log in</span></div>
+<div class="note" style="margin:0">distraction-free: no nav links on the conversion page (FYERS /demat-account pattern)</div>
+</div>
+
+<div class="sec" style="padding:0;display:grid;grid-template-columns:1fr 1.2fr;border-bottom:none">
+<div class="tag"><b>G1 · SPLIT PANEL</b>persuasion left,<br>action right (Public)</div>
+
+<div style="padding:38px 30px;background:#0d0d0d;border-right:1px dashed rgba(255,255,255,.16)">
+<p class="eyebrow">◈ WE COMPUTE, WE DON'T PREDICT</p>
+<h2 style="font:600 24px/1.2 Georgia,serif">The intelligence is already watching.<br>You are early.</h2>
+<div style="display:flex;flex-direction:column;gap:8px;margin-top:16px">
+<span class="chip">3,000+ NSE stocks · every timeframe</span>
+<span class="chip">Ed. {n} Decodes published · graded in public</span>
+<span class="chip">every answer shows its code ◈</span>
+<span class="chip">free while in alpha · no card · no broker change</span>
+</div>
+<div class="ph" style="height:70px;margin-top:14px">micro watching-field animation (signature viz, calm) — or one static finished Playground frame</div>
+</div>
+
+<div style="padding:38px 30px">
+<h2 style="font:600 20px/1.2 Georgia,serif">Start free</h2>
+<p class="dek" style="margin-top:4px">One field now. Everything else after you're in.</p>
+<div class="ph" style="height:44px;margin-top:14px">+91 ▾ | mobile number</div>
+<div class="mono" style="margin:8px 0;color:rgba(255,255,255,.4)">OTP next · T&C consent line (passive, linked) · no password ever</div>
+<span class="btn pri" style="display:block;text-align:center">Get OTP</span>
+<div class="note">G2 · EXPECTATIONS, stated before the ask (Upstox "24–28 hrs" lesson): "2 steps · under a minute · you land in the Playground with your first scan pre-loaded." Alpha capacity honesty if gated: "{n} seats this week — waitlist joins in order."</div>
+</div>
+</div>
+
+<div class="sec" style="padding:22px 30px">
+<div class="tag"><b>G3 · OBJECTIONS</b>3 Qs only,<br>at the decision point</div>
+<div class="mono" style="line-height:2">▸ Do I need to change my broker? (No — Tradl analyses, your broker executes)<br>▸ What does alpha cost? (Free · pricing announced before alpha ends, alpha users first)<br>▸ What happens to my number? (OTP + Decode delivery if you opt in · nothing else)</div>
+</div>
+
+<div class="sec" style="padding:14px 30px;border-bottom:none;background:#0d0d0d">
+<div class="tag"><b>G4 · FOOTER</b>slim — legal only</div>
+<div class="mono" style="color:rgba(255,255,255,.4)">slim footer: compliance line + SEBI RA reg. + privacy/T&C — no link columns on this page</div>
+</div>
+
+</div></div>
+</div>
+<p class="dv-next">Wireframe round complete: home <a class="dv-oid" href="#4b">4b</a> · /edge <a class="dv-oid" href="#5a">5a</a> · tools <a class="dv-oid" href="#6a">6a</a> · /decode <a class="dv-oid" href="#7a">7a</a> · stock <a class="dv-oid" href="#8a">8a</a> · /start <a class="dv-oid" href="#9a">9a</a>. Next stage: lock content (real copy, the open gates), then prototype.</p>
+</section>
+<section class="dv-turn" id="t8">
+<div class="dv-thd"><a class="dv-tid" href="#t8">8</a><span class="dv-tname">/stocks/{SYMBOL} — Smart Stock Page public wrapper (Tickertape entity-page × our watching-field doctrine) · S0–S8 · 3,000 programmatic pages</span></div>
+<div class="dv-opts">
+<div class="dv-opt" id="8a"><div class="dv-olabel"><a class="dv-oid" href="#8a">8a</a>SMART STOCK PAGE · public, SEO-scaled · live data + the machine's read + graded signal record · locked-not-hidden PA depth</div>
+<div class="dv-card wf wfk" style="width:1080px;margin-left:118px">
+
+<div class="sec" style="display:flex;align-items:center;gap:18px;padding:12px 30px">
+<div class="tag"><b>S0 · NAV + CRUMB</b>W0 shell</div>
+<div style="font:700 14px system-ui;color:#fff">tradl<span style="color:#3FCF8E">/.</span></div>
+<div class="mono" style="color:rgba(255,255,255,.5)">Home › Stocks › {SYMBOL}</div>
+<div style="margin-left:auto"><span class="btn pri" style="padding:5px 13px;font-size:11px">Start free</span></div>
+</div>
+
+<div class="sec" style="padding:26px 30px;display:grid;grid-template-columns:2fr 1fr;gap:24px">
+<div class="tag"><b>S1 · HEADER</b>live quote +<br>watching field (signature viz)</div>
+<div>
+<h2 style="font:600 26px/1.15 Georgia,serif">{Company Name} <span class="mono" style="font-size:13px">{SYMBOL} · NSE</span></h2>
+<div class="mono" style="margin-top:6px;font-size:16px">₹{live} <span style="color:#3FCF8E">▲ +{x}%</span> · as of {time} IST</div>
+<div class="ph" style="height:110px;margin-top:10px">price chart · 1D/1W/1M/1Y/5Y toggle · annotations where signals fired ◈</div>
+</div>
+<div class="ph" style="height:100%;min-height:170px">◈ WATCHING FIELD (this stock's slice of the hero viz)<br>"7 tools watching · 3 have something to say"<br>each watcher = one row, live status</div>
+</div>
+
+<div class="sec stmt" style="padding:28px 30px">
+<div class="tag"><b>S2 · THE READ</b>AI narrative +<br>plain-English rule (Tickertape)</div>
+<p class="eyebrow">◈ THE MACHINE'S READ · COMPUTED {DATE}</p>
+<div class="ph" style="height:56px">3–4 sentence computed summary · every claim carries its basis ◈ (tap = the number behind it) · never a raw score without a reading line</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px">
+<div class="ph" style="height:64px;border-color:rgba(120,220,160,.5)">WORKING FOR IT · {n} drivers · green cards</div>
+<div class="ph" style="height:64px;border-color:rgba(255,120,120,.5)">WORKING AGAINST IT · {n} risks · red cards</div>
+</div>
+</div>
+
+<div class="sec" style="padding:26px 30px">
+<div class="tag"><b>S3 · SIGNAL RECORD</b>graded per stock<br>(the trust move nobody else has)</div>
+<p class="eyebrow">SIGNALS FIRED ON {SYMBOL} · PUBLIC RECORD</p>
+<div class="ph" style="height:64px">table: date · signal · read · graded ✓/✗ · move — "fired 14× · 9 with the read in 10 sessions · 64%" · misses at full weight</div>
+</div>
+
+<div class="sec" style="padding:26px 30px">
+<div class="tag"><b>S4 · FUNDAMENTALS</b>table stakes<br>compact, not the story</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap"><span class="chip">Mkt cap</span><span class="chip">P/E</span><span class="chip">52W hi/lo</span><span class="chip">Volume vs avg</span><span class="chip">Sector rank</span><span class="chip">upcoming events →</span></div>
+</div>
+
+<div class="sec" style="padding:26px 30px">
+<div class="tag"><b>S5 · LOCKED DEPTH</b>teased, never hidden<br>(smallcase blur pattern)</div>
+<div style="display:flex;gap:10px">
+<div class="ph" style="flex:1;height:64px">🔒 backtest this stock's setups · blurred preview</div>
+<div class="ph" style="flex:1;height:64px">🔒 intraday watchers <span class="pill pa">PA</span> · blurred preview</div>
+<div class="ph" style="flex:1;height:64px">🔒 add to a watched field · one-line promise + Start free</div>
+</div>
+</div>
+
+<div class="sec" style="padding:24px 30px">
+<div class="tag"><b>S6 · CROSS-LINKS</b>SEO lattice<br>(Tickertape / INDmoney)</div>
+<div class="mono" style="color:rgba(255,255,255,.5)">peers in {sector} · appeared in Decode Ed. {n} → · sector index page → · recent scans that surfaced it →</div>
+</div>
+
+<div class="sec stmt" style="padding:32px 30px;text-align:center">
+<div class="tag"><b>S7 · CLOSE</b></div>
+<h2 style="font:600 20px/1.2 Georgia,serif">The machine is watching {SYMBOL}. Ask it why.</h2>
+<div style="margin-top:12px"><span class="btn pri">Start free</span></div>
+</div>
+
+<div class="sec" style="padding:18px 30px;border-bottom:none;background:#0d0d0d">
+<div class="tag"><b>S8 · FOOTER</b>W0 + risk line</div>
+<div class="mono" style="color:rgba(255,255,255,.5)">standard footer · risk line inline under S2 and S3 · data as-of stamps on every number</div>
+</div>
+
+</div></div>
+</div>
+<p class="dv-next">Try next: "lock <a class="dv-oid" href="#8a">8a</a>, /start signup page next — the last wireframe" · "riff S1 watching-field layout"</p>
+</section>
+<section class="dv-turn" id="t7">
+<div class="dv-thd"><a class="dv-tid" href="#t7">7</a><span class="dv-tname">/decode — Morning Decode hub (Public's Rundown content engine × our graded-in-public doctrine) · D0–D8</span></div>
+<div class="dv-opts">
+<div class="dv-opt" id="7a"><div class="dv-olabel"><a class="dv-oid" href="#7a">7a</a>MORNING DECODE · today's edition + public graded archive · the trust engine and daily-return loop in one page</div>
+<div class="dv-card wf wfk" style="width:1080px;margin-left:118px">
+
+<div class="sec" style="display:flex;align-items:center;gap:18px;padding:12px 30px">
+<div class="tag"><b>D0 · NAV</b>W0 shell</div>
+<div style="font:700 14px system-ui;color:#fff">tradl<span style="color:#3FCF8E">/.</span></div>
+<div class="mono" style="color:rgba(255,255,255,.5)">Home › Morning Decode</div>
+<div style="margin-left:auto"><span class="btn pri" style="padding:5px 13px;font-size:11px">Start free</span></div>
+</div>
+
+<div class="sec stmt" style="padding:38px 30px;display:grid;grid-template-columns:1.2fr 1fr;gap:26px">
+<div class="tag"><b>D1 · TODAY'S ED.</b>the live artifact<br>(Rundown: content IS product)</div>
+<div>
+<p class="eyebrow">◈ ED. {n} · {DATE} · PUBLISHED 07:45 IST</p>
+<h2 style="font:600 28px/1.15 Georgia,serif">Six stocks the machine is watching today — and why.</h2>
+<div class="ph" style="height:44px;margin-top:12px">audio player · waveform · {m}:{ss} · the analyst voice of the brand</div>
+<div class="mono" style="margin-top:8px;color:rgba(255,255,255,.45)">frozen before the open · graded after the close · nothing edited in between</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:7px">
+<div class="ph" style="height:34px">{SYMBOL} · the read · basis ◈</div>
+<div class="ph" style="height:34px">{SYMBOL} · the read · basis ◈</div>
+<div class="ph" style="height:34px">{SYMBOL} · the read · basis ◈</div>
+<div class="mono" style="color:rgba(255,255,255,.4)">+3 more · each links to its Stock Page</div>
+</div>
+</div>
+
+<div class="sec" style="padding:26px 30px">
+<div class="tag"><b>D2 · YESTERDAY GRADED</b>always adjacent<br>to today's promise</div>
+<p class="eyebrow">◈ ED. {n−1} · GRADED AT CLOSE</p>
+<div style="display:flex;gap:10px">
+<div class="ph" style="flex:1;height:56px">✓ {SYMBOL} +{x}% with the read</div>
+<div class="ph" style="flex:1;height:56px">✓ {SYMBOL} +{x}%</div>
+<div class="ph" style="flex:1;height:56px;border-color:rgba(255,120,120,.6)">✗ {SYMBOL} −{x}% against · FULL weight</div>
+<div class="ph" style="flex:1;height:56px">{x}/6 score · running hit rate {y}%</div>
+</div>
+</div>
+
+<div class="sec" style="padding:30px 30px">
+<div class="tag"><b>D3 · THE ARCHIVE</b>public ledger<br>(radical transparency)</div>
+<p class="eyebrow">EVERY EDITION, EVERY GRADE · PUBLIC</p>
+<div class="ph" style="height:88px">table: Ed. · date · 6 calls · score · biggest hit · biggest miss — sortable, filterable, no login, misses never dimmed · monthly rollup line: "{month}: {x}% hit rate over {n} calls"</div>
+<div class="note">This table is the SEO + trust engine: one indexable page per edition ( /decode/ed-{n} ) with the full graded detail.</div>
+</div>
+
+<div class="sec" style="padding:26px 30px">
+<div class="tag"><b>D4 · HOW IT'S MADE</b>methodology<br>(PowerUp methodology PDF lesson)</div>
+<div class="ph" style="height:56px">short: what the machine scans at 06:30, how reads are chosen, what "graded" means precisely, link to full methodology page</div>
+</div>
+
+<div class="sec" style="padding:26px 30px">
+<div class="tag"><b>D5 · GET IT DAILY</b>the return loop<br>(Rundown newsletter capture)</div>
+<div style="display:flex;gap:10px;align-items:center">
+<div class="ph" style="flex:1;height:48px">WhatsApp / email delivery pick · one field · "07:45, every trading day"</div>
+<span class="btn pri">Get the Decode free</span>
+</div>
+<div class="note">The page's primary CTA is the subscription, not signup — Decode is top-of-funnel; Start free stays in nav. Our one deviation from single-CTA doctrine, deliberate.</div>
+</div>
+
+<div class="sec" style="padding:22px 30px">
+<div class="tag"><b>D6 · FAQ</b>3–4 Qs</div>
+<div class="mono" style="line-height:2">▸ Is this a tips service? (No — computed reads, graded, not advice) · ▸ Why publish misses? · ▸ When exactly is it frozen/graded?</div>
+</div>
+
+<div class="sec stmt" style="padding:36px 30px;text-align:center">
+<div class="tag"><b>D7 · CLOSE</b></div>
+<h2 style="font:600 22px/1.2 Georgia,serif">Tomorrow's edition is already computing.</h2>
+<div style="margin-top:12px"><span class="btn pri">Get the Decode free</span></div>
+</div>
+
+<div class="sec" style="padding:18px 30px;border-bottom:none;background:#0d0d0d">
+<div class="tag"><b>D8 · FOOTER</b>W0 + risk line</div>
+<div class="mono" style="color:rgba(255,255,255,.5)">standard footer · "reads are computed analytics, not recommendations" inline under D1 and D3 too</div>
+</div>
+
+</div></div>
+</div>
+<p class="dv-next">Try next: "lock <a class="dv-oid" href="#7a">7a</a>, stock page wrapper next" · "then /start signup page" · "riff D5 delivery options"</p>
+</section>
+<section class="dv-turn" id="t6">
+<div class="dv-thd"><a class="dv-tid" href="#t6">6</a><span class="dv-tname">/tools/* — the reusable tool detail template (FYERS one-template-per-feature × Groww concept-first skeleton) · T0–T9 · shown filled with AI Screener</span></div>
+<div class="dv-opts">
+<div class="dv-opt" id="6a"><div class="dv-olabel"><a class="dv-oid" href="#6a">6a</a>TOOL TEMPLATE · one scaffold, 13 tools · concept-first for education, spec-first for proof · PA variant noted inline</div>
+<div class="dv-card wf wfk" style="width:1080px;margin-left:118px">
+
+<div class="sec" style="display:flex;align-items:center;gap:18px;padding:12px 30px">
+<div class="tag"><b>T0 · NAV + CRUMB</b>W0 shell<br>breadcrumb under nav</div>
+<div style="font:700 14px system-ui;color:#fff">tradl<span style="color:#3FCF8E">/.</span></div>
+<div class="mono" style="color:rgba(255,255,255,.5)">Home › The Edge › AI Screener</div>
+<div style="margin-left:auto"><span class="btn pri" style="padding:5px 13px;font-size:11px">Start free</span></div>
+</div>
+
+<div class="sec stmt" style="padding:40px 30px;display:grid;grid-template-columns:1fr 1fr;gap:26px;align-items:center">
+<div class="tag"><b>T1 · HERO</b>capability claim<br>+ stat chips (Sahi)</div>
+<div>
+<p class="eyebrow">◈ DISCOVER · <span class="pill">LIVE</span></p>
+<h2 style="font:600 30px/1.15 Georgia,serif">Scan 3,000 stocks in the time it takes to type the question.</h2>
+<div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap"><span class="chip">~2s median</span><span class="chip">every timeframe</span><span class="chip">plain language in</span></div>
+<div style="margin-top:14px"><span class="btn pri">Run a scan free</span></div>
+</div>
+<div class="ph" style="height:150px">real product frame — the tool's actual UI, not an illustration (unanimous pattern across all 10)</div>
+<div class="note" style="grid-column:1/-1">PA variant: pill swaps to PRIVATE ACCESS, CTA reads "Get alpha access", frame is a staged-labeled preview. Same template, two states.</div>
+</div>
+
+<div class="sec" style="padding:30px 30px">
+<div class="tag"><b>T2 · WHAT IS IT</b>concept-first<br>(Groww straddle-chart)</div>
+<p class="eyebrow">WHAT A SCREENER ACTUALLY DOES</p>
+<div class="ph" style="height:56px">plain-English concept explainer, 3–4 sentences, one analogy · segmented line: "new to screening… / already run scans elsewhere…" (915 segmented empathy)</div>
+</div>
+
+<div class="sec" style="padding:30px 30px">
+<div class="tag"><b>T3 · FEATURE GRID</b>6 cards max<br>(915 bento)</div>
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+<div class="ph" style="height:64px">capability · verb-first one-liner</div>
+<div class="ph" style="height:64px">capability</div>
+<div class="ph" style="height:64px">capability</div>
+<div class="ph" style="height:64px">capability</div>
+<div class="ph" style="height:64px">capability</div>
+<div class="ph" style="height:64px">capability</div>
+</div>
+</div>
+
+<div class="sec stmt" style="padding:32px 30px">
+<div class="tag"><b>T4 · WORKED SCENARIO</b>real numbers<br>(Groww ₹-worked example)</div>
+<p class="eyebrow">◈ ONE REAL RUN, START TO FINISH</p>
+<div class="ph" style="height:88px">dated walkthrough: the ask → the code → the 7 results → what happened next (graded outcome where applicable) · every figure real and as-of stamped</div>
+</div>
+
+<div class="sec" style="padding:30px 30px">
+<div class="tag"><b>T5 · MINI PLAYGROUND</b>try before signup<br>(Upstox demo-before-KYC)</div>
+<div class="ph" style="height:70px">embedded W2 with 2 presets scoped to THIS tool · "Free-form ships to alpha users first"</div>
+</div>
+
+<div class="sec" style="padding:26px 30px">
+<div class="tag"><b>T6 · CONNECTS TO</b>lifecycle links<br>(anti-fragmentation story)</div>
+<p class="eyebrow">WHERE IT SENDS YOU NEXT</p>
+<div style="display:flex;gap:10px"><div class="ph" style="flex:1;height:44px">→ Backtest this scan</div><div class="ph" style="flex:1;height:44px">→ Open a result's Stock Page</div><div class="ph" style="flex:1;height:44px">→ Track in watchlist <span class="pill pa">PA</span></div></div>
+</div>
+
+<div class="sec" style="padding:26px 30px">
+<div class="tag"><b>T7 · FAQ</b>tool-specific · 5–6 Qs</div>
+<div class="mono" style="line-height:2">▸ concept objection · ▸ data/freshness · ▸ vs. my current tool · ▸ limits in alpha · ▸ is this advice? (no — computed analytics)</div>
+</div>
+
+<div class="sec stmt" style="padding:36px 30px;text-align:center">
+<div class="tag"><b>T8 · CLOSE</b>same CTA verbatim</div>
+<h2 style="font:600 22px/1.2 Georgia,serif">Ask it something.</h2>
+<div style="margin-top:12px"><span class="btn pri">Start free</span></div>
+</div>
+
+<div class="sec" style="padding:18px 30px;border-bottom:none;background:#0d0d0d">
+<div class="tag"><b>T9 · FOOTER</b>W0 compliance</div>
+<div class="mono" style="color:rgba(255,255,255,.5)">standard footer + inline risk line under any performance figure shown above</div>
+</div>
+
+</div></div>
+</div>
+<p class="dv-next">Try next: "lock <a class="dv-oid" href="#6a">6a</a>, /decode next" · "show the PA-state variant filled in" · "map all 13 tools to this template"</p>
+</section>
+<section class="dv-turn" id="t5">
+<div class="dv-thd"><a class="dv-tid" href="#t5">5</a><span class="dv-tname">/edge — the flagship AI page (FYERS /fia + Public /ai-agents template) · E0–E9 · desktop ~1200</span></div>
+<div class="dv-opts">
+<div class="dv-opt" id="5a"><div class="dv-olabel"><a class="dv-oid" href="#5a">5a</a>THE EDGE · workflow-replacement framing, not a feature list · capability honesty + AI-specific trust section</div>
+<div class="dv-card wf wfk" style="width:1080px;margin-left:118px">
+
+<div class="sec" style="display:flex;align-items:center;gap:18px;padding:12px 30px">
+<div class="tag"><b>E0 · NAV + STRIP</b>W0 shell reused<br>(same as home)</div>
+<div style="font:700 14px system-ui;color:#fff">tradl<span style="color:#3FCF8E">/.</span></div>
+<div class="mono" style="color:rgba(255,255,255,.5)">The Edge ▾ · Stocks · Decode · Manifesto</div>
+<div style="margin-left:auto"><span class="btn pri" style="padding:5px 13px;font-size:11px">Start free</span></div>
+</div>
+
+<div class="sec stmt" style="padding:44px 30px">
+<div class="tag"><b>E1 · HERO</b>workflow replacement<br>(FIA "connects the dots")</div>
+<p class="eyebrow">◈ THE EDGE · TRADL'S INTELLIGENCE LAYER</p>
+<h2 style="font:600 34px/1.15 Georgia,serif">One question in.<br>Your whole workflow out.</h2>
+<p class="dek" style="max-width:540px">Screening, backtesting, charts, chain — The Edge runs them all from a single plain-language ask, and shows the code behind every answer.</p>
+<div style="display:flex;gap:10px;margin-top:16px"><span class="btn pri">Start free</span><span class="btn">See it compute ↓</span></div>
+<div class="mono" style="margin-top:8px;color:rgba(255,255,255,.45)">no tab switching · no copy-pasting between apps · one memory across your session</div>
+</div>
+
+<div class="sec" style="padding:30px 30px">
+<div class="tag"><b>E2 · HOW IT WORKS</b>3 numbered steps<br>(/ai-agents 3-step)</div>
+<p class="eyebrow">HOW IT WORKS</p>
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-top:8px">
+<div class="ph" style="height:76px">1 · ASK — plain language, Hinglish welcome</div>
+<div class="ph" style="height:76px">2 · COMPUTE — the quant engine writes + runs transparent code on live NSE data</div>
+<div class="ph" style="height:76px">3 · ACT — results carry their basis ◈; send to watchlist, backtest, or chart in one tap</div>
+</div>
+</div>
+
+<div class="sec stmt" style="padding:32px 30px">
+<div class="tag"><b>E3 · LIVE PLAYGROUND</b>full interactive W2<br>(bigger than homepage receipt)</div>
+<p class="eyebrow">◈ TRY IT · REAL DATA, DATED</p>
+<div style="border:1.5px solid rgba(255,255,255,.5);border-radius:8px;padding:10px;display:flex;flex-direction:column;gap:7px">
+<div class="ph" style="height:30px">6 preset prompts here (vs 3 on home) · grouped by intent: find / test / read</div>
+<div class="ph" style="height:60px">code streams · elapsed counter</div>
+<div class="ph" style="height:52px">results + plain-English reading line · "as of {date}"</div>
+</div>
+<div class="note">Same W2 component, extended preset set. Still no free-text in alpha — say so honestly below the box: "Free-form asks ship to alpha users first."</div>
+</div>
+
+<div class="sec" style="padding:30px 30px">
+<div class="tag"><b>E4 · PROMPT GALLERY</b>real asks as proof<br>(/ai-agents prompt carousel)</div>
+<p class="eyebrow">WHAT TRADERS ASK IT</p>
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-top:8px">
+<div class="ph" style="height:74px">"Show me midcaps breaking 52-week highs on 2× volume" · chip: SCREENING</div>
+<div class="ph" style="height:74px">"Backtest RSI&lt;30 bounce on Bank Nifty, 5 years" · chip: BACKTESTING</div>
+<div class="ph" style="height:74px">"What changed in {SYMBOL} today?" · chip: STOCK READ</div>
+<div class="ph" style="height:74px">"Which of my watchlist gapped against sector?" · chip: WATCHLIST · PA badge</div>
+</div>
+<div class="note">8–10 cards, horizontal scroll, each tagged by lifecycle stage; PA-gated asks shown with badge, never hidden.</div>
+</div>
+
+<div class="sec" style="padding:30px 30px">
+<div class="tag"><b>E5 · CAPABILITY LEDGER</b>radical honesty<br>(Public "not built yet" list)</div>
+<p class="eyebrow">◈ WHAT IT CAN DO TODAY — AND WHAT IT CAN'T YET</p>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:8px">
+<div class="ph" style="height:104px">SHIPS TODAY · checklist<br>screening 3,000+ stocks · backtests to {y} yrs · stock reads · events · Decode</div>
+<div class="ph" style="height:104px">NOT YET · same visual weight<br>free-text prompts (alpha-first) · F&O asks (PA) · order placement (never in alpha — we analyse, we don't execute)</div>
+</div>
+<div class="note">The "never" line is a doctrine statement, not a roadmap gap — style it as a chip: ◈ We analyse. We don't execute.</div>
+</div>
+
+<div class="sec" style="padding:30px 30px">
+<div class="tag"><b>E6 · AI TRUST</b>feature-specific trust<br>(/ai-agents "Designed for safety")</div>
+<p class="eyebrow">WHY TRUST THE ANSWER</p>
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-top:8px">
+<div class="ph" style="height:80px">TRANSPARENT · every answer shows its code — tap to expand</div>
+<div class="ph" style="height:80px">COMPUTED · the LLM never does the math; the quant engine does</div>
+<div class="ph" style="height:80px">GRADED · calls carry their public record — hits and misses</div>
+</div>
+</div>
+
+<div class="sec" style="padding:26px 30px">
+<div class="tag"><b>E7 · SPEC STRIP</b>numbers as adjectives<br>(Sahi stat tiles)</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap"><span class="chip">3,000+ NSE stocks</span><span class="chip">~2s median scan</span><span class="chip">{n} timeframes incl. intraday</span><span class="chip">{y} yrs of history</span><span class="chip">Ed. {n} Decodes graded</span></div>
+</div>
+
+<div class="sec" style="padding:26px 30px">
+<div class="tag"><b>E8 · FAQ</b>page-specific objections</div>
+<div class="mono" style="line-height:2">▸ Is this a chatbot? (No — it computes, doesn't converse)<br>▸ Can it be wrong? (The math can't; the read can — that's why we grade it)<br>▸ Where does the data come from? (CMOTS/NSE/BSE, as-of stamps on everything)<br>▸ Can I type my own prompt? (Alpha users first — Start free)</div>
+</div>
+
+<div class="sec stmt" style="padding:44px 30px;text-align:center;border-bottom:none">
+<div class="tag"><b>E9 · CLOSE</b>manifesto line + CTA<br>("world's first agentic brokerage" move)</div>
+<h2 style="font:600 26px/1.2 Georgia,serif">This is what AI-native trading looks like.</h2>
+<div style="margin-top:14px"><span class="btn pri">Start free</span></div>
+<div class="mono" style="margin-top:8px;color:rgba(255,255,255,.4)">◈ we compute, we don't predict · footer follows (W0)</div>
+</div>
+
+</div></div>
+</div>
+<p class="dv-next">Try next: "lock <a class="dv-oid" href="#5a">5a</a>, tool detail template next" · "then /decode, stock page, /start" · "riff E4 prompt set"</p>
+</section>
+<section class="dv-turn" id="t4">
+<div class="dv-thd"><a class="dv-tid" href="#t4">4</a><span class="dv-tname">Benchmark synthesis of all 10 inspiration teardowns → one blended narrative → homepage rebuilt from scratch</span></div>
+<div class="dv-opts">
+
+<div class="dv-opt" id="4a"><div class="dv-olabel"><a class="dv-oid" href="#4a">4a</a>BENCHMARKING · what the 10 platforms converge on, and Tradl's move for each</div>
+<div class="dv-card wf" style="width:560px">
+<div class="sec" style="padding:20px 24px">
+<p class="eyebrow">CONVERGENT PATTERNS (≥4 OF 10 PLATFORMS)</p>
+<table style="border-collapse:collapse;width:100%">
+<tr><th style="width:46%">Pattern · who does it</th><th>Tradl move</th></tr>
+<tr><td>Live data before any claim<br><span style="color:rgba(0,0,0,.45)">915 ticker · Tickertape live home · smallcase real product</span></td><td>Live NSE strip + one real dated Playground run as the page's only demo</td></tr>
+<tr><td>Serif display + sans body two-voice<br><span style="color:rgba(0,0,0,.45)">Public (Denton) · Sahi (sahiSeason) · Robinhood</span></td><td>Serif for story beats, IBM Plex/Lato for instrument beats — maps to our statement/instrument registers</td></tr>
+<tr><td>Numbers as adjectives, specs as trust<br><span style="color:rgba(0,0,0,.45)">Upstox · Sahi (6.61ms) · 915 (20ms) · INDmoney</span></td><td>"3,000 stocks · 1.9s · Ed. {n} graded" — never "powerful", always the figure</td></tr>
+<tr><td>Radical transparency as a section<br><span style="color:rgba(0,0,0,.45)">Sahi "How we make money" · Public "not built yet" · smallcase locked-not-hidden</span></td><td>Graded-in-public ledger with a real ✗ at full weight; PA tools teased, never grey</td></tr>
+<tr><td>One CTA phrase, repeated verbatim<br><span style="color:rgba(0,0,0,.45)">915 · Sahi · INDmoney · Upstox trust-stack-at-CTA</span></td><td>"Start free" everywhere, proof chips traveling beside it</td></tr>
+<tr><td>Story arc: identity → capability → proof → trust → convert<br><span style="color:rgba(0,0,0,.45)">FYERS · smallcase · Public</span></td><td>The arc below (<a href="#4b">4b</a>) — vision chapter first, receipts after</td></tr>
+<tr><td>AI flagship gets its own stage<br><span style="color:rgba(0,0,0,.45)">Public /ai-agents own nav item · FYERS /fia</span></td><td>Homepage = the story; /edge = the FIA-style flagship page (next wireframe)</td></tr>
+<tr><td>Raw metric always + plain-English line<br><span style="color:rgba(0,0,0,.45)">Tickertape MMI · scorecards</span></td><td>Every number on the page carries a one-line reading</td></tr>
+<tr><td>Founder/human note at the trust peak<br><span style="color:rgba(0,0,0,.45)">915 founders' note · Sahi about · FYERS quotes</span></td><td>Founder note beat before the close</td></tr>
+<tr><td>FAQ kills objections right before final CTA<br><span style="color:rgba(0,0,0,.45)">nearly all 10</span></td><td>5 Qs on our real frictions (is it advice? what's PA? is the AI guessing?)</td></tr>
+</table>
+<div class="note">Deliberately NOT adopted: phone-number-first lead capture (PowerUp/INDmoney — we're web-first), app-QR funnel (Sahi/915), SEO footer link-farm (INDmoney — post-alpha), lime-green CTA (Robinhood — off-brand). Signature visualization (Tickertape MMI lesson) = the watching field, reused hero → stock pages → shareable.</div>
+</div>
+</div></div>
+
+<div class="dv-opt" id="4b"><div class="dv-olabel"><a class="dv-oid" href="#4b">4b</a>REBUILT HOMEPAGE · "The intelligence is already watching" · story sells, the market proves · N0–N11</div>
+<div class="dv-card wf wfk" style="width:1080px;margin-left:118px">
+
+<div class="sec" style="display:flex;align-items:center;gap:18px;padding:12px 30px">
+<div class="tag" style="color:#8a8578"><b>N0 · NAV</b>4 items only<br>(Public pattern)</div>
+<div style="font:700 14px system-ui;color:#fff">tradl<span style="color:#3FCF8E">/.</span></div>
+<div style="display:flex;gap:18px;font:12px system-ui;color:rgba(255,255,255,.7)"><span>The Edge ▾</span><span>Stocks</span><span>Decode</span><span>Manifesto</span></div>
+<div style="margin-left:auto;display:flex;gap:10px;align-items:center"><span class="btn" style="padding:5px 13px;font-size:11px">Log in</span><span class="btn pri" style="padding:5px 13px;font-size:11px">Start free</span></div>
+</div>
+<div class="sec" style="padding:7px 30px;display:flex;gap:16px;background:#0d0d0d">
+<div class="tag"><b>N1 · LIVE STRIP</b>proof before claims<br>(915 / Tickertape)</div>
+<span class="mono">NIFTY {live} ▲ · BANKNIFTY {live} · {SYMBOL} {live} ▼ · scrolling real quotes</span>
+</div>
+
+<div class="sec stmt" style="padding:56px 30px;text-align:center;position:relative">
+<div class="tag"><b>N2 · HERO</b>statement · serif<br>the vision, no demo</div>
+<div class="ph" style="position:absolute;inset:0;border:none"></div>
+<div style="position:relative">
+<p class="eyebrow">◈ WE COMPUTE, WE DON'T PREDICT</p>
+<h2 style="font:600 42px/1.15 Georgia,serif">The market has never had<br>an intelligence on your side.<br><em style="color:#3FCF8E">Until now.</em></h2>
+<p class="dek" style="max-width:520px;margin:12px auto 0">Tradl watches all 3,000 NSE stocks, writes real analysis as code, and grades its own calls in public. This is trading, AI-native.</p>
+<div style="margin-top:20px"><span class="btn pri">Start free</span></div>
+<div class="mono" style="margin-top:10px;color:rgba(255,255,255,.45)">alpha open · free while in alpha · no card</div>
+<div class="note">bg: ambient watching field — 3,000 dim points, slow drift, ◈ marks · the signature visualization (our MMI)</div>
+</div>
+</div>
+
+<div class="sec" style="padding:34px 30px">
+<div class="tag"><b>N3 · THE SHIFT</b>story chapter<br>(FYERS identity arc)</div>
+<p class="eyebrow">THE SHIFT</p>
+<h2 style="font:600 26px/1.2 Georgia,serif">Every era of trading was unlocked by new infrastructure.<br>This one is unlocked by intelligence.</h2>
+<div style="display:flex;gap:10px;align-items:center;margin-top:16px">
+<div class="ph" style="width:150px;height:56px">ACCESS · '90s</div><span class="mono">→</span>
+<div class="ph" style="width:150px;height:56px">COST · '00s</div><span class="mono">→</span>
+<div class="ph" style="width:150px;height:56px">CONVENIENCE · '10s</div><span class="mono">→</span>
+<div class="ph" style="width:190px;height:56px;border-style:solid;border-color:#3FCF8E;color:#3FCF8E">INTELLIGENCE · now</div>
+</div>
+<div class="note">Compressed to one horizontal beat (full waves stay on /manifesto). Kinetic dates on scroll. This is the "vibe" chapter — history makes us inevitable, not a feature list.</div>
+</div>
+
+<div class="sec stmt" style="padding:34px 30px">
+<div class="tag"><b>N4 · THE RECEIPT</b>one live proof<br>(Tickertape: value before ask)</div>
+<p class="eyebrow">◈ NOT A CONCEPT · A DATED RUN</p>
+<div style="display:grid;grid-template-columns:.9fr 1.1fr;gap:24px;align-items:center">
+<div>
+<h2 style="font:600 24px/1.25 Georgia,serif">Ask it something.<br>Watch it compute.</h2>
+<p class="dek">The Playground: 3 preset prompts, real code, real NSE data, real elapsed time. The page's only demo.</p>
+<div class="mono" style="margin-top:10px;color:#3FCF8E">7 matches · 1.9s · as of {date} ← every number dated</div>
+</div>
+<div style="border:1.5px solid rgba(255,255,255,.5);border-radius:8px;padding:10px;display:flex;flex-direction:column;gap:7px">
+<div class="ph" style="height:30px">prompt chips ×3 · types in</div>
+<div class="ph" style="height:64px">code streams · elapsed counter</div>
+<div class="ph" style="height:56px">rows snap in · signed deltas · plain-English reading line under the result</div>
+</div>
+</div>
+</div>
+
+<div class="sec" style="padding:30px 30px">
+<div class="tag"><b>N5 · THE GAP</b>consolidation story<br>(FYERS "one platform")</div>
+<h2 style="font:600 22px/1.25 Georgia,serif">Your edge is scattered across five apps that don't know each other exist.</h2>
+<div style="display:flex;align-items:center;gap:8px;margin-top:14px">
+<div class="ph" style="width:96px;height:52px">screener</div><span class="mono">✕</span>
+<div class="ph" style="width:96px;height:52px">charts</div><span class="mono">✕</span>
+<div class="ph" style="width:96px;height:52px">tips group</div><span class="mono">✕</span>
+<div class="ph" style="width:96px;height:52px">chain</div>
+<span class="mono" style="margin:0 8px">⟶</span>
+<div class="ph" style="width:210px;height:52px;border-style:solid">one surface, one memory</div>
+</div>
+</div>
+
+<div class="sec" style="padding:30px 30px">
+<div class="tag"><b>N6 · HOW IT WORKS</b>specs as trust<br>(Upstox/Sahi numbers)</div>
+<p class="eyebrow">HOW IT WORKS</p>
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-top:8px">
+<div class="ph" style="height:70px">1 · You ask in plain language</div>
+<div class="ph" style="height:70px">2 · The quant engine computes it as transparent code</div>
+<div class="ph" style="height:70px">3 · Every output carries its basis ◈</div>
+</div>
+<div style="display:flex;gap:8px;margin-top:12px"><span class="chip">3,000+ NSE stocks</span><span class="chip">every timeframe, intraday included</span><span class="chip">scans in ~2s</span><span class="chip">no hallucinated numbers — LLM never does the math</span></div>
+</div>
+
+<div class="sec" style="padding:30px 30px">
+<div class="tag"><b>N7 · TOOLKIT</b>13 tools · lifecycle<br>PA teased, never grey (smallcase lock)</div>
+<p class="eyebrow">◈ DISCOVER · ANALYSE · ACT</p>
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:10px">
+<div class="ph" style="height:96px">DISCOVER · 6 tiles<br>Screener/Decode/Events LIVE · Sniper/Insights/F&O PA</div>
+<div class="ph" style="height:96px">ANALYSE · 5 tiles<br>Backtesting/Stock Pages LIVE · Charts PREVIEW · Chain/Smart Charts PA</div>
+<div class="ph" style="height:96px">ACT · 2 tiles<br>Strategy + Position Co-pilot PA</div>
+</div>
+<div class="note">PA tiles expand in place: definition + one frame + "ships to alpha users first" + Start free. Live tiles → /tools/*.</div>
+</div>
+
+<div class="sec stmt" style="padding:34px 30px">
+<div class="tag"><b>N8 · GRADED IN PUBLIC</b>radical transparency<br>(Sahi/Public honesty)</div>
+<p class="eyebrow">◈ GRADED IN PUBLIC</p>
+<h2 style="font:600 24px/1.25 Georgia,serif">Every morning we publish our read.<br>Every evening the market grades it. Misses included.</h2>
+<div style="display:flex;gap:14px;margin-top:14px">
+<div class="ph" style="flex:1;height:64px">Ed. {n} · today's 6 stocks · audio</div>
+<div class="ph" style="flex:1;height:64px">Ed. {n−1} graded: {x}/6 with the read · one ✗ at FULL weight</div>
+<div class="ph" style="flex:1;height:64px">archive · public · Browse →</div>
+</div>
+</div>
+
+<div class="sec" style="padding:30px 30px">
+<div class="tag"><b>N9 · HUMANS</b>founder note + voices<br>(915 founders' note)</div>
+<div style="display:grid;grid-template-columns:1.1fr 1fr 1fr;gap:14px">
+<div class="ph" style="height:88px">FOUNDER NOTE · why we build the machine that grades itself · name, signature</div>
+<div class="ph" style="height:88px">trader quote · name · role</div>
+<div class="ph" style="height:88px">trader quote · name · role</div>
+</div>
+</div>
+
+<div class="sec" style="padding:26px 30px">
+<div class="tag"><b>N10 · FAQ</b>objection killer<br>before the ask (all 10)</div>
+<div class="mono" style="line-height:2">▸ Is this investment advice? (No — computed analytics; here's the difference)<br>▸ Is the AI guessing the numbers? (Never — code computes, LLM only translates)<br>▸ What does Private Access mean?<br>▸ What does alpha cost? What happens after alpha?<br>▸ Do I need to move my broker account? (No)</div>
+</div>
+
+<div class="sec stmt" style="padding:52px 30px;text-align:center">
+<div class="tag"><b>N11 · CLOSE</b>early-mover close<br>(3a's "you are early")</div>
+<h2 style="font:600 30px/1.2 Georgia,serif">The intelligence is already watching.<br>You are early.</h2>
+<p style="font:italic 14px Georgia,serif;color:rgba(255,255,255,.55);margin:8px 0 14px">the market, finally <em>intelligent</em>.</p>
+<span class="btn pri">Start free</span>
+<div class="mono" style="margin-top:8px;color:rgba(255,255,255,.4)">◈ Morning Decode graded daily · 3,000+ stocks · alpha open</div>
+</div>
+
+<div class="sec" style="padding:22px 30px;border-bottom:none;background:#0d0d0d">
+<div class="tag"><b>FOOTER</b>compliance container<br>(915/Upstox pattern)</div>
+<div class="mono" style="color:rgba(255,255,255,.5)">Product · Markets A–Z · Decode archive · Company | "Computed and historical analytics. Nothing here is investment advice." · SEBI RA Reg. {n} · data: CMOTS/NSE/BSE · risk line</div>
+</div>
+
+</div></div>
+</div>
+<p class="dv-next">Try next: "lock <a class="dv-oid" href="#4b">4b</a>, wireframe /edge next" · "swap the hero line" · "show N4 receipt above N3 story" · "mobile pass"</p>
+</section>
+<section class="dv-turn" id="t3">
+<div class="dv-thd"><a class="dv-tid" href="#t3">3</a><span class="dv-tname">Story-first · vision sells, product is the receipt · three narrative architectures (demo demoted to a single proof moment near the close)</span></div>
+<div class="dv-opts">
+
+<div class="dv-opt" id="3a"><div class="dv-olabel"><a class="dv-oid" href="#3a">3a</a>THE FOURTH WAVE · scroll through 30 years of Indian trading and arrive at now · history makes the future inevitable</div>
+<div class="dv-card wf wfk" style="width:640px">
+<div class="hd">STORY · every era of Indian markets was unlocked by infrastructure. The visitor scrolls the eras like chapters and lands on the one being built right now. Tradl = the destination of the timeline, not a product pitch.</div>
+<div class="sec stmt" style="padding:40px 22px;text-align:center">
+<p class="eyebrow">INDIA · 1994 → 2026</p>
+<h2 style="font-size:30px">Trading has changed three times.<br>The fourth is different.</h2>
+<p class="dek">Hero = a claim about history, not about us. Slow ambient wave motion behind. Single CTA: "See the fourth wave ↓". Start free stays in nav only.</p>
+</div>
+<div class="sec" style="padding:18px 22px">
+<div class="row"><span>WAVE 1 · ACCESS</span><span>1990s</span><span>markets reach retail</span></div>
+<div class="ph" style="height:40px;margin:6px 0 12px">full-bleed era scene: paper to screen · period texture, one artifact per era</div>
+<div class="row"><span>WAVE 2 · COST</span><span>2000s</span><span>discount broking</span></div>
+<div class="row"><span>WAVE 3 · CONVENIENCE</span><span>2010s</span><span>account in minutes</span></div>
+<div class="note">Each wave = one screen-height chapter, statement register, kinetic dates. Scroll velocity IS the storytelling: 30 years compress into 3 scrolls.</div>
+</div>
+<div class="sec stmt" style="padding:34px 22px;text-align:center">
+<h2 style="font-size:34px">WAVE 4 · INTELLIGENCE<span style="color:#3FCF8E">.</span></h2>
+<p class="dek">The turn: "Every wave was infrastructure. This one is intelligence itself." Doctrine badge appears here for the first time. The ambient field goes live.</p>
+</div>
+<div class="sec" style="padding:16px 22px">
+<div class="ph" style="height:52px">THE ONE PROOF MOMENT: the Playground runs once, mid-story ("this is not a concept, it already computes") + proof chips</div>
+<div class="ph" style="height:36px;margin-top:8px">the toolkit as "what the wave contains" · 13 names, statuses, no tiles-grid feel</div>
+</div>
+<div class="sec stmt" style="padding:34px 22px;text-align:center;border-bottom:none">
+<h2 style="font-size:24px">You are early.</h2>
+<p class="dek" style="margin:6px 0 12px">Close = being early to a wave, not signing up for a tool. Warm beat: "the market, finally <em>intelligent</em>."</p>
+<span class="btn pri" style="padding:4px 12px;font-size:11px">Enter the alpha</span>
+<div class="note">Note: brand book parks the waves on /manifesto; promoting them to the homepage is a deliberate amendment for you to approve. H7 honesty + voices become short interludes between waves 4 and close.</div>
+</div>
+</div></div>
+
+<div class="dv-opt" id="3b"><div class="dv-olabel"><a class="dv-oid" href="#3b">3b</a>DISPATCH FROM 2030 · show the destination first · a trading day in the agentic future, then reveal the foundation exists today</div>
+<div class="dv-card wf wfk" style="width:640px">
+<div class="hd">STORY · don't argue the future, let the visitor live it for 60 seconds. The page opens as speculative fiction (clearly staged), then pulls back: "the first pieces of this are running today." Vision → receipt.</div>
+<div class="sec stmt" style="padding:40px 22px">
+<p class="eyebrow">◈ A TRADING DAY, SOON</p>
+<h2 style="font-size:28px">It is 09:14. Your analysis finished before you woke up.</h2>
+<p class="dek">Hero = second-person future narration, timestamped like fiction. Ambient dawn-terminal field. CTA: "Watch the day unfold ↓"</p>
+</div>
+<div class="sec" style="padding:18px 22px 18px 40px;position:relative">
+<div style="position:absolute;left:22px;top:18px;bottom:18px;width:2px;background:rgba(255,255,255,.25)"></div>
+<div class="mono" style="color:#3FCF8E">09:14 · your thesis, already tested against 30 years</div>
+<div class="mono" style="margin:10px 0;color:#3FCF8E">11:02 · a pattern forms; the chart annotates itself</div>
+<div class="mono" style="color:#3FCF8E">14:30 · your position, recomputed against your actual entry</div>
+<div class="ph" style="height:40px;margin-top:12px">each beat = one cinematic staged frame, explicitly labeled STAGED · not screenshots</div>
+<div class="note">This is the agentic-ambition register: allowed because it's framed as direction, never as shipped autonomy (brand tension #2). No fake screenshots of unshipped features.</div>
+</div>
+<div class="sec stmt" style="padding:30px 22px;text-align:center">
+<h2 style="font-size:24px">That day is being built. Here is what already runs.</h2>
+</div>
+<div class="sec" style="padding:16px 22px">
+<div class="ph" style="height:48px">THE RECEIPT: live Playground run, real date + proof chips + honesty ledger (real ✗) · the contrast between staged future and audited present IS the trust move</div>
+<div class="ph" style="height:32px;margin-top:8px">toolkit: "shipped / arriving" two-state list, PA badged</div>
+</div>
+<div class="sec stmt" style="padding:30px 22px;text-align:center;border-bottom:none">
+<h2 style="font-size:22px">The future of trading needs early traders.</h2>
+<div style="margin-top:12px"><span class="btn pri" style="padding:4px 12px;font-size:11px">Claim early access</span></div>
+<div class="note">Strongest emotional arc; requires strict staged-vs-real labeling discipline to stay inside compliance rails.</div>
+</div>
+</div></div>
+
+<div class="dv-opt" id="3c"><div class="dv-olabel"><a class="dv-oid" href="#3c">3c</a>THE AWAKENING · manifesto-as-homepage · the market rendered as a living field that wakes up as you scroll · sparse declarations, one proof</div>
+<div class="dv-card wf wfk" style="width:640px">
+<div class="hd">STORY · almost no interface. A full-bleed ambient visualization of the market (3,000 faint points, breathing) runs the entire page; scrolling wakes it: points begin to be watched, computed, graded. Sparse manifesto lines carry the narrative over it.</div>
+<div class="sec stmt" style="padding:44px 22px;text-align:center">
+<div class="ph" style="height:64px;border-style:dotted">ambient field: 3,000 dim points · slow drift · surveillance calm</div>
+<h2 style="font-size:30px;margin-top:14px">The market never sleeps.<br>Now neither does your analysis.</h2>
+</div>
+<div class="sec stmt" style="padding:34px 22px;text-align:center">
+<p class="dek">Scroll beats, one declaration per viewport, the field responding to each:</p>
+<div class="mono" style="margin-top:10px;line-height:2.1">"Every stock, watched." → points get ◈ marks<br>"Every claim, computed." → code traces flicker across the field<br>"Every call, graded in public." → some points flash ✗, and stay<br>"This is what AI-native trading looks like."</div>
+<div class="note">The ✗ beat carries H7. The field IS the watching-field device (02 §2.3) scaled to a whole page. Reduced-motion: still frames per beat.</div>
+</div>
+<div class="sec" style="padding:16px 22px">
+<div class="ph" style="height:44px">ONE proof moment: the field collapses into a single terminal frame, one real run, dated + 3 chips</div>
+</div>
+<div class="sec stmt" style="padding:40px 22px;text-align:center;border-bottom:none">
+<h2 style="font-size:26px">the market, finally <em style="color:#3FCF8E">intelligent</em>.</h2>
+<div style="margin-top:12px"><span class="btn pri" style="padding:4px 12px;font-size:11px">Start free</span><span class="btn" style="padding:4px 12px;font-size:11px;margin-left:8px">Read the manifesto</span></div>
+<div class="note">Purest vibe play, least copy, most engineering in the field itself. Toolkit/voices demoted to a compact strip above the footer.</div>
+</div>
+</div></div>
+
+</div>
+<p class="dv-next">Try next: "go with <a class="dv-oid" href="#3a">3a</a>, full wireframe" · "open like <a class="dv-oid" href="#3c">3c</a>, then land in <a class="dv-oid" href="#3a">3a</a>'s wave 4" · "make <a class="dv-oid" href="#3b">3b</a> less fiction, more near-term"</p>
+</section>
+<section class="dv-turn" id="t2">
+<div class="dv-thd"><a class="dv-tid" href="#t2">2</a><span class="dv-tname">Fresh takes on <a class="dv-oid" href="#1a">1a</a> · three opinionated, AI-native homepage formats · same H0–H9 content, radically different staging</span></div>
+<div class="dv-opts">
+
+<div class="dv-opt" id="2a"><div class="dv-olabel"><a class="dv-oid" href="#2a">2a</a>COMMAND SURFACE · the site IS the terminal · you land inside the intelligence, sections are panes it opens</div>
+<div class="dv-card wf wfk" style="width:640px">
+<div class="hd">CONCEPT · no marketing page at all. The homepage is one persistent instrument session; scrolling replays the machine working.</div>
+<div class="sec" style="padding:10px 22px;display:flex;gap:14px;align-items:center">
+<div style="font:700 13px system-ui;color:#fff">tradl<span style="color:#3FCF8E">/.</span></div>
+<div class="mono">SESSION OPEN · NSE LIVE · 09:15:00</div>
+<span class="pill" style="margin-left:auto">LIVE · NSE</span><span class="btn pri" style="padding:4px 12px;font-size:11px">Start free</span>
+</div>
+<div class="sec stmt" style="padding:30px 22px">
+<div class="mono" style="color:#3FCF8E">&gt; _</div>
+<h2 style="font-size:26px;margin-top:6px">Agentic trading starts here.</h2>
+<p class="dek">H1 = the prompt line itself. Headline types in AS a prompt, then the machine answers it below. Doctrine badge sits in the chrome.</p>
+<div class="ph" style="height:70px;margin-top:12px">machine answers: code streams → 7 matches · 1.9s (the W2 loop, but it IS the page, not a window on the page)</div>
+<div class="note">Nav = command bar. No hero image, no split layout. One column, monospace-forward.</div>
+</div>
+<div class="sec" style="padding:18px 22px">
+<div class="mono" style="margin-bottom:6px">H2+H5 merged → RUNNING PROCESSES (13 tools as live processes)</div>
+<div class="row"><span>ai_screener</span><span>DISCOVER</span><span style="color:#3FCF8E">LIVE</span></div>
+<div class="row"><span>morning_decode</span><span>DISCOVER</span><span style="color:#3FCF8E">LIVE · Ed. {n} graded</span></div>
+<div class="row"><span>pattern_sniper</span><span>DISCOVER</span><span>PRIVATE ACCESS</span></div>
+<div class="row" style="border-bottom:none"><span>… 10 more, expandable in place</span><span></span><span></span></div>
+<div class="note">Toolkit reads as a process table, not tiles. PA rows full weight, expander opens a pane.</div>
+</div>
+<div class="sec" style="padding:18px 22px">
+<div class="mono" style="margin-bottom:6px">H7 → a log entry, graded ✗, full weight</div>
+<div class="ph" style="height:48px">2026-07-30 · Ed. 71 · 2 of 6 moved against the read · ✗ KEPT ON RECORD</div>
+</div>
+<div class="sec stmt" style="padding:30px 22px;border-bottom:none">
+<div class="mono" style="color:#3FCF8E">&gt; your turn_</div>
+<p class="dek" style="margin:8px 0 12px">H9 close = an empty prompt awaiting the visitor. The 3 preset chips are the CTA; Start free beside them.</p>
+<div style="display:flex;gap:8px"><span class="chip">preset 1</span><span class="chip">preset 2</span><span class="btn pri" style="padding:4px 12px;font-size:11px">Start free</span></div>
+<div class="note">Risk: density may cost mainstream conversion. Payoff: nothing else in Indian fintech looks like this. H3/H4/H8 fold in as session interludes.</div>
+</div>
+</div></div>
+
+<div class="dv-opt" id="2b"><div class="dv-olabel"><a class="dv-oid" href="#2b">2b</a>THE TAPE · a day in the life of the intelligence · one timestamped feed spine, pre-open to close</div>
+<div class="dv-card wf wfk" style="width:640px">
+<div class="hd">CONCEPT · "an intelligence is actively watching this market" shown literally: the page is its output tape for one real dated session. Marketing docks onto the tape at the moment each claim becomes true.</div>
+<div class="sec stmt" style="padding:30px 22px">
+<h2 style="font-size:26px">The market opens in 90 minutes.<br>Tradl is already working.</h2>
+<p class="dek">Hero = headline + the tape already running beneath it. CTA pair. Doctrine badge on the tape head.</p>
+</div>
+<div class="sec" style="padding:18px 22px 18px 40px;position:relative">
+<div style="position:absolute;left:22px;top:18px;bottom:18px;width:2px;background:rgba(255,255,255,.25)"></div>
+<div class="mono" style="color:#3FCF8E">07:45 · Morning Decode Ed. {n} published</div>
+<div class="ph" style="height:44px;margin:6px 0 14px">docked module: today's 6 stocks + audio + yesterday graded (H6 Decode scene)</div>
+<div class="mono" style="color:#3FCF8E">09:41 · scan completed · 7 matches · 1.9s</div>
+<div class="ph" style="height:44px;margin:6px 0 14px">docked module: the Playground, operable (H1/W2 lives HERE, mid-tape)</div>
+<div class="mono" style="color:#3FCF8E">11:40 · signal fired on {SYMBOL} · record attached</div>
+<div class="ph" style="height:44px;margin:6px 0 14px">docked module: stock page dock + watching field (H6)</div>
+<div class="mono" style="color:#e0a06a">15:45 · Ed. 71 graded · 2 of 6 against · ✗ kept</div>
+<div class="ph" style="height:44px;margin:6px 0">H7 honesty entry, same weight as wins, enlarged on scroll</div>
+</div>
+<div class="sec" style="padding:18px 22px">
+<div class="mono" style="margin-bottom:6px">Off-tape interludes: H3 gap (your 5 apps vs this one tape) · H5 toolkit as the tape's stations · H8 voices quoted with timestamps</div>
+</div>
+<div class="sec stmt" style="padding:30px 22px;border-bottom:none">
+<h2 style="font-size:22px">Session ends. The record stays.</h2>
+<div style="display:flex;gap:10px;margin-top:12px"><span class="btn pri" style="padding:4px 12px;font-size:11px">Start free</span><span class="btn" style="padding:4px 12px;font-size:11px">Browse the archive</span></div>
+<div class="note">Every number on the page is dated to ONE real session (hard-case doctrine). Freshness story built in. Risk: needs one genuinely real day of data before prototype.</div>
+</div>
+</div></div>
+
+<div class="dv-opt" id="2c"><div class="dv-olabel"><a class="dv-oid" href="#2c">2c</a>THREE ACTS · kinetic-type keynote · ASK / COMPUTE / ACT as full-bleed chapters, type becomes the demo</div>
+<div class="dv-card wf wfk" style="width:640px">
+<div class="hd">CONCEPT · the rhythm line becomes the page architecture. Three cinematic acts; each giant word transforms into working product. Statement register leads, instruments interlude.</div>
+<div class="sec stmt" style="padding:44px 22px;text-align:center">
+<h2 style="font-size:48px;letter-spacing:.04em">ASK<span style="color:#3FCF8E">.</span></h2>
+<p class="dek" style="margin-top:8px">Act I: the word ASK dissolves into the typed prompt. Sub + doctrine badge + CTA pair. (H1)</p>
+</div>
+<div class="sec" style="padding:14px 22px"><div class="ph" style="height:34px">interlude: proof strip chips (H2) + the gap, one line: "five apps, zero memory" (H3 compressed)</div></div>
+<div class="sec stmt" style="padding:44px 22px;text-align:center">
+<h2 style="font-size:48px;letter-spacing:.04em">COMPUTE<span style="color:#3FCF8E">.</span></h2>
+<p class="dek" style="margin-top:8px">Act II: code streams THROUGH the letterforms; elapsed counter real. Resolves into the 3-beat architecture + pills (H4) and the toolkit band (H5).</p>
+<div class="ph" style="height:56px;margin-top:12px">13-tool lifecycle band, three stage columns, PA badged alive</div>
+</div>
+<div class="sec" style="padding:14px 22px"><div class="ph" style="height:34px">interlude: honesty ledger (H7) full weight + voices (H8), instrument register</div></div>
+<div class="sec stmt" style="padding:44px 22px;text-align:center;border-bottom:none">
+<h2 style="font-size:48px;letter-spacing:.04em">ACT<span style="color:#3FCF8E">.</span></h2>
+<p class="dek" style="margin-top:8px">Act III: results snap in as rows; the word becomes the CTA. Start free + warm beat: "the market, finally <em>intelligent</em>." (H6 scenes fold into acts II–III, H9 close)</p>
+<div style="margin-top:12px"><span class="btn pri" style="padding:4px 12px;font-size:11px">Start free</span></div>
+<div class="note">Most brand-forward, least "product demo site." Risk: ~50% statement register, over the 30% guideline; needs a waiver. Reduced-motion static acts required.</div>
+</div>
+</div></div>
+
+</div>
+<p class="dv-next">Try next: "go with <a class="dv-oid" href="#2a">2a</a>, full wireframe" · "merge <a class="dv-oid" href="#2b">2b</a>'s tape into <a class="dv-oid" href="#2c">2c</a>'s acts" · "keep <a class="dv-oid" href="#1a">1a</a>'s structure but stage it like <a class="dv-oid" href="#2a">2a</a>"</p>
+</section>
+<section class="dv-turn" id="t1">
+<div class="dv-thd"><a class="dv-tid" href="#t1">1</a><span class="dv-tname">Wireframe round · W0 shell + W1 Homepage (H0–H9) with W2 Playground in hero · desktop ~1200</span></div>
+<div class="dv-opts">
+<div class="dv-opt" id="1a"><div class="dv-olabel"><a class="dv-oid" href="#1a">1a</a>Homepage, brand door · register rhythm: H1 stmt · H2–H8 instrument · H3 stmt · H9 stmt · annotations in orange</div>
+<div class="dv-card wf" style="width:1080px;margin-left:118px">
+
+<div class="sec" style="display:flex;align-items:center;gap:22px;padding:14px 30px">
+<div class="tag"><b>H0 · NAV</b>W0 shell<br>sticky · blur on scroll</div>
+<div style="font:700 14px system-ui">tradl<span style="color:#2f9e6e">/.</span></div>
+<div style="display:flex;gap:18px;font:12px system-ui;color:rgba(0,0,0,.7)"><span>Product ▾</span><span>Stocks</span><span>Decode</span><span>Manifesto</span></div>
+<div style="margin-left:auto;display:flex;gap:10px;align-items:center"><span class="btn" style="border-color:rgba(0,0,0,.35)">Log in</span><span class="btn pri">Start free</span></div>
+</div>
+<div class="sec" style="padding:6px 30px 10px;background:#fbfaf7"><div class="mono" style="color:rgba(0,0,0,.5)">Product ▾ dropdown: Edge overview · AI Screener · AI Backtesting · Smart Stock Pages · Tradl AI Charts &nbsp;&nbsp;|&nbsp;&nbsp; Variant B (intent-door pages): primary CTA slot is contextual, prop-driven</div></div>
+
+<div class="sec stmt" style="display:grid;grid-template-columns:1fr 1.1fr;gap:30px;padding:44px 30px">
+<div class="tag"><b>H1 · HERO</b>statement<br>the Playground S1</div>
+<div>
+<p class="eyebrow">◈ AGENTIC TRADING · ALPHA</p>
+<h2 style="font-size:38px">Agentic trading starts here.</h2>
+<p class="dek">Ask in plain language. Tradl writes the analysis as code, runs it on live market data, and shows you every number it computed.</p>
+<div style="margin-top:14px"><span class="chip">◈ We compute, we don't predict.</span></div>
+<div style="display:flex;gap:10px;margin-top:18px"><span class="btn pri">Start free</span><span class="btn">Run a scan ↓</span></div>
+</div>
+<div>
+<div style="display:flex;gap:8px;margin-bottom:8px"><span class="chip">preset 1</span><span class="chip">preset 2</span><span class="chip">preset 3</span><span class="mono" style="color:rgba(0,0,0,.4);align-self:center">← G1: final 3 prompts TBD</span></div>
+<div style="border:1.5px solid #1a1a1a;border-radius:8px;overflow:hidden">
+<div style="display:flex;gap:6px;align-items:center;padding:7px 10px;border-bottom:1px solid rgba(0,0,0,.25)"><span style="width:8px;height:8px;border:1px solid #000;border-radius:50%"></span><span style="width:8px;height:8px;border:1px solid #000;border-radius:50%"></span><span class="pill" style="margin-left:auto">LIVE · NSE</span></div>
+<div style="padding:10px;display:flex;flex-direction:column;gap:8px">
+<div class="ph" style="height:34px">PROMPT · types in, natural cadence</div>
+<div class="ph" style="height:84px">GENERATED CODE · streams · real elapsed counter</div>
+<div class="ph" style="height:74px">RESULTS · rows snap in · signed colored deltas · "7 matches · 1.9s" · as-of date</div>
+</div>
+</div>
+<div class="note">Loop 18–24s, rest 4–6s. First paint = static finished frame (LCP). Reduced-motion = static. No free-text input.</div>
+</div>
+</div>
+
+<div class="sec" style="display:flex;flex-wrap:wrap;gap:12px;padding:16px 30px">
+<div class="tag"><b>H2 · PROOF</b>instrument<br>chips deep-link</div>
+<span class="chip">◈ Morning Decode · Ed. {n} · graded daily · archive public</span>
+<span class="chip">3,000+ NSE stocks · every timeframe · intraday included</span>
+<span class="chip">{n} signals fired today · each carries its record</span>
+<span class="mono" style="color:rgba(0,0,0,.4);align-self:center">max 1 pulsing</span>
+</div>
+
+<div class="sec stmt" style="padding:40px 30px">
+<div class="tag"><b>H3 · THE GAP</b>statement<br>no loss stats</div>
+<p class="eyebrow">THE GAP</p>
+<h2>Your workflow lives in five apps that don't know each other exist.</h2>
+<div style="display:flex;align-items:center;gap:8px;margin-top:18px">
+<div class="ph" style="width:110px;height:64px">Scan app</div><span class="mono">✕</span>
+<div class="ph" style="width:110px;height:64px">Chart app</div><span class="mono">✕</span>
+<div class="ph" style="width:110px;height:64px">Signals</div><span class="mono">✕</span>
+<div class="ph" style="width:110px;height:64px">Chain</div>
+<span class="mono" style="margin:0 10px">⟶ resolves into</span>
+<div class="ph" style="width:220px;height:64px;border-style:solid">ONE TRADL SURFACE</div>
+</div>
+<div class="note">Pain framed = continuity + verification. Break points marked at each ✕.</div>
+</div>
+
+<div class="sec" style="padding:34px 30px">
+<div class="tag"><b>H4 · HOW IT WORKS</b>instrument<br>earns "agentic"</div>
+<p class="eyebrow">HOW IT WORKS</p>
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-top:6px">
+<div class="ph" style="height:80px">1 · LLM reads intent</div>
+<div class="ph" style="height:80px">2 · Quant computes in transparent code</div>
+<div class="ph" style="height:80px">3 · Every output carries its basis ◈</div>
+</div>
+<div style="display:flex;gap:8px;margin-top:12px"><span class="pill">NO HALLUCINATIONS</span><span class="pill">GLASS BOX</span><span class="pill">REPRODUCIBLE</span></div>
+<div class="note">One-line definition of agentic: "software that takes steps on your analysis, not just answers about it." Micro-Playground echo animation.</div>
+</div>
+
+<div class="sec" style="padding:34px 30px">
+<div class="tag"><b>H5 · LIFECYCLE BAND</b>instrument<br>S2 · link hub</div>
+<p class="eyebrow">◈ THE TOOLKIT</p>
+<h2 style="font-size:22px">Discover · Analyse · Act</h2>
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-top:12px">
+<div>
+<div class="mono" style="margin-bottom:8px;font-weight:600">DISCOVER</div>
+<div style="display:flex;flex-direction:column;gap:6px">
+<div class="ph" style="height:36px;justify-content:space-between">AI Screener <span class="pill">LIVE</span></div>
+<div class="ph" style="height:36px;justify-content:space-between">Morning Decode <span class="pill">LIVE</span></div>
+<div class="ph" style="height:36px;justify-content:space-between">Events Calendar <span class="pill">LIVE</span></div>
+<div class="ph" style="height:36px;justify-content:space-between">Pattern Sniper <span class="pill pa">PRIVATE ACCESS</span></div>
+<div class="ph" style="height:36px;justify-content:space-between">Insights Engine <span class="pill pa">PRIVATE ACCESS</span></div>
+<div class="ph" style="height:36px;justify-content:space-between">F&amp;O Discovery <span class="pill pa">PRIVATE ACCESS</span></div>
+</div>
+</div>
+<div>
+<div class="mono" style="margin-bottom:8px;font-weight:600">ANALYSE</div>
+<div style="display:flex;flex-direction:column;gap:6px">
+<div class="ph" style="height:36px;justify-content:space-between">AI Backtesting <span class="pill">LIVE</span></div>
+<div class="ph" style="height:36px;justify-content:space-between">Smart Stock Pages <span class="pill">LIVE</span></div>
+<div class="ph" style="height:36px;justify-content:space-between">Tradl AI Charts <span class="pill">PREVIEW</span></div>
+<div class="ph" style="height:36px;justify-content:space-between">Smart Chain <span class="pill pa">PRIVATE ACCESS</span></div>
+<div class="ph" style="height:36px;justify-content:space-between">Smart Charts <span class="pill pa">PRIVATE ACCESS</span></div>
+</div>
+</div>
+<div>
+<div class="mono" style="margin-bottom:8px;font-weight:600">ACT</div>
+<div style="display:flex;flex-direction:column;gap:6px">
+<div class="ph" style="height:36px;justify-content:space-between">Strategy Copilot <span class="pill pa">PRIVATE ACCESS</span></div>
+<div class="ph" style="height:36px;justify-content:space-between">Position Co-pilot <span class="pill pa">PRIVATE ACCESS</span></div>
+</div>
+<div class="ph" style="height:76px;margin-top:6px;border-style:dotted">PA tile expander (in place, never routes away):<br>definition · one frame · access line · [Start free]</div>
+</div>
+</div>
+<div class="note">13 tiles per tool map. Live tiles link to /tools/*. PA tiles full color + badge, never grey. Charts naming collision: two distinct tiles for now.</div>
+</div>
+
+<div class="sec" style="padding:34px 30px">
+<div class="tag"><b>H6 · SIGNATURE SCENES</b>instrument<br>3 not 7</div>
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px">
+<div><div class="ph" style="height:120px">AI SCREENER<br>demo frame: speed + language</div><div class="mono" style="margin-top:6px">record: "3,000 stocks · 1.9s"</div><div class="mono" style="color:#2a78d6">CTA: Run this scan →</div></div>
+<div><div class="ph" style="height:120px">SMART STOCK PAGES<br>dock summon + watching field<br>"7 tools watching · 3 have something to say"</div><div class="mono" style="margin-top:6px">record: live signal line (fired 14× · 9 up in 10 · 64%)</div><div class="mono" style="color:#2a78d6">CTA: Open a stock page →</div></div>
+<div><div class="ph" style="height:120px">MORNING DECODE<br>graded-in-public + audio waveform</div><div class="mono" style="margin-top:6px">record: "Ed. {n} · hit rate {x}% · archive public"</div><div class="mono" style="color:#2a78d6">CTA: Read today's Decode →</div></div>
+</div>
+</div>
+
+<div class="sec" style="padding:34px 30px;background:#fbfaf7">
+<div class="tag"><b>H7 · HONESTY</b>instrument<br>S4 · not optional</div>
+<p class="eyebrow">◈ GRADED IN PUBLIC</p>
+<h2 style="font-size:22px">The misses stay on the record.</h2>
+<p class="dek">Every call is frozen before the open and graded after.</p>
+<table style="border-collapse:collapse;margin-top:12px;width:60%">
+<tr><th>Ed. {n} · {date}</th><th>call</th><th>graded</th><th>move</th></tr>
+<tr><td>{SYMBOL}</td><td>{read}</td><td>✗ against</td><td>−{x}%</td></tr>
+</table>
+<div class="note">One archived wrong call at FULL weight (✗ never dimmed). G4: which miss features here. CTA: Browse the archive →</div>
+</div>
+
+<div class="sec" style="padding:34px 30px">
+<div class="tag"><b>H8 · VOICES</b>instrument<br>static, attributed</div>
+<p class="eyebrow">VOICES</p>
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;margin-top:6px">
+<div class="ph" style="height:90px">quote · name · role</div>
+<div class="ph" style="height:90px">quote · name · role</div>
+<div class="ph" style="height:90px">quote · name · role</div>
+<div class="ph" style="height:90px">quote · name · role</div>
+</div>
+<div class="note">4–6 from the 21-quote set. No logo wall, no star ratings.</div>
+</div>
+
+<div class="sec stmt" style="padding:64px 30px;text-align:center">
+<div class="tag"><b>H9 · CLOSE</b>statement<br>full-bleed type</div>
+<h2 style="font-size:44px;letter-spacing:.04em">ASK. COMPUTE. ACT.</h2>
+<p style="font:italic 15px Georgia,serif;color:rgba(0,0,0,.55);margin:6px 0 16px">the market, finally <em>intelligent</em>.</p>
+<span class="btn pri">Start free</span>
+<div class="note" style="text-align:center">the one warm serif beat on this page</div>
+</div>
+
+<div class="sec" style="padding:26px 30px;border-bottom:none;background:#f4f3ef">
+<div class="tag"><b>FOOTER</b>W0 shell<br>all pages</div>
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:14px">
+<div class="ph" style="height:70px">Product links</div>
+<div class="ph" style="height:70px">Markets: stocks A–Z · sector index (SEO)</div>
+<div class="ph" style="height:70px">Decode archive</div>
+<div class="ph" style="height:70px">Company · Manifesto · social</div>
+</div>
+<div class="mono" style="margin-top:12px;color:rgba(0,0,0,.55)">Compliance block: "Tradl AI publishes computed and historical analytics. Nothing on this platform is investment advice or a recommendation." · SEBI RA Reg. No. {number} · Market data: CMOTS, NSE, BSE · risk line (JARS wording pending)</div>
+</div>
+
+</div></div>
+</div>
+<p class="dv-next">Try next: "lock <a class="dv-oid" href="#1a">1a</a>, wireframe /edge next" · "riff the hero layout" · "show the mobile pass for the homepage"</p>
+</section>
+</x-dc>
+</body>
+</html>

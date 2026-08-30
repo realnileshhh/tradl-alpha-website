@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/tradl-ai-design-system-7cfe07d6-17cb-4bad-a8b6-de87b3ea902d/tokens/fonts.css">
+<link rel="stylesheet" href="_ds/tradl-ai-design-system-7cfe07d6-17cb-4bad-a8b6-de87b3ea902d/tokens/colors.css">
+<link rel="stylesheet" href="_ds/tradl-ai-design-system-7cfe07d6-17cb-4bad-a8b6-de87b3ea902d/tokens/typography.css">
+<link rel="stylesheet" href="_ds/tradl-ai-design-system-7cfe07d6-17cb-4bad-a8b6-de87b3ea902d/tokens/spacing.css">
+<link rel="stylesheet" href="_ds/tradl-ai-design-system-7cfe07d6-17cb-4bad-a8b6-de87b3ea902d/tokens/effects.css">
+<link rel="stylesheet" href="_ds/tradl-ai-design-system-7cfe07d6-17cb-4bad-a8b6-de87b3ea902d/styles.css">
+<script src="_ds/tradl-ai-design-system-7cfe07d6-17cb-4bad-a8b6-de87b3ea902d/_ds_bundle.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#000;color:#E8E6E0;font-family:'IBM Plex Sans',system-ui,sans-serif}
+a{color:#3FCF8E;text-decoration:none}a:hover{color:#6FE3AE}
+@keyframes wdot{0%,100%{opacity:.4}50%{opacity:1}}
+</style>
+</helmet>
+
+<div style="min-height:100vh;background:#000">
+
+<div style="position:sticky;top:0;z-index:50;background:rgba(0,0,0,.85);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.12)">
+<div style="max-width:1160px;margin:0 auto;padding:0 24px;height:60px;display:flex;align-items:center;gap:28px">
+<a href="Tradl Home Proto v2.dc.html" style="font:700 17px 'IBM Plex Sans',sans-serif;color:#fff">trad<span style="color:#3FCF8E">l/.</span></a>
+<div style="display:flex;gap:22px;font-size:13px;color:rgba(255,255,255,.72)">
+<a href="Tradl Edge Proto v1.dc.html" style="color:rgba(255,255,255,.72)">The Edge</a>
+<span style="color:#3FCF8E;font-weight:600">Stocks</span>
+<a href="Tradl Decode Proto v1.dc.html" style="color:rgba(255,255,255,.72)">Decode</a>
+<a href="Tradl Manifesto Proto v1.dc.html" style="color:rgba(255,255,255,.72)">Manifesto</a>
+</div>
+<div style="margin-left:auto"><a href="Tradl Start Proto v1.dc.html" style="background:#3FCF8E;color:#06130D;border-radius:6px;padding:8px 18px;font:600 13px 'IBM Plex Sans',sans-serif">Start free</a></div>
+</div>
+</div>
+
+<div style="max-width:1160px;margin:0 auto;padding:10px 24px 0;font:400 12px Lato,sans-serif;color:rgba(255,255,255,.4)"><a href="Tradl Home Proto v2.dc.html" style="color:rgba(255,255,255,.4)">Home</a> › Stocks › RELIANCE</div>
+
+<section data-screen-label="Stock Header" style="border-bottom:1px solid rgba(255,255,255,.1)">
+<div style="max-width:1160px;margin:0 auto;padding:40px 24px 56px;display:grid;grid-template-columns:2fr 1fr;gap:32px">
+<div>
+<div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap">
+<h1 style="font:600 30px 'IBM Plex Serif',Georgia,serif;color:#fff;margin:0">Reliance Industries</h1>
+<span style="font:600 12px Lato,sans-serif;letter-spacing:.08em;color:rgba(255,255,255,.45)">RELIANCE · NSE</span>
+</div>
+<div style="margin-top:10px;display:flex;align-items:baseline;gap:12px">
+<span style="font:700 28px Lato,sans-serif;font-variant-numeric:tabular-nums;color:#fff">₹{2,981.40}</span>
+<span style="font:600 15px Lato,sans-serif;color:#3FCF8E">▲ +{1.2}%</span>
+<span style="font:400 11px Lato,sans-serif;color:rgba(255,255,255,.4)">as of {time} IST · delayed 15 min</span>
+</div>
+<div style="margin-top:16px;border:1px solid rgba(255,255,255,.12);border-radius:12px;background:#111;padding:14px">
+<canvas ref="{{ chartRef }}" width="720" height="200" style="width:100%;height:170px;display:block"></canvas>
+<div style="display:flex;gap:6px;margin-top:10px">
+<sc-for list="{{ ranges }}" as="rg" hint-placeholder-count="5">
+<button onClick="{{ rg.pick }}" style="background:{{ rg.bg }};border:1px solid {{ rg.border }};color:{{ rg.color }};border-radius:6px;padding:4px 12px;font:600 11px Lato,sans-serif;cursor:pointer">{{ rg.label }}</button>
+</sc-for>
+<span style="margin-left:auto;font:400 11px Lato,sans-serif;color:rgba(255,255,255,.35);align-self:center">◈ marks = signals fired · illustrative series</span>
+</div>
+</div>
+</div>
+<div style="border:1px solid rgba(63,207,142,.35);border-radius:12px;background:rgba(63,207,142,.03);padding:18px">
+<div style="font:600 10.5px Lato,sans-serif;letter-spacing:.16em;color:#3FCF8E">◈ WATCHING FIELD</div>
+<div style="font:600 15px 'IBM Plex Sans',sans-serif;color:#fff;margin-top:8px">{7} tools watching · {3} have something to say</div>
+<div style="display:flex;flex-direction:column;gap:6px;margin-top:12px">
+<sc-for list="{{ watchers }}" as="w" hint-placeholder-count="5">
+<div style="display:flex;align-items:center;gap:9px;padding:7px 10px;border:1px solid rgba(255,255,255,.08);border-radius:7px;background:#0D0D0D">
+<span style="width:7px;height:7px;border-radius:50%;background:{{ w.dotCol }};animation:{{ w.anim }};flex:none"></span>
+<span style="font:600 12px 'IBM Plex Sans',sans-serif;color:#fff;width:110px">{{ w.name }}</span>
+<span style="font:400 11.5px 'IBM Plex Sans',sans-serif;color:rgba(255,255,255,.55);flex:1">{{ w.status }}</span>
+</div>
+</sc-for>
+</div>
+</div>
+</div>
+</section>
+
+<section data-screen-label="Machine Read" style="border-bottom:1px solid rgba(255,255,255,.1);background:#0A0A0A">
+<div style="max-width:1160px;margin:0 auto;padding:56px 24px">
+<div style="font:600 10.5px Lato,sans-serif;letter-spacing:.16em;color:#3FCF8E">◈ THE MACHINE'S READ · COMPUTED {DATE} {TIME} IST</div>
+<p style="font:400 17px/1.75 'IBM Plex Serif',Georgia,serif;color:rgba(255,255,255,.85);margin:16px 0 0;max-width:760px">RELIANCE is trading {1.2}% ahead of the energy index on {2.4}× average volume ◈, with delivery share rising for a {third} straight session ◈. Price is {2.1}% below the 52-week high with the 20-day trend intact ◈. Options positioning shifted toward calls at the {3,000} strike this morning ◈.</p>
+<div style="font:400 11.5px Lato,sans-serif;color:rgba(255,255,255,.4);margin-top:10px">every ◈ opens the number behind the sentence · sample read — live compute wires in at build</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:24px">
+<div style="border:1px solid rgba(63,207,142,.4);border-radius:10px;padding:20px;background:rgba(63,207,142,.03)">
+<div style="font:600 11px Lato,sans-serif;letter-spacing:.14em;color:#3FCF8E">WORKING FOR IT · {3}</div>
+<div style="font:400 13.5px/1.9 'IBM Plex Sans',sans-serif;color:rgba(255,255,255,.75);margin-top:10px">▲ Volume {2.4}× average with rising delivery ◈<br>▲ Leading its sector by {1.2}% today ◈<br>▲ 20-day trend intact through the pullback ◈</div>
+</div>
+<div style="border:1px solid rgba(255,120,120,.4);border-radius:10px;padding:20px;background:rgba(255,120,120,.03)">
+<div style="font:600 11px Lato,sans-serif;letter-spacing:.14em;color:#FF7878">WORKING AGAINST IT · {2}</div>
+<div style="font:400 13.5px/1.9 'IBM Plex Sans',sans-serif;color:rgba(255,255,255,.75);margin-top:10px">▼ {2.1}% under 52-week-high resistance ◈<br>▼ India VIX rising into the weekly expiry ◈</div>
+</div>
+</div>
+</div>
+</section>
+
+<section data-screen-label="Signal Record" style="border-bottom:1px solid rgba(255,255,255,.1)">
+<div style="max-width:1160px;margin:0 auto;padding:56px 24px">
+<div style="font:600 10.5px Lato,sans-serif;letter-spacing:.16em;color:#3FCF8E">SIGNALS FIRED ON RELIANCE · PUBLIC RECORD</div>
+<div style="display:flex;gap:20px;align-items:baseline;margin:14px 0 18px">
+<span style="font:700 26px Lato,sans-serif;color:#fff;font-variant-numeric:tabular-nums">fired {14}×</span>
+<span style="font:600 15px Lato,sans-serif;color:#3FCF8E">{9} with the read in 10 sessions · {64}%</span>
+<span style="font:400 12px Lato,sans-serif;color:rgba(255,255,255,.45)">misses at full weight</span>
+</div>
+<div style="border:1px solid rgba(255,255,255,.12);border-radius:12px;overflow:hidden">
+<div style="display:grid;grid-template-columns:110px 1fr 1fr 80px 100px;background:#161616;padding:10px 16px;font:600 10px Lato,sans-serif;letter-spacing:.12em;color:rgba(255,255,255,.45)">
+<span>DATE</span><span>SIGNAL</span><span>READ</span><span>GRADED</span><span>MOVE (10D)</span>
+</div>
+<sc-for list="{{ signals }}" as="s" hint-placeholder-count="4">
+<div style="display:grid;grid-template-columns:110px 1fr 1fr 80px 100px;padding:11px 16px;border-top:1px solid rgba(255,255,255,.06);background:{{ s.bg }};font:400 12.5px Lato,sans-serif;color:rgba(255,255,255,.7)">
+<span>{{ s.date }}</span><span style="font-family:'IBM Plex Sans',sans-serif">{{ s.sig }}</span><span style="font-family:'IBM Plex Sans',sans-serif">{{ s.read }}</span><span style="font-weight:700;color:{{ s.col }}">{{ s.grade }}</span><span style="font-variant-numeric:tabular-nums;color:{{ s.col }}">{{ s.move }}</span>
+</div>
+</sc-for>
+</div>
+</div>
+</section>
+
+<section data-screen-label="Fundamentals" style="border-bottom:1px solid rgba(255,255,255,.1);background:#0A0A0A">
+<div style="max-width:1160px;margin:0 auto;padding:40px 24px;display:flex;gap:10px;flex-wrap:wrap">
+<sc-for list="{{ fundamentals }}" as="f" hint-placeholder-count="6">
+<div style="border:1px solid rgba(255,255,255,.15);border-radius:999px;padding:8px 18px;display:flex;gap:8px;align-items:baseline">
+<span style="font:400 11px Lato,sans-serif;color:rgba(255,255,255,.45)">{{ f.k }}</span>
+<span style="font:600 13px Lato,sans-serif;font-variant-numeric:tabular-nums;color:#fff">{{ f.v }}</span>
+</div>
+</sc-for>
+</div>
+</section>
+
+<section data-screen-label="Locked Depth" style="border-bottom:1px solid rgba(255,255,255,.1)">
+<div style="max-width:1160px;margin:0 auto;padding:56px 24px">
+<div style="font:600 10.5px Lato,sans-serif;letter-spacing:.16em;color:#3FCF8E">MORE, SHOWN NOT HIDDEN</div>
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-top:18px">
+<sc-for list="{{ locked }}" as="l" hint-placeholder-count="3">
+<div style="border:1px solid rgba(255,255,255,.12);border-radius:10px;background:#111;overflow:hidden">
+<div style="height:76px;position:relative;background:linear-gradient(135deg,#161616,#0D0D0D)">
+<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:400 11px Lato,sans-serif;color:rgba(255,255,255,.25);filter:blur(.4px)">{{ l.tease }}</div>
+<div style="position:absolute;top:10px;right:10px;font:600 12px Lato,sans-serif;color:rgba(255,255,255,.6)">🔒</div>
+</div>
+<div style="padding:14px 16px">
+<div style="font:600 13px 'IBM Plex Sans',sans-serif;color:#fff">{{ l.t }} <span style="font:600 8.5px Lato,sans-serif;letter-spacing:.1em;border:1px solid rgba(255,255,255,.35);border-radius:999px;padding:2px 7px;color:rgba(255,255,255,.7)">{{ l.badge }}</span></div>
+<div style="font:400 12px/1.55 'IBM Plex Sans',sans-serif;color:rgba(255,255,255,.55);margin-top:5px">{{ l.p }}</div>
+<a href="Tradl Start Proto v1.dc.html" style="font:600 12px 'IBM Plex Sans',sans-serif;margin-top:8px;display:inline-block">Start free →</a>
+</div>
+</div>
+</sc-for>
+</div>
+</div>
+</section>
+
+<section data-screen-label="Cross Links" style="border-bottom:1px solid rgba(255,255,255,.1);background:#0A0A0A">
+<div style="max-width:1160px;margin:0 auto;padding:36px 24px;font:400 13px/2 Lato,sans-serif;color:rgba(255,255,255,.5)">
+Peers in {Energy}: {SYM} · {SYM} · {SYM} — <a href="Tradl Decode Proto v1.dc.html">appeared in Decode Ed. {n} →</a> · <a href="Tradl Screener Proto v1.dc.html">recent scans that surfaced it →</a> · sector index page →
+</div>
+</section>
+
+<section data-screen-label="Stock Close" style="border-bottom:1px solid rgba(255,255,255,.1)">
+<div style="max-width:1160px;margin:0 auto;padding:72px 24px;text-align:center">
+<h2 style="font:600 28px 'IBM Plex Serif',Georgia,serif;color:#fff;margin:0">The machine is watching RELIANCE. Ask it why.</h2>
+<div style="margin-top:20px"><a href="Tradl Start Proto v1.dc.html" style="background:#3FCF8E;color:#06130D;border-radius:6px;padding:14px 32px;font:600 15px 'IBM Plex Sans',sans-serif;display:inline-block">Start free</a></div>
+</div>
+</section>
+
+<footer style="background:#060606;padding:32px 24px">
+<div style="max-width:1160px;margin:0 auto;font:400 11px/1.8 'IBM Plex Sans',sans-serif;color:rgba(255,255,255,.35)">Computed and historical analytics — not investment advice. Every number carries its as-of stamp. SEBI RA Reg. No. {INH000000000} · data: CMOTS, NSE, BSE — delayed up to 15 min. · <a href="Tradl Home Proto v2.dc.html">Home</a></div>
+</footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { range: '1M' };
+  componentDidMount() { this.draw(); }
+  componentDidUpdate() { this.draw(); }
+  seriesFor(range) {
+    const n = { '1D': 60, '1W': 40, '1M': 44, '1Y': 52, '5Y': 60 }[range] || 44;
+    const seed = range.charCodeAt(0) * 7 + range.length;
+    let v = 100; const pts = [];
+    for (let i = 0; i < n; i++) { v += Math.sin(i * 0.7 + seed) * 1.4 + Math.cos(i * 0.23 + seed) * 0.9 + 0.18; pts.push(v); }
+    return pts;
+  }
+  draw() {
+    const cv = this._cv; if (!cv) return;
+    const ctx = cv.getContext('2d'); const W = cv.width, H = cv.height;
+    ctx.clearRect(0, 0, W, H);
+    const pts = this.seriesFor(this.state.range);
+    const min = Math.min(...pts), max = Math.max(...pts);
+    const x = (i) => 8 + (i / (pts.length - 1)) * (W - 16);
+    const y = (v) => H - 14 - ((v - min) / (max - min)) * (H - 34);
+    ctx.beginPath();
+    pts.forEach((v, i) => i ? ctx.lineTo(x(i), y(v)) : ctx.moveTo(x(i), y(v)));
+    ctx.strokeStyle = '#3FCF8E'; ctx.lineWidth = 2; ctx.stroke();
+    ctx.lineTo(x(pts.length - 1), H - 6); ctx.lineTo(x(0), H - 6); ctx.closePath();
+    const g = ctx.createLinearGradient(0, 0, 0, H);
+    g.addColorStop(0, 'rgba(63,207,142,.18)'); g.addColorStop(1, 'rgba(63,207,142,0)');
+    ctx.fillStyle = g; ctx.fill();
+    [0.3, 0.62, 0.85].forEach((f) => {
+      const i = Math.floor(pts.length * f);
+      ctx.beginPath(); ctx.arc(x(i), y(pts[i]), 4, 0, Math.PI * 2);
+      ctx.fillStyle = '#3FCF8E'; ctx.fill();
+      ctx.font = '10px Lato, sans-serif'; ctx.fillStyle = 'rgba(63,207,142,.9)';
+      ctx.fillText('◈', x(i) - 4, y(pts[i]) - 8);
+    });
+  }
+  renderVals() {
+    return {
+      chartRef: (el) => { if (el && el !== this._cv) { this._cv = el; this.draw(); } },
+      ranges: ['1D', '1W', '1M', '1Y', '5Y'].map((r) => ({
+        label: r, pick: () => this.setState({ range: r }),
+        bg: r === this.state.range ? 'rgba(63,207,142,.12)' : 'none',
+        border: r === this.state.range ? 'rgba(63,207,142,.6)' : 'rgba(255,255,255,.2)',
+        color: r === this.state.range ? '#3FCF8E' : 'rgba(255,255,255,.55)' })),
+      watchers: [
+        { name: 'Screener', status: 'surfaced in 2 scans today', dotCol: '#3FCF8E', anim: 'wdot 1.6s ease-in-out infinite' },
+        { name: 'Pattern Sniper', status: 'flag forming on the daily', dotCol: '#3FCF8E', anim: 'wdot 1.6s ease-in-out .4s infinite' },
+        { name: 'Insights', status: 'delivery anomaly · {2σ}', dotCol: '#3FCF8E', anim: 'wdot 1.6s ease-in-out .8s infinite' },
+        { name: 'Events', status: 'AGM in {12} days', dotCol: 'rgba(255,255,255,.3)', anim: 'none' },
+        { name: 'Chain', status: 'quiet — PCR near median', dotCol: 'rgba(255,255,255,.3)', anim: 'none' } ],
+      signals: [
+        { date: '{date}', sig: 'Volume breakout', read: 'long bias, 10 sessions', grade: '✓', move: '+{4.1}%', col: '#3FCF8E', bg: '#0D0D0D' },
+        { date: '{date}', sig: 'Delivery anomaly', read: 'accumulation read', grade: '✓', move: '+{2.6}%', col: '#3FCF8E', bg: '#0D0D0D' },
+        { date: '{date}', sig: 'Gap-up follow', read: 'hold above open', grade: '✗', move: '−{1.8}%', col: '#FF7878', bg: 'rgba(255,120,120,.03)' },
+        { date: '{date}', sig: 'Sector rotation', read: 'leader read', grade: '✓', move: '+{3.0}%', col: '#3FCF8E', bg: '#0D0D0D' } ],
+      fundamentals: [
+        { k: 'Mkt cap', v: '₹{20.1L} Cr' }, { k: 'P/E', v: '{28.4}' }, { k: '52W H/L', v: '₹{3,048} / ₹{2,221}' },
+        { k: 'Vol vs avg', v: '{2.4}×' }, { k: 'Sector rank', v: '{1} of {14}' }, { k: 'Next event', v: 'AGM · {date}' } ],
+      locked: [
+        { t: 'Backtest its setups', badge: 'FREE ACCOUNT', tease: 'every setup that ever fired here, graded', p: 'See the full distribution — wins, losses, worst runs.' },
+        { t: 'Intraday watchers', badge: 'PRIVATE ACCESS', tease: '5m / 15m watchers · live', p: 'The same field, running on intraday timeframes.' },
+        { t: 'Add to a watched field', badge: 'FREE ACCOUNT', tease: 'ping when this page changes', p: 'The machine tells you when the read shifts — you don\u2019t refresh.' } ]
+    };
+  }
+}
+</script>
+</body>
+</html>

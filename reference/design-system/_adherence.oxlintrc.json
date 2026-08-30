@@ -1,0 +1,398 @@
+{
+  "plugins": [
+    "react",
+    "import"
+  ],
+  "rules": {
+    "react/forbid-elements": [
+      "warn",
+      {
+        "forbid": []
+      }
+    ],
+    "no-restricted-imports": [
+      "warn",
+      {
+        "patterns": [
+          {
+            "group": [
+              "components/core/**",
+              "components/data/**"
+            ],
+            "message": "Import design-system components from 'index.js', not component internals."
+          }
+        ]
+      }
+    ],
+    "no-restricted-syntax": [
+      "warn",
+      {
+        "selector": "Literal[value=/#[0-9a-fA-F]{3,8}\\b/]",
+        "message": "Raw hex color — use a design-system color token via var()."
+      },
+      {
+        "selector": "Literal[value=/\\b\\d+px\\b/]",
+        "message": "Raw px value — use a design-system spacing token via var()."
+      },
+      {
+        "selector": "Literal[value=/font-family\\s*:\\s*(?!['\\\"]?(?:IBM Plex Sans|Lato))/i]",
+        "message": "Font not provided by the design system. Available: IBM Plex Sans, Lato."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='Badge'] > JSXAttribute > JSXIdentifier[name!=/^(?:variant|children|key|ref|className|style|children)$/]",
+        "message": "<Badge> doesn't accept that prop. Declared props: variant, children."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='Badge'] > JSXAttribute[name.name='variant'] > Literal[value!=/^(?:neutral|green|yellow|positive|negative)$/]",
+        "message": "<Badge> variant must be one of 'neutral' | 'green' | 'yellow' | 'positive' | 'negative'."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='Card'] > JSXAttribute > JSXIdentifier[name!=/^(?:level|accent|padding|children|key|ref|className|style|children)$/]",
+        "message": "<Card> doesn't accept that prop. Declared props: level, accent, padding, children."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='Card'] > JSXAttribute[name.name='level'] > Literal[value!=/^(?:l2|l3|l4)$/]",
+        "message": "<Card> level must be one of 'l2' | 'l3' | 'l4'."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='Card'] > JSXAttribute[name.name='accent'] > Literal[value!=/^(?:column|metric|rule|positive|negative)$/]",
+        "message": "<Card> accent must be one of 'column' | 'metric' | 'rule' | 'positive' | 'negative'."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='CategoryTag'] > JSXAttribute > JSXIdentifier[name!=/^(?:category|children|key|ref|className|style|children)$/]",
+        "message": "<CategoryTag> doesn't accept that prop. Declared props: category, children."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='CategoryTag'] > JSXAttribute[name.name='category'] > Literal[value!=/^(?:column|metric|rule)$/]",
+        "message": "<CategoryTag> category must be one of 'column' | 'metric' | 'rule'."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='Delta'] > JSXAttribute > JSXIdentifier[name!=/^(?:value|format|showArrow|key|ref|className|style|children)$/]",
+        "message": "<Delta> doesn't accept that prop. Declared props: value, format, showArrow."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='Delta'] > JSXAttribute[name.name='format'] > Literal[value!=/^(?:percent|number)$/]",
+        "message": "<Delta> format must be one of 'percent' | 'number'."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='StatTile'] > JSXAttribute > JSXIdentifier[name!=/^(?:label|value|delta|deltaFormat|accent|key|ref|className|style|children)$/]",
+        "message": "<StatTile> doesn't accept that prop. Declared props: label, value, delta, deltaFormat, accent."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='StatTile'] > JSXAttribute[name.name='deltaFormat'] > Literal[value!=/^(?:percent|number)$/]",
+        "message": "<StatTile> deltaFormat must be one of 'percent' | 'number'."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='StatTile'] > JSXAttribute[name.name='accent'] > Literal[value!=/^(?:column|metric|rule)$/]",
+        "message": "<StatTile> accent must be one of 'column' | 'metric' | 'rule'."
+      }
+    ]
+  },
+  "overrides": [
+    {
+      "files": [
+        "**/index.js"
+      ],
+      "rules": {
+        "no-restricted-imports": "off"
+      }
+    }
+  ],
+  "x-omelette": {
+    "components": {
+      "Badge": {
+        "replaces": []
+      },
+      "Card": {
+        "replaces": []
+      },
+      "CategoryTag": {
+        "replaces": []
+      },
+      "Delta": {
+        "replaces": []
+      },
+      "StatTile": {
+        "replaces": []
+      }
+    },
+    "tokens": [
+      "--accent-column",
+      "--accent-metric",
+      "--accent-rule",
+      "--blur-overlay",
+      "--border-column",
+      "--border-column-highlight",
+      "--border-column-highlight-green",
+      "--border-faint",
+      "--border-medium",
+      "--border-metric",
+      "--border-negative",
+      "--border-positive",
+      "--border-rule",
+      "--border-strong",
+      "--border-subtle",
+      "--border-subtle-2",
+      "--font-mono",
+      "--font-num",
+      "--font-sans",
+      "--gradient-panel",
+      "--icon-column",
+      "--icon-metric",
+      "--icon-primary",
+      "--icon-rule",
+      "--icon-secondary",
+      "--icon-tertiary",
+      "--layout-gutter",
+      "--layout-max-width",
+      "--radius-lg",
+      "--radius-md",
+      "--radius-pill",
+      "--radius-sm",
+      "--radius-xl",
+      "--radius-xs",
+      "--shadow-inset-hairline",
+      "--shadow-lg",
+      "--shadow-md",
+      "--shadow-sm",
+      "--shadow-xl",
+      "--shadow-xs",
+      "--space-0",
+      "--space-1",
+      "--space-10",
+      "--space-11",
+      "--space-2",
+      "--space-3",
+      "--space-4",
+      "--space-5",
+      "--space-6",
+      "--space-7",
+      "--space-8",
+      "--space-9",
+      "--stroke-1",
+      "--surface-ai-search",
+      "--surface-badge",
+      "--surface-badge-green",
+      "--surface-badge-yellow",
+      "--surface-chart-negative",
+      "--surface-chart-positive",
+      "--surface-column",
+      "--surface-highlight-negative",
+      "--surface-highlight-positive-1",
+      "--surface-highlight-positive-2",
+      "--surface-l1",
+      "--surface-l2",
+      "--surface-l2-alpha",
+      "--surface-l3",
+      "--surface-l4",
+      "--surface-l5",
+      "--surface-metric",
+      "--surface-rule",
+      "--surface-warning",
+      "--text-inverse",
+      "--text-negative",
+      "--text-positive",
+      "--text-primary",
+      "--text-secondary",
+      "--text-tertiary",
+      "--text-warning",
+      "--tradl-black",
+      "--tradl-green",
+      "--tradl-green-deep",
+      "--tradl-green-emerald",
+      "--tradl-green-tint",
+      "--tradl-indigo",
+      "--tradl-indigo-icon",
+      "--tradl-red",
+      "--tradl-red-alt",
+      "--tradl-red-tint",
+      "--tradl-violet",
+      "--tradl-violet-icon",
+      "--tradl-white",
+      "--tradl-yellow",
+      "--type-body-line",
+      "--type-body-medium-line",
+      "--type-body-medium-size",
+      "--type-body-medium-weight",
+      "--type-body-size",
+      "--type-body-weight",
+      "--type-caption-line",
+      "--type-caption-size",
+      "--type-caption-weight",
+      "--type-display-line",
+      "--type-display-size",
+      "--type-display-weight",
+      "--type-heading-line",
+      "--type-heading-size",
+      "--type-heading-weight",
+      "--type-label-bold-line",
+      "--type-label-bold-size",
+      "--type-label-bold-weight",
+      "--type-label-line",
+      "--type-label-size",
+      "--type-label-weight",
+      "--type-micro-size",
+      "--type-micro-weight",
+      "--type-overline-size",
+      "--type-overline-tracking",
+      "--type-overline-weight",
+      "--type-subheading-line",
+      "--type-subheading-size",
+      "--type-subheading-weight",
+      "--type-table-accent-line",
+      "--type-table-accent-size",
+      "--type-table-accent-weight",
+      "--type-table-data-line",
+      "--type-table-data-size",
+      "--type-table-data-weight",
+      "--type-table-header-line",
+      "--type-table-header-size",
+      "--type-table-header-weight",
+      "--weight-bold",
+      "--weight-medium",
+      "--weight-regular",
+      "--weight-semibold"
+    ],
+    "tokenKinds": {
+      "--tradl-white": "color",
+      "--tradl-black": "color",
+      "--tradl-green": "color",
+      "--tradl-green-emerald": "color",
+      "--tradl-green-deep": "color",
+      "--tradl-green-tint": "color",
+      "--tradl-yellow": "color",
+      "--tradl-red": "color",
+      "--tradl-red-alt": "color",
+      "--tradl-red-tint": "color",
+      "--tradl-indigo": "color",
+      "--tradl-indigo-icon": "color",
+      "--tradl-violet": "color",
+      "--tradl-violet-icon": "color",
+      "--text-primary": "font",
+      "--text-secondary": "font",
+      "--text-tertiary": "font",
+      "--text-inverse": "font",
+      "--text-positive": "font",
+      "--text-warning": "font",
+      "--text-negative": "font",
+      "--surface-l1": "color",
+      "--surface-l2": "color",
+      "--surface-l2-alpha": "color",
+      "--surface-l3": "color",
+      "--surface-l4": "color",
+      "--surface-l5": "color",
+      "--surface-chart-positive": "color",
+      "--surface-chart-negative": "color",
+      "--surface-highlight-positive-1": "color",
+      "--surface-highlight-positive-2": "color",
+      "--surface-highlight-negative": "color",
+      "--surface-badge": "color",
+      "--surface-badge-green": "color",
+      "--surface-badge-yellow": "color",
+      "--surface-ai-search": "color",
+      "--surface-column": "color",
+      "--surface-metric": "color",
+      "--surface-rule": "color",
+      "--surface-warning": "color",
+      "--icon-primary": "color",
+      "--icon-secondary": "color",
+      "--icon-tertiary": "color",
+      "--icon-column": "color",
+      "--icon-metric": "color",
+      "--icon-rule": "color",
+      "--border-strong": "color",
+      "--border-medium": "color",
+      "--border-subtle": "color",
+      "--border-subtle-2": "color",
+      "--border-faint": "color",
+      "--border-positive": "color",
+      "--border-negative": "color",
+      "--border-column-highlight": "color",
+      "--border-column-highlight-green": "color",
+      "--border-column": "color",
+      "--border-metric": "color",
+      "--border-rule": "color",
+      "--accent-column": "color",
+      "--accent-metric": "color",
+      "--accent-rule": "color",
+      "--font-sans": "font",
+      "--font-mono": "font",
+      "--font-num": "font",
+      "--weight-regular": "font",
+      "--weight-medium": "font",
+      "--weight-semibold": "font",
+      "--weight-bold": "font",
+      "--type-display-size": "font",
+      "--type-display-weight": "font",
+      "--type-display-line": "font",
+      "--type-heading-size": "font",
+      "--type-heading-weight": "font",
+      "--type-heading-line": "font",
+      "--type-subheading-size": "font",
+      "--type-subheading-weight": "font",
+      "--type-subheading-line": "font",
+      "--type-body-medium-size": "font",
+      "--type-body-medium-weight": "font",
+      "--type-body-medium-line": "font",
+      "--type-body-size": "font",
+      "--type-body-weight": "font",
+      "--type-body-line": "font",
+      "--type-table-header-size": "font",
+      "--type-table-header-weight": "font",
+      "--type-table-header-line": "font",
+      "--type-table-data-size": "font",
+      "--type-table-data-weight": "font",
+      "--type-table-data-line": "font",
+      "--type-table-accent-size": "font",
+      "--type-table-accent-weight": "font",
+      "--type-table-accent-line": "font",
+      "--type-label-bold-size": "font",
+      "--type-label-bold-weight": "font",
+      "--type-label-bold-line": "font",
+      "--type-label-size": "font",
+      "--type-label-weight": "font",
+      "--type-label-line": "font",
+      "--type-caption-size": "font",
+      "--type-caption-weight": "font",
+      "--type-caption-line": "font",
+      "--type-overline-size": "font",
+      "--type-overline-weight": "font",
+      "--type-overline-tracking": "font",
+      "--type-micro-size": "font",
+      "--type-micro-weight": "font",
+      "--space-0": "spacing",
+      "--space-1": "spacing",
+      "--space-2": "spacing",
+      "--space-3": "spacing",
+      "--space-4": "spacing",
+      "--space-5": "spacing",
+      "--space-6": "spacing",
+      "--space-7": "spacing",
+      "--space-8": "spacing",
+      "--space-9": "spacing",
+      "--space-10": "spacing",
+      "--space-11": "spacing",
+      "--layout-max-width": "spacing",
+      "--layout-gutter": "spacing",
+      "--radius-xs": "radius",
+      "--radius-sm": "radius",
+      "--radius-md": "radius",
+      "--radius-lg": "radius",
+      "--radius-xl": "radius",
+      "--radius-pill": "radius",
+      "--stroke-1": "color",
+      "--shadow-xs": "shadow",
+      "--shadow-sm": "shadow",
+      "--shadow-md": "shadow",
+      "--shadow-lg": "shadow",
+      "--shadow-xl": "shadow",
+      "--shadow-inset-hairline": "shadow",
+      "--gradient-panel": "color",
+      "--blur-overlay": "spacing"
+    },
+    "fontFamilies": [
+      "IBM Plex Sans",
+      "Lato"
+    ]
+  }
+}
