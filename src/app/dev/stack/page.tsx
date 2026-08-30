@@ -3,6 +3,7 @@ import { FadeIn } from "@/components/motion/fade-in";
 import { env } from "@/lib/env";
 import { PinnedPanel } from "./pinned-panel";
 import { Readouts } from "./readouts";
+import { Reveals } from "./reveals";
 import { SceneMount } from "./scene-mount";
 
 /**
@@ -28,6 +29,7 @@ export default function StackPage() {
             Scroll: motion is smooth (lenis). The panel below pins and scrubs sideways
             (gsap + ScrollTrigger). The cube spins, a ball drops and bounces (fiber, drei,
             rapier), under bloom and grain (postprocessing). Numbers update live (zustand).
+            Further down, the reveal layer, the scroll control surface and the lock.
           </p>
         </FadeIn>
 
@@ -47,8 +49,11 @@ export default function StackPage() {
           <PinnedPanel />
         </div>
 
-        <p className="py-32 text-fg-3">End. Pin released.</p>
+        <p className="py-32 text-fg-3">Pin released.</p>
 
+        <Reveals />
+
+        <p className="py-32 text-fg-3">End.</p>
       </div>
     </main>
   );
