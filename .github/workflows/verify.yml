@@ -1,0 +1,56 @@
+name: verify
+
+# Every gate this repo has, on every pull request. They all existed already and
+# all of them only ran when someone remembered, which is the same as not having
+# them: the failures they catch are silent by construction.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+# A new push supersedes the run in flight for the same ref.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    env:
+      # env.ts refuses to fall back to localhost when CI or VERCEL is set, so a
+      # build here must be given an origin. Any absolute URL satisfies
+      # metadataBase; the real one comes from the deploy environment, and the
+      # artefact this job produces is thrown away. Set a repository variable to
+      # override it.
+      NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL || 'https://ci.example.com' }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          # Matches the Vercel default, so CI and production run the same major.
+          node-version: 24
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      # typecheck, then the copy, motion and surface linters, then the build.
+      - name: Verify
+        run: npm run verify
+
+      # Regenerates tokens, icons, the wordmark and the app icons, then fails if
+      # the tree moved. The generators are deterministic, so a non-empty diff
+      # means someone hand-edited a generated file and is about to lose it.
+      - name: Design system has not drifted
+        run: npm run ds:verify
+
+      # Exits non-zero only on a contrast failure that is not already documented,
+      # so a new regression stands out instead of hiding among the known four.
+      - name: Contrast
+        run: npm run ds:contrast
