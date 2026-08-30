@@ -34,9 +34,9 @@ jobs:
       NEXT_PUBLIC_SITE_URL: https://ci.example.com
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           # Matches the Vercel default, so CI and production run the same major.
           node-version: 24
