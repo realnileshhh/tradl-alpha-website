@@ -1,0 +1,298 @@
+/* =============================================================================
+   SURFACE AND ELEVATION. Not from Figma. PROPOSED, awaiting design sign-off.
+
+   Figma gives us colour, type, radii, spacing and two glass effect styles. It
+   does not say how a surface is *lit*: where the highlight sits, how a pane
+   separates from what is behind it, what a hover does, how deep a blur goes for
+   a nav bar versus a popover. Without a named answer every component invents
+   one, and a system whose whole positioning is instrument-grade consistency
+   ends up with six different card treatments.
+
+   THE THESIS, in one line: a surface is a translucent pane, lit from directly
+   above by a 1px specular highlight, outlined by a hairline stroke, floating on
+   an ambient shadow, blurred behind. Depth is never communicated by a big drop
+   shadow. It is communicated by stroke plus inner top highlight plus blur.
+
+   Four ingredients, always in this order:
+
+     1. blur behind      backdrop-filter
+     2. translucent fill --ds-bg-surface and friends
+     3. hairline stroke  --ds-border-subtle
+     4. top specular     inset 0 1px 0 white-alpha       <- the one people omit
+
+   Omit 4 and the surface reads flat. Add a soft outer shadow instead of 4 and
+   it reads like a generic card.
+
+   NO NEW COLOUR. Every value below is one of three things:
+     a) a real --ds-* token, used as-is;
+     b) an achromatic alpha of pure white or pure black, which is light and
+        shadow rather than palette, introduced only where Figma has no token;
+     c) a length or an angle.
+   Nothing here introduces a hue, and nothing overrides a Figma colour.
+
+   Added 30 Aug 2026. See docs/SURFACES.md.
+   ============================================================================= */
+
+:root {
+  /* ---------------------------------------------------------------------------
+     Strokes
+
+     Figma's border ladder already is this system. The names below are aliases
+     that say what each one is *for*, so a component author picks by intent
+     rather than by guessing which of four greys is the card border.
+
+     Mapping, and it is close to exact: the two most-used alphas in dark glass
+     interfaces are white at 6 per cent and white at 10 per cent, which is
+     precisely --ds-border-subtle and --ds-border-default.
+     ------------------------------------------------------------------------- */
+  --stroke-faint: var(--ds-border-subtle); /* #ffffff0f, the default surface edge */
+  --stroke-visible: var(--ds-border-default); /* #ffffff1a, interactive or emphasised */
+  --stroke-medium: var(--ds-border-medium); /* #393939, solid, structural */
+  --stroke-strong: var(--ds-border-strong); /* #bababa, the only one that clears 3:1 */
+
+  /* ---------------------------------------------------------------------------
+     Specular highlights
+
+     The top-edge light. This is the single most important ingredient and the
+     one with no Figma equivalent, so it is the main thing this file adds.
+
+     --spec-mid is built from a real token: --ds-color-white-10 is #ffffff1a,
+     white at 10 per cent, which is exactly the default specular. The other
+     three are achromatic alphas of --ds-color-white, derived with color-mix so
+     the white itself still comes from the mirror.
+     ------------------------------------------------------------------------- */
+  --spec-low: inset 0 1px 0 color-mix(in srgb, var(--ds-color-white) 5%, transparent);
+  --spec-mid: inset 0 1px 0 var(--ds-color-white-10);
+  --spec-soft: inset 0 1px 1px color-mix(in srgb, var(--ds-color-white) 15%, transparent);
+  --spec-high: inset 0 0.5px 0 color-mix(in srgb, var(--ds-color-white) 30%, transparent);
+
+  /* ---------------------------------------------------------------------------
+     Shadow atoms
+
+     Composed, not atmospheric: a surface stacks one to three of these from a
+     fixed menu rather than reaching for an arbitrary blur radius.
+
+     --drop-ambient is Figma's own glass shadow, used as-is. --drop-wide is the
+     hero-scale version Figma has no token for, and is the only drop shadow
+     allowed to exceed it.
+     ------------------------------------------------------------------------- */
+  /* A hairline of black under the stroke. What actually separates a pane from a
+     busy backdrop, far more than any drop shadow does. Uses Figma's own scrim
+     black rather than a deeper invented one. */
+  --ring-contact: 0 0 0 0.5px var(--ds-color-black-60);
+
+  /* Figma's glass shadow, as-is. The default lift. */
+  --drop-ambient: var(--ds-shadow-glass-surface); /* 0 12px 12px #00000059 */
+
+  /* Hero scale, and the only drop allowed to exceed the Figma one. Lighter than
+     --ds-color-black-60 on purpose: at this blur and spread, 60 per cent black
+     reads as a smudge rather than as air. */
+  --drop-wide: 0 4px 40px 8px color-mix(in srgb, black 40%, transparent);
+
+  /* Menus. The negative spread pulls the shadow under the element instead of
+     haloing it, which is what stops a popover looking like it is glowing. */
+  --drop-menu: 0 12px 24px -12px var(--ds-color-black-60);
+
+  /* ---------------------------------------------------------------------------
+     Bloom
+
+     Outer glow is white at 3 to 5 per cent with a very large blur and a large
+     spread. It is a haze, never a visible ring. Never stack a strong bloom and
+     a strong drop on the same element unless it is the page's one hero.
+     ------------------------------------------------------------------------- */
+  --bloom-wide: 0 0 40px 20px color-mix(in srgb, var(--ds-color-white) 3%, transparent);
+  --bloom-tight: 0 0 2px color-mix(in srgb, var(--ds-color-white) 19%, transparent);
+
+  /* ---------------------------------------------------------------------------
+     Wash
+
+     The hover overlay. A real token: --ds-color-white-6 at 6 per cent over a
+     6 per cent surface reads as a clear step without changing the fill.
+     Hover changes the stroke or adds this wash. It never changes the fill.
+     ------------------------------------------------------------------------- */
+  --wash-hover: var(--ds-color-white-6);
+
+  /* ---------------------------------------------------------------------------
+     Blur tiers
+
+     Blur radius is a semantic choice, not decoration: how much of what is
+     behind should survive.
+
+     Figma specifies 4px for its two glass effect styles, and a component that
+     Figma drew keeps that value (--ds-blur-glass-surface). These tiers are for
+     marketing chrome Figma has not drawn: a sticky nav, a popover, a toast.
+
+     Cost note. backdrop-filter forces a compositing layer and repaints on
+     scroll. Doc 04 §5 caps LCP at 2.0s on mid-range Android, so treat two
+     blurred surfaces per viewport as the ceiling and prefer an opaque fill
+     wherever the blur is not doing visible work.
+     ------------------------------------------------------------------------- */
+  --glass-chrome: 5px; /* nav: softens without obscuring what is behind */
+  --glass-panel: 10px; /* banners, inline cards over imagery */
+  --glass-menu: 24px; /* popovers, dropdowns, toasts */
+  --glass-window: 36px; /* a full product-window frame, the signature */
+  --glass-bar: 48px; /* a bar nested inside an already-blurred window */
+
+  /* ---------------------------------------------------------------------------
+     Directional fill
+
+     Surfaces are lit from the top-left, which is where the specular sits, so a
+     two-stop fill on that diagonal reads as a lit plate rather than a flat one.
+     The stop positions are deliberate: they put the lighter corner exactly
+     under the specular highlight.
+
+     OPEN QUESTION FOR DESIGN. Figma's two surface steps are bg/surface at 6 per
+     cent and bg/surface-raised at 5 per cent, one percentage point apart, so
+     this gradient is almost invisible. That is faithful, and it is also the
+     reason the effect is understated here. A pronounced lit fill needs a real
+     pair in Figma (a `bg/surface-lit` at, say, 9 per cent to 4 per cent).
+     Deriving one here would be inventing colour, so it is reported instead.
+     ------------------------------------------------------------------------- */
+  --surface-lit-angle: 137deg;
+  --fill-lit: linear-gradient(
+    var(--surface-lit-angle),
+    var(--ds-bg-surface) 4.87%,
+    var(--ds-bg-surface-raised) 75.88%
+  );
+
+  /* ---------------------------------------------------------------------------
+     Radial fills
+
+     Small controls and section tops are lit by a radial anchored to the TOP
+     edge, so the light source agrees with the specular highlight. A radial
+     centred in the middle fights it and reads as a bubble.
+
+     --fill-top-lit is for controls under about 64px: keycaps, chips, thumbs.
+     --spill-top is the wide, very low-alpha wash that sits under a section
+     divider and reads as light bleeding in from above.
+     ------------------------------------------------------------------------- */
+  --fill-top-lit: radial-gradient(
+    100% 100% at 50% 0%,
+    var(--ds-bg-surface-raised) 0%,
+    var(--ds-bg-elevated) 100%
+  );
+  --spill-top: radial-gradient(
+    49.41% 64.58% at 49.4% 0,
+    color-mix(in srgb, var(--ds-color-white) 3%, transparent) 0%,
+    transparent 100%
+  );
+
+  /* ---------------------------------------------------------------------------
+     Panel texture
+
+     A 1px repeating gradient rather than an SVG noise filter. It costs nothing,
+     it survives backdrop-filter, and it does not need an asset. Used inside
+     window bodies to stop a large dark area reading as an empty rectangle.
+
+     There is no CSS grain anywhere on this site and there should not be:
+     feTurbulence is expensive per-frame and a real image is cheaper.
+     ------------------------------------------------------------------------- */
+  --texture-scanline: repeating-linear-gradient(
+    0deg,
+    var(--ds-bg-elevated),
+    var(--ds-bg-elevated) 1px,
+    transparent 1px,
+    transparent
+  );
+  --texture-scanline-size: 3px 3px;
+
+  /* ---------------------------------------------------------------------------
+     Dividers
+
+     A section rule fades out at both ends rather than running edge to edge. A
+     hard line boxes a section in; a fading one reads as the edge of a lit area,
+     which is the same story the specular highlight tells.
+
+     Applied through border-image, which disables border-radius on that element,
+     so use these on straight rules only, never on a rounded surface.
+     ------------------------------------------------------------------------- */
+  --divider-fade: linear-gradient(
+    90deg,
+    transparent 0%,
+    color-mix(in srgb, var(--ds-color-white) 19%, transparent) 30%,
+    color-mix(in srgb, var(--ds-color-white) 19%, transparent) 70%,
+    transparent 100%
+  );
+  --divider-fade-soft: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--ds-border-default) 40%,
+    var(--ds-border-default) 60%,
+    transparent 100%
+  );
+
+  /* ---------------------------------------------------------------------------
+     Focus
+
+     Kept as an `outline`, not converted to a spread box-shadow.
+
+     A spread ring is the more fashionable choice and it does avoid layout
+     shift, but `outline` avoids layout shift too, and it survives two things a
+     box-shadow does not: forced-colors mode, where shadows are dropped
+     entirely and an outline is remapped to the system highlight, and an
+     ancestor with overflow: hidden, which clips a shadow ring and leaves the
+     focused control with no visible focus at all. Every surface in this system
+     has overflow: hidden.
+
+     --focus-ring exists for the one case where a ring must sit inside a
+     clipping ancestor and an outline would be cropped by it.
+     ------------------------------------------------------------------------- */
+  --focus-ring: 0 0 0 2px var(--ds-accent-secondary);
+
+  /* ---------------------------------------------------------------------------
+     Aura
+
+     A tinted glow for a surface that must read as selected or recommended. Three
+     shadows of the same colour at different blur and spread, stacked, so the
+     falloff is soft rather than a single visible ring.
+
+     Tinted with our accent, not a new hue. Keep it under about 8 per cent: an
+     aura that is legible as a colour has become a border.
+     ------------------------------------------------------------------------- */
+  --aura-accent: 0 1px 40px color-mix(in srgb, var(--ds-accent-secondary) 5%, transparent),
+    0 0 16px -7px color-mix(in srgb, var(--ds-accent-secondary) 5%, transparent),
+    0 2px 40px 10px color-mix(in srgb, var(--ds-accent-secondary) 5%, transparent);
+
+  /* ---------------------------------------------------------------------------
+     Canonical stacks
+
+     Pick a stack, not an atom. These are the five that cover everything the
+     marketing site needs; a sixth should be a conversation, not a one-off.
+     ------------------------------------------------------------------------- */
+
+  /* A resting card. Specular only. Depth comes from the stroke and the fill. */
+  --elevation-card: var(--spec-mid);
+
+  /* Chrome that floats over content: nav, sticky bars. */
+  --elevation-chrome: var(--spec-soft), var(--drop-ambient);
+
+  /* A product window lifted onto the page. The dark contact ring is what
+     separates it from a busy backdrop; the bright inner edge is the glass. */
+  --elevation-window: var(--drop-wide), var(--ring-contact), var(--spec-high);
+
+  /* A hero frame. Bloom and specular, deliberately no drop: it should feel lit
+     rather than lifted. */
+  --elevation-frame: var(--bloom-wide), var(--spec-high);
+
+  /* A frame nested inside another frame. Halo instead of bloom. */
+  --elevation-inner: var(--bloom-tight), var(--spec-mid);
+
+  /* Menus and popovers. Note the negative spread: the shadow sits under the
+     element rather than haloing it. */
+  --elevation-menu: var(--drop-menu);
+
+  /* A physical key. Five layers, and all five are load-bearing: a cast shadow
+     under the cap, a hard edge that defines its outline, an inner bottom shade,
+     and an inner top light. Pressing it collapses the cast shadow to nothing,
+     which is what reads as travel. */
+  --elevation-key:
+    0 1.5px 0.5px 2.5px color-mix(in srgb, black 40%, transparent),
+    0 0 0.5px 1px black,
+    inset 0 2px 1px 1px color-mix(in srgb, black 25%, transparent),
+    inset 0 1px 1px 1px color-mix(in srgb, var(--ds-color-white) 20%, transparent);
+  --elevation-key-pressed:
+    0 0 0 0 transparent,
+    0 0 0.5px 1px black,
+    inset 0 2px 1px 1px color-mix(in srgb, black 25%, transparent),
+    inset 0 1px 1px color-mix(in srgb, var(--ds-color-white) 15%, transparent);
+}

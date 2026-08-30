@@ -13,6 +13,7 @@ Everything else is here.
 - [Current state](#current-state)
 - [Brand assets](#brand-assets)
 - [Icons](#icons)
+- [Components](#components)
 - [Extending the system](#extending-the-system)
 - [Accessibility findings](#accessibility-findings)
 - [Sync log](#sync-log)
@@ -95,7 +96,7 @@ read is indistinguishable from a deletion, and step 4 would then strip live toke
 | `npm run ds:app-icons` | Favicon, app icons, manifest icons and the share card |
 | `npm run ds:contrast` | WCAG report for every pairing the site actually uses |
 | `npm run ds:verify` | Regenerate, then fail if the working tree moved. Catches hand edits to generated files. |
-| `npm run verify` | typecheck + copy + motion + build |
+| `npm run verify` | typecheck + copy lint + build |
 
 `ds:verify` is the one that matters in CI. The generators are deterministic, so a non-empty diff
 after a rebuild means someone edited a generated file by hand and their change is about to be lost.
@@ -172,6 +173,26 @@ declared box. Run it after any re-export.
 Monochrome ink (`#BABABA`, `#F5F5F5`, white) becomes `currentColor` so one file works on both the
 dark instrument modules and the light statement register. `#8A38F5` and `#3FCF8E` are deliberate
 semantic colour in the source and are left alone.
+
+## Components
+
+Ported from Figma with `get_design_context`, into `src/components/ui/`. Every one records its source
+node and the measured spec in its own header, so a later reader can check the port without opening
+Figma.
+
+| Component | Figma node | Notes |
+|---|---|---|
+| `button.tsx` | `63:201`, `357:2566`, `359:2583` | primary / secondary / tertiary. `size="sm"` is spec-exact at 30px; `size="lg"` is a marketing extension |
+| `card.tsx` | `409:1316` | Composed (`Card`, `CardIcon`, `CardTitle`, `CardBody`, `CardAction`) rather than monolithic |
+| `badge.tsx` | `346:464` | `Badge` is spec-exact. `StatusPill` adds the brief's LIVE / PREVIEW / PRIVATE ACCESS states |
+| `brand/wordmark.tsx` | `361:2588` | Generated. Ink is `currentColor` so it works in both registers |
+| `icons/*` | Icons page | 84 generated components |
+
+Their fills are white at five to ten per cent, so they only resolve against a dark ground. The site
+runs on one, so they work anywhere on it; drop one onto a light fill and it disappears.
+
+Browse them at `/dev/design-system`, which reads `tokens.css` from disk at build time and therefore
+cannot drift from the mirror.
 
 ## Extending the system
 
@@ -280,6 +301,39 @@ in Figma but unreachable) · **stripped** (junk excluded from the mirror).
 
 **Scaling:** keep the last 20 runs here; archive older ones to `docs/design-system-log/YYYY.md`.
 
+### 2026-08-30 · dark ground, and making the pipeline extensible
+
+No Figma values changed. This entry is about the repo catching up to the system.
+
+**changed**
+- The site now runs on the design system's own mode rather than around it (decision 004 supersedes
+  001). Deleted from `marketing/`: `--ink-primary`, `--ink-secondary`, `--ink-tertiary`,
+  `--hairline`, `--hairline-strong`, `--accent-on-light`, `--page-ground-alt`, `--module-ground`.
+  Deleted from `globals.css`: the `.instrument` class and the ink, hairline and light-accent theme
+  mappings. `marketing/` is down to the page ground and the measure.
+- Share card rebuilt on the dark ground. The full lockup cannot be inverted, because its app tile is
+  `#010101` holding a white letterform, so recolouring the ink would produce a white tile with a
+  white "t". The dark card is built from the wordmark and tagline vectors recoloured to white
+  instead, at the 79 per cent width ratio the lockup itself uses.
+- `theme_color`, `background_color` and the viewport `themeColor` all follow the page ground.
+
+**hardened**
+- The icon extractor no longer holds a hand-typed table of 84 names and coordinates, nor a
+  hard-coded canvas offset. Both derive from a new input, `icons-metadata.xml`. Adding an icon in
+  Figma is now a re-export and a re-run. The two icon inputs are cross-checked against each other,
+  so refreshing only one fails loudly rather than silently offsetting every viewBox. Duplicate
+  normalised names also fail rather than overwrite.
+- `build-tokens.mjs` emits unrecognised export groups generically and reports them, so a new Figma
+  collection lands in the mirror on first sync instead of being silently dropped. Verified by
+  simulating one.
+- `check-contrast.mjs` now separates documented exceptions from regressions and exits non-zero only
+  on an unexpected failure.
+
+**found**
+- `placeholder` `#5e5e5e` scores 2.51:1 on `bg/surface`. Placeholder text is not exempt under WCAG
+  1.4.3 the way a disabled control is, so this is a genuine AA gap in the design system. Recorded
+  and raised, not patched.
+
 ### 2026-08-30 · initial read
 
 First read. No prior state to diff against.
@@ -325,6 +379,8 @@ First read. No prior state to diff against.
 - 84 icon components generated and geometrically verified.
 - Wordmark generated as a component with `currentColor` ink so it works in both registers.
 
+**components**
+- Button, Card, Badge and StatusPill ported from measured Figma specs. See the Components table.
 
 **app icons and metadata**
 - Favicon, apple icon, manifest icons and the 1200x630 share card rasterised from the brand vectors.

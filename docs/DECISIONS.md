@@ -11,6 +11,50 @@ one greppable file is worth more than tidy folders until then.
 
 ---
 
+## 006 · A named surface language, built on the tokens we already mirror
+
+`30 Aug 2026` · Nilesh · **accepted**
+
+Figma gives colour, type, radii, spacing and two glass effect styles. It does not say how a surface
+is *lit*: where the highlight sits, how a pane separates from what is behind it, what a hover does,
+how deep a blur goes for a nav versus a popover. Without a named answer every component invents one,
+and a site whose whole positioning is instrument-grade consistency ends up with six card treatments.
+
+**`docs/SURFACES.md` is now that answer**, with the values in
+`src/design-system/extensions/surface.css` and the construction classes in the `components` layer of
+`globals.css`.
+
+**It cost almost no new colour, which was the surprise.** The alphas that carry a dark glass
+interface are white at 6 per cent and white at 10 per cent, and those are already
+`--ds-border-subtle` and `--ds-border-default`. The glass fill is `--ds-bg-elevated`. The popover
+fill is `--ds-bg-surface-raised`. The contact ring is `--ds-color-black-60`. The default drop shadow
+is `--ds-shadow-glass-surface`. What was genuinely missing is the specular highlight, the wide bloom,
+the hero-scale drop, blur tiers above 4px, the fading divider and the panel texture, and that is the
+whole of the extension. Everything else in it is an achromatic alpha of pure white or black, which is
+light and shadow rather than palette, or a length.
+
+**Adopted, with one correction.** The nesting rule is written as *inner radius = outer radius minus
+padding*, because that is what makes two corner arcs concentric. The formulation this was drawn from
+said the padding equals the radius delta and then gave an example where it does not.
+
+**Deliberately not adopted.** Focus stays an `outline` rather than becoming a spread `box-shadow`: an
+outline avoids layout shift just as well and additionally survives forced-colors mode, where shadows
+are dropped entirely, and an ancestor with `overflow: hidden`, which clips a shadow ring and leaves a
+focused control with no visible focus. Every surface here has `overflow: hidden`. Buttons keep a real
+`border` for the same class of reason: ours is Figma-specified and 1px in every state, so there is no
+shift to design around.
+
+**Reported rather than invented.** Figma's two surface steps are 6 per cent and 5 per cent, one point
+apart, so the directional two-stop fill is nearly invisible. A pronounced version needs a real pair
+in Figma. Deriving one here would have been inventing colour.
+
+**Enforced, because all of it fails silently.** `npm run check:surfaces` catches a raw hex in a
+component, a backdrop blur with no compositing layer, an overlay pseudo-element that swallows clicks,
+a transition on a layout property, and an unprefixed mask. It also asserts that the three copies of
+the page ground agree, replacing a comment that asked humans to keep them in step.
+
+---
+
 ## 005 · Motion is a vocabulary, and the transport is always mounted
 
 `30 Aug 2026` · Nilesh · **accepted** · amends the reduced-motion rule in CLAUDE.md
