@@ -44,3 +44,10 @@ reference/**/.DS_Store
 # Re-include them explicitly. A repo .gitignore takes precedence over the global.
 !src/components/ui/icons/
 !public/icons/
+
+# Conflict copies. Something in this working tree, most likely iCloud Drive
+# sync, periodically duplicates files as "name 2.ts", "name 3.png". 85 of them
+# were swept into a commit once already and had to be stripped out, and the same
+# artefacts inside .next break `tsc` with duplicate-identifier errors that look
+# like real type failures. They are never wanted.
+* [0-9].*
