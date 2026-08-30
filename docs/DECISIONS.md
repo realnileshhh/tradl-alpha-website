@@ -58,10 +58,13 @@ no stacking context and no layout. The breakpoint pair is 1023.98 / 1024 rather 
 because a viewport can be a fractional CSS pixel on a scaled display and the integer pair leaves a
 gap that matches neither rule.
 
-**The cost, stated plainly: this is bad for search.** Google indexes mobile-first, so a crawler
-rendering at phone width sees a page with no content on it. It does not bite yet, because
-`env.shouldIndex` is false everywhere except the real production deployment, and it must be lifted
-before that deployment is indexed. It is the reason this entry exists rather than a commit message.
+**The cost, stated plainly: this is bad for search, so the site is noindex while it stands.** Google
+indexes mobile-first, so a crawler rendering at phone width sees a page with no content on it, and
+being in an index as an empty page is a worse starting position than not being there at all. So
+`robots` in `app/layout.tsx` now takes two gates rather than one: the environment, as before, and
+`VIEWPORT_GATED`, a constant in the same file. Delete that constant in the same commit that deletes
+the notice and indexing turns itself back on. This is the reason the entry exists rather than a
+commit message: the notice is easy to remove and the robots line is easy to leave behind.
 
 **Rejected:** a fixed overlay over a live page (accessibility, and it keeps hydrating and observing
 behind a pane nobody can see); a React branch on a media query (a wrong first paint for half of all

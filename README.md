@@ -35,7 +35,9 @@ copy and compliance locks, which animation library owns which concern, and the p
 - On phones and tablets, in either orientation, the site is one page saying to come back on a laptop.
   The narrow layouts underneath it are built and working; what is missing is a design pass over the
   whole page at that width. The gate is `src/components/site/viewport-gate.tsx` plus the tablet test
-  in `src/lib/device.ts`, and it comes out in one commit.
+  in `src/lib/device.ts`, and it comes out in one commit. While it stands the site is `noindex`,
+  because Google indexes mobile-first and would store the notice rather than the page; the
+  `VIEWPORT_GATED` constant in `app/layout.tsx` comes out in the same commit and indexing returns.
 
 - The SEBI Research Analyst registration number is a braced placeholder. An invented one that looks
   plausible is the worst string that could ship on this site.
