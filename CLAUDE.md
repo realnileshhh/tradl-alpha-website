@@ -91,6 +91,12 @@ Positive rules:
 - Warmth is allowed exactly once per page: a lowercase serif-italic beat. Everywhere else stays
   instrument-grade.
 
+**Customer-facing includes metadata.** Page titles, meta descriptions, Open Graph and X card text,
+image alt text, the web app manifest and JSON-LD are all read by people, and the RA perimeter does
+not care that a string sits in a `<head>`. They live in `src/lib/site.ts`, taken verbatim from the
+copy library in doc 05 §5 rather than paraphrased, because a locked string edited slightly is no
+longer a locked string. `npm run check:copy` enforces the hard bans and flags the context-dependent
+ones for a human; it runs as part of `npm run verify`.
 
 ## Compliance rails · doc 01 §8
 
@@ -301,9 +307,10 @@ popup. Touch targets at least 44px.
 ```bash
 npm run dev          # localhost:4100, Turbopack
 npm run typecheck    # tsc --noEmit
+npm run check:copy   # lexicon rules (doc 01 §7) over customer-facing strings
 npm run check:motion # fails if motion.css drifted from motion.ts
 npm run build        # production build
-npm run verify       # typecheck + motion + build. Run before every commit.
+npm run verify       # typecheck + copy + motion + build. Run before every commit.
 
 npm run ds:build     # regenerate tokens, icons, wordmark, favicons and share card
 npm run ds:verify    # regenerate, then fail if the tree moved. Catches hand edits.
