@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import { AppProviders } from "@/components/providers/app-providers";
+import { RESTORE_SCRIPT } from "@/lib/scroll-restoration";
 import { env } from "@/lib/env";
 import {
   SITE_CATEGORY,
@@ -142,8 +143,24 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   /* No data-theme attribute. The design system declares its one mode on :root,
      the site runs on it, and there is nothing to toggle. See docs/DECISIONS.md 004. */
   return (
-    <html lang={SITE_LANG} className={inter.variable}>
+    /* `suppressHydrationWarning` is here for exactly one attribute, and it is
+       the documented escape hatch for it. The blocking script below stamps
+       `data-restoring` on this element before React hydrates, so the DOM
+       legitimately carries an attribute the server HTML does not, and React
+       reports it as a mismatch. The suppression covers this element's own
+       attributes and nothing below it, and the only other attributes here are
+       a static lang and a font class. */
+    <html lang={SITE_LANG} className={inter.variable} suppressHydrationWarning>
       <body>
+        {/* First in the body and deliberately blocking. A reload deep in the
+            page cannot be restored until the pinned sections have added their
+            spacers, which is after hydration, so without this the visitor
+            watches the hero for as long as hydration takes and is then thrown
+            to where they were. This arms a flag that hides the body for that
+            window; the provider clears it the moment the page is back where it
+            was. See src/lib/scroll-restoration.ts. */}
+        <script dangerouslySetInnerHTML={{ __html: RESTORE_SCRIPT }} />
+
         <AppProviders>{children}</AppProviders>
         <script
           type="application/ld+json"

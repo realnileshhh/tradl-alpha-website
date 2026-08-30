@@ -45,7 +45,14 @@ import { SparkButton } from "./spark-button";
 export function Hero() {
   return (
     <HeroChoreography>
-      <section className="spill-top border-b border-line">
+      {/* `overflow-x: clip`, and it is a bug fix rather than housekeeping. The
+          particle field is inset -18 per cent on each side, which on a phone is
+          38px past the page on both edges. The section does not clip it, the
+          pin spacer around this scene does not either, and the document ends up
+          38px wider than the viewport: the whole page scrolls sideways. `clip`
+          rather than `hidden` because `hidden` would make this a scroll
+          container and the pin inside it would have nothing to pin against. */}
+      <section className="spill-top overflow-x-clip border-b border-line">
         {/* Gutter outside, measure inside, so the demo frame's edges land on
             the same verticals as the nav pane above it, not 24px inside them. */}
         <div className="px-[var(--content-gutter)]">

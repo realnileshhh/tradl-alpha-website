@@ -91,6 +91,29 @@ export const DURATION = {
 } as const;
 
 /**
+ * Seconds a self-advancing component holds one state before it moves on.
+ *
+ * Not a transition duration, which is why it is its own object: `DURATION` is
+ * how long a change takes, `DWELL` is how long the thing sits still between
+ * changes. Mixing them into one table is how a 7 second pause ends up being
+ * used as a fade.
+ *
+ * `slide` is the sneak peek carriage, and 7 seconds is the prototype's number
+ * kept deliberately. It is long: long enough to read a window's chrome, its
+ * caption and its state before the next one arrives, and slow enough that the
+ * section never feels like it is racing the reader. Doc 04 §7 and WCAG 2.2.2
+ * both want anything moving on its own to be stoppable, which is why the
+ * carriage carries a pause control rather than a shorter interval.
+ *
+ * CSS-facing. The peek's progress rail runs for exactly this long and the
+ * advance fires off the end of that animation, so the clock and the bar cannot
+ * disagree: pausing the bar pauses the slideshow, because they are one thing.
+ */
+export const DWELL = {
+  slide: 7,
+} as const;
+
+/**
  * Reveal presets, one per register (doc 04 §1). The register is the only
  * variant that exists on purpose: a third one is a request to invent a third
  * register, which is a design decision and not a prop.

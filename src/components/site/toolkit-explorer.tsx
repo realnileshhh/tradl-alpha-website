@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState, type ComponentType, type SVGProps } from "react";
-import { ScrollTrigger, useGSAP } from "@/lib/gsap";
+import { gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
 import { StatusPill } from "@/components/ui/badge";
 import {
   IconArrowPointRight,
@@ -135,30 +135,51 @@ export function ToolkitExplorer() {
   useGSAP(
     () => {
       if (prefersReducedMotion) return;
-      /* This block pins itself. It used to pin the whole section, which was
-         right when the section held nothing else; the section now opens with a
-         lifecycle band above this, and pinning all of it would drag that band
-         through the sequence. */
       const root = scope.current;
       if (!root) return;
 
-      trigger.current = ScrollTrigger.create({
-        trigger: root,
-        /* Centre to centre, so the sequence starts once the whole block is
-           settled in the middle of the screen rather than the moment its top
-           edge arrives. */
-        start: "center center",
-        end: `+=${TOOLS.length * SCROLL_PER_TOOL}%`,
-        pin: true,
-        anticipatePin: 1,
-        invalidateOnRefresh: true,
-        onUpdate: (self) => {
-          const next = Math.min(TOOLS.length - 1, Math.floor(self.progress * TOOLS.length));
-          setIndex((currentIndex) => (currentIndex === next ? currentIndex : next));
-        },
+      /* THE PIN IS DESKTOP ONLY, and the media query is load-bearing rather
+         than tidy. Below `lg` the two columns stack, so the block is taller
+         than the viewport and pinning it crops itself; the layout has always
+         said as much and the trigger did not, which left a phone scrolling a
+         five-screen pinned sequence it could not see the bottom of, and a
+         pin-spacer wide enough to push the whole document 38px sideways.
+         `gsap.matchMedia` creates the trigger over 1024px and reverts it, with
+         the spacer, the moment the viewport drops under it. */
+      const mm = gsap.matchMedia();
+
+      mm.add("(min-width: 1024px)", () => {
+        /* This block pins itself. It used to pin the whole section, which was
+           right when the section held nothing else; the section now opens with
+           a lifecycle band above this, and pinning all of it would drag that
+           band through the sequence. */
+        trigger.current = ScrollTrigger.create({
+          trigger: root,
+          /* Centre to centre, so the sequence starts once the whole block is
+             settled in the middle of the screen rather than the moment its top
+             edge arrives. */
+          start: "center center",
+          end: `+=${TOOLS.length * SCROLL_PER_TOOL}%`,
+          pin: true,
+          anticipatePin: 1,
+          invalidateOnRefresh: true,
+          onUpdate: (self) => {
+            const next = Math.min(TOOLS.length - 1, Math.floor(self.progress * TOOLS.length));
+            setIndex((currentIndex) => (currentIndex === next ? currentIndex : next));
+          },
+        });
+
+        ScrollTrigger.refresh();
+
+        return () => {
+          /* Reverted with the query. `goTo` already handles the null: below
+             `lg` a click sets the state and moves nothing, which is the right
+             behaviour for a list that is not pinned to anything. */
+          trigger.current = null;
+        };
       });
 
-      ScrollTrigger.refresh();
+      return () => mm.revert();
     },
     { scope, dependencies: [prefersReducedMotion] },
   );

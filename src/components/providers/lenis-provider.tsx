@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import Lenis from "lenis";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
 import { registerLenis } from "@/lib/scroll";
+import { RESTORING_ATTR, SCROLL_KEY } from "@/lib/scroll-restoration";
 
 /**
  * Smooth scroll, driven by GSAP's ticker rather than its own rAF loop.
@@ -30,6 +31,61 @@ export function LenisProvider({ children }: { children: ReactNode }) {
   const pathname = usePathname();
 
   useEffect(() => {
+    /* -----------------------------------------------------------------------
+       SCROLL RESTORATION, AND WHY THE BROWSER'S OWN IS WRONG ON THIS PAGE.
+
+       Two sections pin, and a pin adds a spacer worth several viewports to the
+       document. Those spacers do not exist until GSAP has run, which is after
+       hydration, and the browser restores the scroll offset long before that,
+       against a document that is thousands of pixels shorter than the one the
+       offset was recorded in. It clamps to what fits, and a refresh taken in
+       the sneak peek came back in the middle of the toolkit.
+
+       So the browser is told to keep its hands off, the offset is parked on the
+       way out, and it is put back here: after the pins exist, after
+       ScrollTrigger has measured them, and again after the fonts land and every
+       measurement moves. Only for a reload or a back-forward, which is what the
+       native behaviour restores for; a fresh visit still starts at the top.
+       -------------------------------------------------------------------- */
+    const key = `${SCROLL_KEY}:${window.location.pathname}`;
+
+    /* Through ScrollTrigger, not by assignment. ScrollTrigger caches
+       `history.scrollRestoration` the first time it runs and writes its cached
+       copy back on every refresh, so `history.scrollRestoration = "manual"` is
+       reverted a few milliseconds later and reads as "auto" by the time anyone
+       checks. This is the same switch, thrown where the library will keep it,
+       and it clears the scroll memory ScrollTrigger keeps for its own restores
+       in the same call. */
+    ScrollTrigger.clearScrollMemory("manual");
+
+    const entry = performance.getEntriesByType("navigation")[0] as
+      | PerformanceNavigationTiming
+      | undefined;
+    const resuming = entry?.type === "reload" || entry?.type === "back_forward";
+    const parked = Number(sessionStorage.getItem(key) ?? "");
+    const restoreTo = resuming && Number.isFinite(parked) && parked > 0 ? parked : 0;
+
+    const park = () => {
+      try {
+        sessionStorage.setItem(key, String(Math.round(window.scrollY)));
+      } catch {
+        /* Private mode and full quotas both throw. Losing the offset is not
+           worth throwing away the page. */
+      }
+    };
+
+    window.addEventListener("pagehide", park);
+    /* iOS often kills a tab without ever firing pagehide. */
+    const onVisibility = () => {
+      if (document.visibilityState === "hidden") park();
+    };
+    document.addEventListener("visibilitychange", onVisibility);
+
+    /* A URL bar sliding away on a phone is a resize, and refreshing every
+       trigger mid-scroll makes a pinned scene jump. GSAP's own guard: ignore
+       vertical-only resizes on touch devices. */
+    ScrollTrigger.config({ ignoreMobileResize: true });
+
     const lenis = new Lenis({
       /* The one dial that matters, and the only one this site tunes.
          Exponential damping: each frame closes 1 - e^(-lerp * 60 * dt) of the
@@ -92,14 +148,66 @@ export function LenisProvider({ children }: { children: ReactNode }) {
        reveals firing where they were authored and firing a few hundred pixels
        early on a cold cache. */
     let cancelled = false;
+
+    /* Immediate and forced: Lenis ignores a scrollTo while it is stopped, and
+       anything animated here would be a 700ms glide from the top of a page the
+       visitor never asked to leave. */
+    /* The body is hidden from the first byte when a restore is pending, so
+       nothing is painted at the top of the page and then yanked. This is the
+       other half of that: show it again the moment the page is where it should
+       be. Called even when there is nothing to restore, because the flag is
+       armed by a script that cannot know whether the offset will still be
+       reachable by the time this runs. */
+    const reveal = () => document.documentElement.removeAttribute(RESTORING_ATTR);
+
+    const restore = () => {
+      if (restoreTo <= 0) {
+        reveal();
+        return;
+      }
+      /* Lenis measures the document once, when it is constructed, and clamps
+         every scrollTo to that. The pins apply their spacing later, so at that
+         moment the page is six thousand pixels shorter than it is about to be,
+         and a restore to the sneak peek clamped straight back into the toolkit.
+         Re-measuring first is the whole fix. */
+      lenis.resize();
+      lenis.scrollTo(restoreTo, { immediate: true, force: true });
+      ScrollTrigger.update();
+      reveal();
+    };
+
     document.fonts?.ready.then(() => {
-      if (!cancelled) ScrollTrigger.refresh();
+      if (cancelled) return;
+      ScrollTrigger.refresh();
+      restore();
     });
 
     ScrollTrigger.refresh();
+    restore();
+
+    /* And once more when everything that carries height has arrived. Images
+       are sized in the markup so nothing should move, but `load` is the last
+       moment anything can, and a restore that lands 200px out is worse than
+       one that costs a second scroll. */
+    const onLoad = () => restore();
+    if (document.readyState === "complete") requestAnimationFrame(onLoad);
+    else window.addEventListener("load", onLoad, { once: true });
+
+    /* A <details> opening changes the height of the document under everything
+       below it, which leaves every trigger past it measured against a page that
+       no longer exists. `toggle` does not bubble, so this listens in the
+       capture phase, and the refresh waits a frame for the panel to settle. */
+    const onToggle = () => {
+      requestAnimationFrame(() => ScrollTrigger.refresh());
+    };
+    document.addEventListener("toggle", onToggle, true);
 
     return () => {
       cancelled = true;
+      window.removeEventListener("pagehide", park);
+      window.removeEventListener("load", onLoad);
+      document.removeEventListener("visibilitychange", onVisibility);
+      document.removeEventListener("toggle", onToggle, true);
       gsap.ticker.remove(step);
       gsap.ticker.lagSmoothing(500, 33);
       registerLenis(null);

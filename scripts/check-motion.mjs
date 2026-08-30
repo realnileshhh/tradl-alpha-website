@@ -39,7 +39,7 @@ const bezier = (name) => {
     .join(", ")})`;
 };
 
-/** Read a `key: 0.3` entry out of the DURATION object as a millisecond string. */
+/** Read a `key: 0.3` entry out of a DURATION or DWELL object as a millisecond string. */
 const ms = (key) => {
   const m = ts.match(new RegExp(`\\b${key}:\\s*([\\d.]+)`));
   if (!m) fail(`could not read DURATION.${key} from motion.ts`);
@@ -55,6 +55,7 @@ const MIRRORED = [
   ["--motion-ease-travel", bezier("EASE_TRAVEL_POINTS")],
   ["--motion-press", ms("press")],
   ["--motion-chrome", ms("chrome")],
+  ["--motion-dwell-slide", ms("slide")],
 ];
 
 for (const [name, expected] of MIRRORED) {

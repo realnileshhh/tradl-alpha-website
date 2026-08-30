@@ -133,6 +133,10 @@ type PolymorphicTag = ComponentType<{
 
 function warnIfAboveTheFold(el: HTMLElement): void {
   if (process.env.NODE_ENV === "production") return;
+  /* Only meaningful at the top of the page. A reload inside the page restores
+     the offset before these mount, and then every reveal near the restored
+     viewport looks like it is above the fold when none of them are. */
+  if (window.scrollY > 0) return;
   if (el.getBoundingClientRect().top >= window.innerHeight * 0.9) return;
   console.warn(
     "[motion] A Reveal mounted above the fold. It starts hidden, so it delays the largest paint. Doc 04 §5 wants the first screen painted as a finished static. Render it without Reveal.",

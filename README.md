@@ -23,6 +23,7 @@ copy and compliance locks, which animation library owns which concern, and the p
 | Nav + ticker | A floating pane that sticks; the market strip scrolls under it. |
 | Hero | Doctrine badge, statement headline, single-field start, the spark CTA, and a demo frame the scroll carries to the centre of the screen. |
 | Toolkit | Section opener, a three-panel lifecycle band, and a scroll-driven tool explorer with a stacked preview deck. |
+| Sneak peek | Four product windows on one carriage, advancing themselves once the section is on screen. The progress rail is the clock and the navigation. |
 | Founders | Two quotes at equal weight, glass cards over an aura. |
 | FAQ | Two columns, native `<details>`, smooth disclosure, no JavaScript. |
 | Close | Statement scene, the page's one warm beat, email capture, proof chips. |
@@ -33,7 +34,7 @@ copy and compliance locks, which animation library owns which concern, and the p
 - The SEBI Research Analyst registration number is a braced placeholder. An invented one that looks
   plausible is the worst string that could ship on this site.
 - The ticker figures are the prototype's staged set and carry no attribution line yet.
-- The demo frames are labelled wells waiting for real recordings.
+- The demo frame and the four sneak peek windows are labelled wells waiting for real recordings.
 - `/edge`, `/stocks`, `/decode`, `/manifesto`, `/login` and `/start` do not exist.
 - Copy that is not from the brief's locked library is marked `NEEDS SIGN-OFF` at the constant.
 
