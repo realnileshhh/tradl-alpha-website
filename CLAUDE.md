@@ -128,6 +128,28 @@ The site runs the product's design system in two registers, and the alternation 
 
 **Statement register never exceeds ~30% of a page's scroll length.**
 
+---
+
+## Building a component · the surface rules
+
+The construction language is `docs/SURFACES.md`. It governs material, strokes, elevation, glass,
+layering and geometry. It governs **nothing** about colour or typography, which come from the Figma
+mirror and are not open for reinterpretation.
+
+The thesis: a surface is a translucent pane, lit from above by a 1px specular highlight, outlined by
+a hairline stroke, blurred behind. Depth comes from stroke plus inner top highlight plus blur, never
+from a big drop shadow.
+
+- **Every surface carries a specular.** `shadow-spec`, or a stack containing one. Omit it and the
+  component reads flat and unlike the rest of the site.
+- **Hover moves the stroke or adds a wash. It never changes the fill.**
+- **No raw hex in a component.** Colour is `--ds-*`. Enforced by `npm run check:surfaces`.
+- **A `backdrop-blur` needs its own compositing layer**, or Safari drops it. Use the `glass` class.
+  At most two blurred surfaces per viewport, against the LCP budget below.
+- **Nested surfaces are concentric:** inner radius = outer radius minus padding.
+- **Never animate layout.** Not `width`, `height`, `left`, `top`, `margin`, `padding` or `filter`.
+  Blur a sibling and animate its opacity.
+- **Pick a stack, not an atom**, from the elevation table. A sixth stack is a conversation.
 
 ---
 
@@ -187,12 +209,12 @@ by scale and density, not colour. See `docs/DECISIONS.md` 004.
 
 ---
 
-## Design system sync · the four rules
+## Design system sync · the five rules
 
-The Figma system is live and changing. This repo holds a **generated mirror** of it under
-`src/design-system/`, refreshed after every push and every deploy. The full handbook and the sync
-log are in **`docs/DESIGN-SYSTEM.md`**. These four rules are the ones that must be in context every
-session, because breaking any of them is silent and unrecoverable later.
+The Figma system is live and **expected to grow**. This repo holds a **generated mirror** of it under
+`src/design-system/`, refreshed after every push and every deploy. The full handbook, the extension
+procedures and the sync log are in **`docs/DESIGN-SYSTEM.md`**. These five rules are the ones that
+must be in context every session, because breaking any of them is silent and unrecoverable later.
 
 **1 · One direction.** Figma → repo, never back. The Figma write tools (`use_figma`,
 `create_new_file`, `generate_figma_design`, `upload_assets`, `add_code_connect_map`,
@@ -221,6 +243,12 @@ src/design-system/
 A value's bucket is visible from its import path, which is the point: once "is this from Figma?"
 needs a lookup, the answer starts getting guessed.
 
+**5 · Extending means refreshing an input, never editing a script.** The system will grow. Nothing
+about its *contents* may be hard-coded in `scripts/`: not a token list, not an icon name, not a
+canvas offset. Everything derives from the raw Figma responses in `_figma-export/`, so a new
+variable, icon or collection is picked up by refreshing that input and re-running `npm run ds:build`.
+A script that needs editing to accept a new token is a script that will silently drop the next one.
+Procedures for each case are in `docs/DESIGN-SYSTEM.md` → Extending the system.
 
 ---
 
@@ -309,8 +337,9 @@ npm run dev          # localhost:4100, Turbopack
 npm run typecheck    # tsc --noEmit
 npm run check:copy   # lexicon rules (doc 01 §7) over customer-facing strings
 npm run check:motion # fails if motion.css drifted from motion.ts
+npm run check:surfaces # raw colour, uncomposited blur, click-eating overlays, layout transitions
 npm run build        # production build
-npm run verify       # typecheck + copy + motion + build. Run before every commit.
+npm run verify       # typecheck + copy + motion + surfaces + build. Before every commit.
 
 npm run ds:build     # regenerate tokens, icons, wordmark, favicons and share card
 npm run ds:verify    # regenerate, then fail if the tree moved. Catches hand edits.

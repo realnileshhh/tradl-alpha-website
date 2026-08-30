@@ -24,12 +24,29 @@ import { cn } from "@/lib/utils";
  * be reimplemented the first time one of those appears.
  */
 
-export function Card({ className, children, ...props }: HTMLAttributes<HTMLDivElement>) {
+export function Card({
+  interactive,
+  className,
+  children,
+  ...props
+}: HTMLAttributes<HTMLDivElement> & {
+  /** Moves the stroke on hover. Cards in a grid or a list want this. */
+  interactive?: boolean;
+}) {
   return (
     <div
       className={cn(
-        "flex flex-col items-start rounded-md border border-line bg-surface",
+        "relative flex flex-col items-start overflow-hidden rounded-md border border-line bg-surface",
         "gap-[var(--ds-space-4)] p-[var(--ds-padding-card)]",
+        /* The specular top edge. Figma has no token for it and it is the single
+           ingredient that separates a lit pane from a flat rectangle. See
+           docs/SURFACES.md. */
+        "shadow-card",
+        /* Hover moves the stroke, never the fill. A card that lightens on hover
+           reads as a button; a card whose edge sharpens reads as a card that
+           knows you are there. */
+        interactive &&
+          "surface-interactive transition-[border-color] duration-[var(--motion-chrome)] ease-house",
         className
       )}
       {...props}

@@ -7,10 +7,18 @@ import { Wordmark } from "@/components/ui/brand/wordmark";
 import { Button } from "@/components/ui/button";
 import { Card, CardAction, CardBody, CardIcon, CardTitle } from "@/components/ui/card";
 import { Badge, StatusPill } from "@/components/ui/badge";
+import { Divider, Frame, FrameInner, Surface } from "@/components/ui/surface";
+import { Window, WindowBar, WindowBody, WindowHeader, WindowSeparator } from "@/components/ui/window";
+import { Popover, Toast, Tooltip } from "@/components/ui/overlay";
+import { Keycap, KeycapSequence } from "@/components/ui/keycap";
+import { SegmentedControl } from "@/components/ui/segmented-control";
+import { Input, InputAction } from "@/components/ui/input";
 import {
   IconAdjustments,
   IconArrowPointRight,
+  IconArrowPointUp,
   IconMorningDecode,
+  IconSearch,
 } from "@/components/ui/icons";
 
 /**
@@ -164,6 +172,123 @@ export default function DesignSystemPage() {
             <StatusPill status="live" />
             <StatusPill status="preview" />
             <StatusPill status="private" />
+          </div>
+        </Section>
+
+        <Section
+          title="Surfaces"
+          note="The construction language. Every pane is a translucent fill, a hairline stroke and a 1px specular highlight, blurred behind. Depth comes from the stroke and the highlight, never from a big drop shadow. See docs/SURFACES.md."
+        >
+          <div className="flex flex-col gap-8">
+            <div className="grid gap-4 sm:grid-cols-3">
+              {(
+                [
+                  ["shadow-card", "resting card"],
+                  ["shadow-chrome", "nav, sticky bars"],
+                  ["shadow-window", "product window"],
+                  ["shadow-frame", "hero frame, lit not lifted"],
+                  ["shadow-inner", "frame inside a frame"],
+                  ["shadow-menu", "popovers, negative spread"],
+                ] as const
+              ).map(([cls, what]) => (
+                <div
+                  key={cls}
+                  className={`rounded-card border border-line bg-surface p-4 ${cls}`}
+                >
+                  <p className="text-xs text-fg">{cls}</p>
+                  <p className="mt-1 text-xs text-fg-3">{what}</p>
+                </div>
+              ))}
+            </div>
+
+            <div>
+              <p className="mb-3 text-xs uppercase tracking-widest text-fg-3">Strokes</p>
+              <div className="flex flex-wrap items-start gap-4">
+                <div className="rounded-card border border-line bg-surface p-4 text-xs text-fg-2">
+                  hairline
+                </div>
+                <div className="stroke-top-lit rounded-card bg-surface p-4 text-xs text-fg-2">
+                  three-sided
+                </div>
+                <div className="ring-gradient rounded-card bg-surface p-4 text-xs text-fg-2">
+                  gradient ring
+                </div>
+              </div>
+              <Divider className="mt-6" />
+              <p className="mt-2 text-xs text-fg-3">a rule that fades at both ends</p>
+            </div>
+
+            <div>
+              <p className="mb-3 text-xs uppercase tracking-widest text-fg-3">Hover</p>
+              <div className="flex flex-wrap gap-4">
+                <Surface interactive className="p-4 text-xs text-fg-2">
+                  stroke moves
+                </Surface>
+                <Surface className="hover-wash p-4 text-xs text-fg-2">wash</Surface>
+                <Surface vignette className="p-4 text-xs text-fg-2">
+                  vignette
+                </Surface>
+              </div>
+            </div>
+
+            <div>
+              <p className="mb-3 text-xs uppercase tracking-widest text-fg-3">
+                Nested frame, concentric corners
+              </p>
+              <Frame className="max-w-md">
+                <FrameInner className="h-28" />
+              </Frame>
+            </div>
+
+            <div>
+              <p className="mb-3 text-xs uppercase tracking-widest text-fg-3">Window</p>
+              <Window className="h-64 max-w-xl">
+                <WindowHeader>
+                  <IconSearch className="size-3 text-fg-3" />
+                  <span className="text-sm text-fg-2">Describe the setup</span>
+                </WindowHeader>
+                <WindowBody />
+                <WindowBar>
+                  <span className="text-xs text-fg-3">Run</span>
+                  <WindowSeparator />
+                  <KeycapSequence keys={["Cmd", "K"]} />
+                </WindowBar>
+              </Window>
+            </div>
+
+            <div>
+              <p className="mb-3 text-xs uppercase tracking-widest text-fg-3">Overlays and controls</p>
+              <div className="flex flex-wrap items-center gap-6">
+                <Tooltip>Tooltip</Tooltip>
+                <Toast>Saved</Toast>
+                <Keycap>Esc</Keycap>
+                <Keycap physical>Esc</Keycap>
+                <SegmentedControl
+                  label="Register"
+                  options={[
+                    { value: "d", label: "Discover" },
+                    { value: "a", label: "Analyse" },
+                    { value: "c", label: "Act" },
+                  ]}
+                />
+              </div>
+              <Popover className="mt-6 max-w-xs">
+                <p className="text-sm text-fg">Popover</p>
+                <p className="mt-1 text-sm text-fg-2">
+                  No border. The blur and the shadow do the edge work.
+                </p>
+              </Popover>
+            </div>
+
+            <div>
+              <p className="mb-3 text-xs uppercase tracking-widest text-fg-3">Input</p>
+              <Input
+                placeholder="Describe the stocks you want to find..."
+                action={
+                  <InputAction label="Run" icon={<IconArrowPointUp className="size-4" />} />
+                }
+              />
+            </div>
           </div>
         </Section>
 
