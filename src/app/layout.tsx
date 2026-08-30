@@ -30,6 +30,12 @@ const inter = Inter({
 
 const TITLE = `${SITE_NAME} · ${SITE_CATEGORY}`;
 
+/**
+ * True while phones and tablets are served the small-screen notice instead of
+ * the site. Delete this and the notice together; `robots` below reads it.
+ */
+const VIEWPORT_GATED = true;
+
 /* Icons, the share card and the manifest are all file conventions rather than
    hand-written tags, so Next emits them with the correct sizes and types and
    they cannot drift from the files on disk:
@@ -83,15 +89,27 @@ export const metadata: Metadata = {
     description: SITE_DESCRIPTION,
   },
 
-  /* Only the real production deployment is indexable. A preview URL competing
-     with the live site in search results is a slow problem to diagnose. */
-  robots: env.shouldIndex
-    ? {
-        index: true,
-        follow: true,
-        googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 },
-      }
-    : { index: false, follow: false, nocache: true },
+  /* Two gates, and both have to be open.
+ 
+     The first is the environment: only the real production deployment is
+     indexable, because a preview URL competing with the live site in search
+     results is a slow problem to diagnose.
+ 
+     The second is the small-screen notice, and it is the one that will be easy
+     to forget. Google indexes mobile-first, so while phones and tablets are
+     served a one-screen notice instead of the site, the page a crawler renders
+     and stores has no content on it. Being absent from an index is recoverable;
+     being in one as an empty page is a worse starting position than not being
+     there at all. Delete VIEWPORT_GATED in the same commit that deletes the
+     notice, and this reverts to indexable on its own. See docs/DECISIONS.md 009. */
+  robots:
+    env.shouldIndex && !VIEWPORT_GATED
+      ? {
+          index: true,
+          follow: true,
+          googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 },
+        }
+      : { index: false, follow: false, nocache: true },
 
   appleWebApp: { title: SITE_NAME, statusBarStyle: "default" },
 };
