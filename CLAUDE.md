@@ -30,18 +30,27 @@ tradl-alpha-website/
 ├── src/
 │   ├── app/                    App Router. layout.tsx is a server component.
 │   │   ├── page.tsx            Homepage. Empty. Start here.
-│   │   └── dev/stack/          Proving ground. 404s in production. Deletable.
+│   │   └── dev/                404s in production. Deletable whole.
+│   │       ├── design-system/  Living reference: tokens, icons, components.
+│   │       └── stack/          Animation/3D proving ground.
+│   ├── design-system/          The Figma mirror. See docs/DESIGN-SYSTEM.md.
+│   │   ├── _figma-export/      Raw exports. Input, never edited.
+│   │   ├── tokens/             GENERATED. Never hand-edit.
+│   │   ├── extensions/         Ours, because Figma has no answer yet.
+│   │   ├── marketing/          Site-only: the page ground and the measure.
+│   │   └── provenance.json     What was read, when, and what is missing.
 │   ├── components/
 │   │   ├── providers/          Client providers, mounted once in layout
 │   │   ├── three/              R3F canvas wrapper + post-processing chain
 │   │   ├── motion/             Component-level transitions
-│   │   └── ui/                 Empty. Real components go here.
+│   │   └── ui/                 Ported components, generated icons/ and brand/
 │   ├── lib/                    gsap registration, reduced motion, env, utils
 │   ├── store/                  Zustand
-│   └── styles/                 globals.css + tokens/
-├── docs/                       The brief. Binding. See docs/README.md.
-├── reference/                  Prior artefacts. Not binding.
-└── public/
+│   └── styles/                 globals.css. The only global CSS.
+├── scripts/                    The design-system generators. `npm run ds:build`.
+├── docs/                       The brief (binding) + DECISIONS + DESIGN-SYSTEM + MOTION.
+├── reference/                  Prior artefacts. Not binding, and mostly stale.
+└── public/brand/               Logo SVGs, canvas rects stripped.
 ```
 
 Import alias is `@/*` → `src/*`.
@@ -82,6 +91,7 @@ Positive rules:
 - Warmth is allowed exactly once per page: a lowercase serif-italic beat. Everywhere else stays
   instrument-grade.
 
+
 ## Compliance rails · doc 01 §8
 
 - SEBI Research Analyst perimeter: computed and historical analytics only. Never a recommendation,
@@ -112,15 +122,34 @@ The site runs the product's design system in two registers, and the alternation 
 
 **Statement register never exceeds ~30% of a page's scroll length.**
 
+
 ---
 
 ## Design tokens
 
-`src/styles/tokens/` is a copy. The source of truth is `reference/design-system/tokens/`, exported
-from Figma. When Figma changes: re-export into `reference/`, then sync forward. Never edit the copy
-alone.
+**The source of truth is the Figma file, and only the Figma file.**
+
+| | |
+|---|---|
+| File | `Tradl Design System` |
+| File key | `ZRYpUf3iulUMH0Rbdb68hk` |
+| Pages | Components - General · Components - Tradl Guide · Components - Backtesting · Typography · Icons · Logos |
+| Variable collections | `Primitives` · `Semantics` · `Shadows` |
+
+The system is still evolving. It is read through the Figma MCP and regenerated into this repo. See
+**Design system sync** below for the procedure and the rules that keep the mirror honest.
+
+`reference/design-system/` is a **stale earlier export** from a different Figma file (the "Bento"
+one). Its `--surface-l1…l5` / `--radius-xs…xl` naming does not exist in the live file. Treat it as
+history. It is not a source, and values are never copied forward from it.
 
 Dark is canonical (`:root`); light lives behind `[data-theme="light"]` on `<html>`.
+
+> **The table below is stale.** It describes `src/styles/tokens/`, which came from the superseded
+> "Bento" export. None of those custom property names (`--surface-l1`, `--radius-xs`, `--tradl-green`)
+> exist in the live Figma file. It is kept only because it still accurately describes the code as it
+> stands today, and it goes away when `src/design-system/tokens/` is generated. The `@theme` naming
+> rule underneath it is permanent and applies to the new layer too.
 
 `globals.css` maps tokens into Tailwind through `@theme inline`. **A `@theme` key must never repeat a
 custom property the token files declare.** Tailwind emits its theme keys back into `:root`, so
@@ -139,8 +168,53 @@ collapses and the utility silently emits nothing. That is why the theme uses dis
 
 Anything unmapped is still reachable as a plain custom property: `var(--surface-badge)`.
 
-Type: IBM Plex Sans drives all text, Lato drives all numbers. The split is from the design system,
-not taste. Use `.num` on any figure so it gets Lato and tabular numerals.
+Type: **Inter drives everything**, text and numbers both, because that is what every type variable in
+the live Figma file says. The old IBM Plex Sans + Lato split came from the superseded "Bento" export;
+see `docs/DECISIONS.md` 002. Use `.num` on any figure so it gets tabular
+numerals; it no longer switches family.
+
+**Ground.** The site runs dark, directly on the design system's one mode. There is no theme switch,
+no inverted scale and no wrapper class: every token renders exactly as drawn. Do not author light
+equivalents. The only value that is ours is `--page-ground` `#121212`, because the system's surfaces
+are white overlays with no ground of their own and Figma has no `bg/base`. The two registers differ
+by scale and density, not colour. See `docs/DECISIONS.md` 004.
+
+---
+
+## Design system sync · the four rules
+
+The Figma system is live and changing. This repo holds a **generated mirror** of it under
+`src/design-system/`, refreshed after every push and every deploy. The full handbook and the sync
+log are in **`docs/DESIGN-SYSTEM.md`**. These four rules are the ones that must be in context every
+session, because breaking any of them is silent and unrecoverable later.
+
+**1 · One direction.** Figma → repo, never back. The Figma write tools (`use_figma`,
+`create_new_file`, `generate_figma_design`, `upload_assets`, `add_code_connect_map`,
+`send_code_connect_mappings`, `weave_*`) are off limits on this project. Read tools only. If
+something is wrong in Figma, the design team changes it there and we re-sync.
+
+**2 · Never write a value you did not just read.** Every colour, radius, spacing, shadow, type size
+and asset in `src/design-system/tokens/` must trace to a Figma MCP response *from the current
+session*. Not from `reference/design-system/`, not from an older token file, not from a screenshot,
+not from memory. Do not infer a token because its siblings exist. Never eyedrop a colour out of a
+PNG.
+
+**3 · A gap is reported, never filled.** If the MCP is unreachable, a page will not enumerate, or a
+node errors: stop and say so. Half a mirror with an honest gap list beats a complete one with three
+invented values in it, because the invented ones are undetectable afterwards.
+
+**4 · Three buckets, never mixed.**
+
+```
+src/design-system/
+├── tokens/        MIRRORED.  Generated from Figma. Hand-editing it is always a bug.
+├── extensions/    EXTENDED.  We invented it because Figma has no answer yet. Dated, with a why.
+└── marketing/     SITE-ONLY. Right for a landing page, wrong for a product surface.
+```
+
+A value's bucket is visible from its import path, which is the point: once "is this from Figma?"
+needs a lookup, the answer starts getting guessed.
+
 
 ---
 
@@ -175,7 +249,6 @@ Rules that are easy to violate once and expensive to find later:
   `"always"` explicitly, so the battery cost is a decision rather than a default.
 - **Read the store inside `useFrame` with `useAppStore.getState()`**, not the hook. A component that
   runs 60 times a second should not also re-render on store changes.
-
 ## Performance budget · doc 04 §5, and it is in tension with the stack
 
 - **LCP under 2.0s on 4G mid-range Android.** This is the binding constraint, and the 3D stack is the
@@ -201,11 +274,19 @@ popup. Touch targets at least 44px.
 ## Commands
 
 ```bash
-npm run dev        # localhost:4100, Turbopack
-npm run typecheck  # tsc --noEmit
-npm run build      # production build
-npm run verify     # typecheck + build. Run before every commit.
+npm run dev          # localhost:4100, Turbopack
+npm run typecheck    # tsc --noEmit
+npm run build        # production build
+npm run verify       # typecheck + build. Run before every commit.
+
+npm run ds:build     # regenerate tokens, icons, wordmark, favicons and share card
+npm run ds:verify    # regenerate, then fail if the tree moved. Catches hand edits.
+npm run ds:contrast  # WCAG report for every pairing the site actually uses
 ```
+
+The design-system generators are documented in `docs/DESIGN-SYSTEM.md`. `ds:verify` is the one that
+belongs in CI: the generators are deterministic, so a dirty tree after a rebuild means someone edited
+a generated file by hand and is about to lose the change.
 
 ## Removing what does not ship
 

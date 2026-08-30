@@ -1,0 +1,43 @@
+/* =============================================================================
+   MARKETING GROUND. Not from Figma. Site-only.
+
+   This file used to hold a light page ground and a whole inverted ink scale.
+   It does not any more. The site runs on the design system's own dark ground
+   (docs/DECISIONS.md 004 supersedes 001), which means the ink, borders, accents
+   and surfaces all come from real tokens and none of them have to be invented.
+
+   What is left is the small set of things Figma genuinely does not define for a
+   marketing page: the ground the components are composed on, and the measure.
+
+   Added 30 Aug 2026, reduced the same day when the site went dark.
+   ============================================================================= */
+
+:root {
+  /* ---------------------------------------------------------------------------
+     Ground
+
+     The design system's surfaces are white at 5 to 10 per cent. They are
+     overlays and carry no ground of their own: in the product that ground is
+     the app shell, and there is no `bg/base` or `bg/app` variable to mirror.
+
+     #121212 is the fill every design-system page and component is composed on
+     in Figma (the canvas fill, present in every asset export before it was
+     stripped). Using it means a component rendered here sits on the ground the
+     designer drew it on, so every bg/* and border/* overlay composites to the
+     value they were designed to produce.
+
+     If a `bg/base` variable ever lands in Figma, this is the first thing to
+     delete: the mirrored token wins and this stops being ours.
+     ------------------------------------------------------------------------- */
+  --page-ground: #121212;
+
+  /* ---------------------------------------------------------------------------
+     Measure
+
+     From the brief (doc 04 §2: "max content width ~1200 to 1280px for marketing
+     sections"), not from Figma, which carries no layout width variable. Product
+     surfaces keep their own locked grid and must not read this.
+     ------------------------------------------------------------------------- */
+  --content-max: 1200px;
+  --content-gutter: 24px;
+}

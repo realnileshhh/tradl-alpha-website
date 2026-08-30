@@ -1,0 +1,158 @@
+/* =============================================================================
+   Tradl AI design tokens. GENERATED FILE, DO NOT EDIT.
+
+   Source:    Tradl Design System (ZRYpUf3iulUMH0Rbdb68hk)
+   Read:      2026-08-30
+   Method:    get_variable_defs on nodes that consume each variable
+   Regenerate: node scripts/build-tokens.mjs
+
+   Editing this file by hand is always a bug: the next sync overwrites it and
+   the diff reads as though Figma changed when it did not. Change it in Figma.
+   See docs/DESIGN-SYSTEM.md.
+
+   These custom properties are inert declarations. Nothing here applies colour
+   to the page. The design system has one mode and it is dark, and the site
+   runs on it directly, so these render exactly as drawn. The page ground the
+   overlays composite against lives in ../marketing/. See docs/DECISIONS.md 004.
+   ============================================================================= */
+
+:root {
+
+  /* ------------------------------------------------------------------------ */
+  /* Colour primitives */
+  /* The raw ramp. Prefer the semantic tokens below in components. */
+  /* ------------------------------------------------------------------------ */
+  --ds-color-white: #ffffff;
+  --ds-color-white-6: #ffffff0f;
+  --ds-color-white-10: #ffffff1a;
+  --ds-color-black-60: #00000099;
+  --ds-color-grey-300: #bababa;
+  --ds-color-grey-500: #8a8a8a;
+  --ds-color-grey-700: #5e5e5e;
+  --ds-color-grey-750: #393939;
+  --ds-color-grey-750-20: #39393933;
+  --ds-color-grey-750-80: #393939cc;
+  --ds-color-green-400: #3fcf8e;
+  --ds-color-green-700: #18744b;
+  --ds-color-red-400: #ff5a5f;
+  --ds-color-red-500: #e5484d;
+  --ds-color-olive-16: #74966329;
+
+  /* ------------------------------------------------------------------------ */
+  /* Colour semantics */
+  /* Built for a dark ground. text/primary is white. */
+  /* ------------------------------------------------------------------------ */
+  --ds-text-primary: #ffffff;
+  --ds-text-secondary: #bababa;
+  --ds-text-tertiary: #8a8a8a;
+  --ds-text-muted: #8a8a8a;
+  --ds-text-disabled: #5e5e5e;
+  --ds-placeholder: #5e5e5e;
+  --ds-icon-default: #ffffff;
+  --ds-icon-secondary: #bababa;
+  --ds-bg-surface: #ffffff0f;
+  --ds-bg-surface-raised: #ffffff0d;
+  --ds-bg-elevated: #00000099;
+  --ds-bg-toolbar: #393939cc;
+  --ds-border-subtle: #ffffff0f;
+  --ds-border-default: #ffffff1a;
+  --ds-border-medium: #393939;
+  --ds-border-strong: #bababa;
+  --ds-accent-primary: #18744b;
+  --ds-accent-secondary: #3fcf8e;
+  --ds-accent-negative: #e5484d;
+  --ds-table-card-bg: #39393933;
+  --ds-table-card-card-bg: #3939394d;
+
+  /* ------------------------------------------------------------------------ */
+  /* Highlights */
+  /* ------------------------------------------------------------------------ */
+  --ds-highlight-1: #b067ff;
+  --ds-highlight-1-12: #b067ff1f;
+  --ds-highlight-5: #ca940d;
+
+  /* ------------------------------------------------------------------------ */
+  /* Heatmap */
+  /* Cell fills for computed heat grids. */
+  /* ------------------------------------------------------------------------ */
+  --ds-heatmap-neutral: #ffffff0f;
+  --ds-heatmap-positive-moderate: #1b4332;
+  --ds-heatmap-positive-strong: #1a3a2a;
+  --ds-heatmap-negative-mild: #6b1520;
+  --ds-heatmap-negative-moderate: #8b1a2b;
+  --ds-heatmap-negative-strong: #a02040;
+
+  /* ------------------------------------------------------------------------ */
+  /* Dimensions */
+  /* Radii, spacing, padding, gaps, stroke weight. Unitless in Figma, px here. */
+  /* ------------------------------------------------------------------------ */
+  --ds-radius-zero: 0px;
+  --ds-radius-sm: 4px;
+  --ds-radius-radius-6: 6px;
+  --ds-radius-md: 8px;
+  --ds-radius-card: 8px;
+  --ds-radius-base: 12px;
+  --ds-radius-lg: 16px;
+  --ds-radius-container: 16px;
+  --ds-radius-input: 20px;
+  --ds-radius-full: 999px;
+  --ds-space-0: 0px;
+  --ds-space-1: 2px;
+  --ds-space-2: 4px;
+  --ds-space-3: 8px;
+  --ds-space-4: 12px;
+  --ds-space-5: 16px;
+  --ds-space-6: 24px;
+  --ds-space-7: 32px;
+  --ds-padding-zero: 0px;
+  --ds-padding-nav: 12px;
+  --ds-padding-card: 16px;
+  --ds-padding-card-lg: 24px;
+  --ds-gap-default: 8px;
+  --ds-item-spacing-10: 10px;
+  --ds-stroke-weight-1: 1px;
+
+  /* ------------------------------------------------------------------------ */
+  /* Typography */
+  /* Family is Inter on every token. The runtime binding lives in globals.css */
+  /* because next/font owns the loaded family name. */
+  /* Note: the bold styles resolve to weight 500 (Inter Medium), not 700. */
+  /* Only Display XXXL is 700. */
+  /* ------------------------------------------------------------------------ */
+  --ds-font-size-xs: 10px;
+  --ds-line-height-xs: 14px;
+  --ds-font-size-sm: 12px;
+  --ds-line-height-sm: 16px;
+  --ds-font-size-md: 14px;
+  --ds-line-height-md: 20px;
+  --ds-font-size-lg: 18px;
+  --ds-line-height-lg: 24px;
+  --ds-font-size-display-xxxl: 42px;
+  /* --ds-line-height-display-xxxl: withheld, see "Not emitted" below */
+
+  --ds-font-weight-regular: 400;
+  --ds-font-weight-medium: 500;
+  --ds-font-weight-bold: 700;
+
+  /* ------------------------------------------------------------------------ */
+  /* Gradients */
+  /* get_variable_defs returns an empty string for gradient-valued variables. */
+  /* These stops came from get_design_context on a node that paints with them. */
+  /* ------------------------------------------------------------------------ */
+  --ds-accent-gradient: linear-gradient(180deg, #0f8f63 0%, #0b7350 100%);
+
+  /* ------------------------------------------------------------------------ */
+  /* Effects */
+  /* glass/* combine a drop shadow with a backdrop blur. */
+  /* ------------------------------------------------------------------------ */
+  --ds-shadow-glass-surface: 0px 12px 12px 0px #00000059;
+  --ds-blur-glass-surface: 4px;
+  --ds-blur-glass-table: 4px;
+
+  /* ------------------------------------------------------------------------ */
+  /* Not emitted */
+  /* Read from Figma but not expressible as a custom property. */
+  /* ------------------------------------------------------------------------ */
+  /* border/glass: Gradient. Same as above. */
+  /* Display XXXL lineHeight: Figma returned 100. Every other token returns line height in px (text-sm 12px/16), which would make this 100px on a 42px face, i.e. 2.4x. The superseded Bento export recorded the equivalent as 100%, so this is likely a percentage. */
+}

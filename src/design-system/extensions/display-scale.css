@@ -1,0 +1,38 @@
+/* =============================================================================
+   DISPLAY SCALE. Not from Figma. PROPOSED, awaiting design sign-off.
+
+   Figma's largest type token is Display XXXL, Inter Bold 42px. That is a
+   product-surface display size. The statement register needs one step above it
+   for full-bleed scenes (doc 03 §3, H1 and H9).
+
+   Deliberately one invented size, not a parallel type system. Section openers
+   reuse the real 42px token rather than inventing a second size beside it.
+
+   Named `statement-*` rather than `font-size-*` so it cannot be mistaken for a
+   mirrored token at the point of use: `--ds-*` is Figma, everything else is ours.
+
+   Added 30 Aug 2026. See src/design-system/extensions/README.md.
+   ============================================================================= */
+
+:root {
+  /* Fluid from 40px at 360px viewport to 68px at ~1240px. Upper bound chosen so
+     the longest locked headline, "Trading intelligence that shows its work.",
+     sets on two lines at --content-max rather than three. */
+  --statement-size: clamp(2.5rem, 1.9rem + 2.7vw, 4.25rem);
+
+  /* Display leading is set here rather than read from Figma: the mirrored
+     Display XXXL line height is ambiguous (reported as 100, unclear whether px
+     or per cent) and is withheld from tokens/ until confirmed. */
+  --statement-line: 1.04;
+  --statement-tracking: -0.02em;
+
+  /* Section openers. Size is the real Figma token; only the leading and tracking
+     are ours, for the same reason as above. */
+  --section-size: var(--ds-font-size-display-xxxl);
+  --section-line: 1.1;
+  --section-tracking: -0.015em;
+
+  /* The dek under a statement headline. Reuses the real 18px token. */
+  --dek-size: var(--ds-font-size-lg);
+  --dek-line: 1.5;
+}

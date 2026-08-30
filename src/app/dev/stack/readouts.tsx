@@ -8,11 +8,11 @@ export function Readouts() {
   const scrollProgress = useAppStore((s) => s.scrollProgress);
 
   return (
-    <dl className="grid grid-cols-2 gap-2 text-secondary">
+    <dl className="grid grid-cols-2 gap-2 text-fg-2">
       <dt>zustand · sceneReady</dt>
-      <dd className="num text-primary">{String(sceneReady)}</dd>
+      <dd className="num text-fg">{String(sceneReady)}</dd>
       <dt>zustand · scrollProgress</dt>
-      <dd className="num text-primary">{scrollProgress.toFixed(3)}</dd>
+      <dd className="num text-fg">{scrollProgress.toFixed(3)}</dd>
     </dl>
   );
 }

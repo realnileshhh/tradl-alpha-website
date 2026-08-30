@@ -48,9 +48,9 @@ export function PinnedPanel() {
         {[1, 2, 3, 4, 5].map((n) => (
           <div
             key={n}
-            className="grid h-64 w-[70vw] place-items-center rounded-panel border border-subtle bg-l2 shadow-e3"
+            className="grid h-64 w-[70vw] place-items-center rounded-lg border border-line bg-surface shadow-glass"
           >
-            <span className="num text-4xl text-secondary">{n}</span>
+            <span className="num text-4xl text-fg-2">{n}</span>
           </div>
         ))}
       </div>
