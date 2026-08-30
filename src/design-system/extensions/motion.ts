@@ -56,6 +56,24 @@ export const EASE_PRESS_POINTS = [0.34, 1.56, 0.64, 1] as const;
 export const EASE_PRESS_CSS = `cubic-bezier(${EASE_PRESS_POINTS.join(", ")})`;
 
 /**
+ * The travel curve. Symmetric ease-in-out, and the only curve here that is not
+ * an ease-out.
+ *
+ * For a thing that starts at rest, crosses a distance, and comes back to rest
+ * in the same place: the hero CTA's travelling light. The house curve is wrong
+ * for that motion. It leaves at full speed, which reads as something already
+ * moving that happened to appear, and it has no deceleration to spend on the
+ * arrival, so the light hits its parking spot still moving and simply stops.
+ * Accelerating out of rest and braking back into it is what makes one lap read
+ * as a single deliberate gesture rather than a loop of a spinner.
+ *
+ * CSS-facing only, like the press curve. Nothing in the reveal layer should use
+ * it: content that enters should still arrive on the house curve.
+ */
+export const EASE_TRAVEL_POINTS = [0.65, 0, 0.35, 1] as const;
+export const EASE_TRAVEL_CSS = `cubic-bezier(${EASE_TRAVEL_POINTS.join(", ")})`;
+
+/**
  * Seconds. Doc 04's rule, made numeric: chrome reacts faster than content
  * reveals, so a nav bar or a chip never feels like it is waiting for the page.
  *

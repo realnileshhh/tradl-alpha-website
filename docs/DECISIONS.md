@@ -11,6 +11,33 @@ one greppable file is worth more than tidy folders until then.
 
 ---
 
+## 007 · The marketing ground is deeper than the Figma canvas
+
+`30 Aug 2026` · Nilesh · **accepted** · supersedes the ground clause of 004
+
+**`--page-ground` is `#07080a`.** 004 set it to `#121212` on the grounds that the Figma canvas fill
+is the value every component was composed on, so a component rendered on it composites to what the
+designer saw. That argument is still true, and it is now outranked by a design call: the alpha site
+wants a deeper ground than the product shell, because the whole page is chrome floating on it and a
+near-black ground is what makes a hairline read as a hairline.
+
+**What it costs, stated plainly.** Every `bg/*` and `border/*` overlay is white at 5 to 10 per cent,
+so all of them composite one step darker here than on the Figma canvas: `bg/surface` lands on
+`#16171a` rather than `#1e1e1e`. Nothing changes hue, no token is replaced or invented, and every
+text pairing gains contrast rather than losing it. `npm run ds:contrast` is the check on that claim.
+
+**What it does not change.** The ground is still ours, still site-only, still the one value in
+`marketing/`. A product surface must not read it: the product's ground is the app shell. If a
+`bg/base` variable ever lands in Figma it becomes the product ground, and this stays the marketing
+one rather than being deleted, because the two are now genuinely different values rather than one
+value copied twice.
+
+The three places that cannot read CSS keep their copies asserted against it by
+`npm run check:surfaces`: the viewport `themeColor` in `app/layout.tsx`, and `background_color` and
+`theme_color` in `app/manifest.ts`.
+
+---
+
 ## 006 · A named surface language, built on the tokens we already mirror
 
 `30 Aug 2026` · Nilesh · **accepted**
@@ -135,11 +162,11 @@ marketing page: the ground the overlays composite against, and the measure.
 closer to what doc 04 §1 actually describes. Statement is full-bleed and typographic; instrument is
 dense, hairline-bordered and numbers-forward. The alternation is still the design.
 
-One value stays ours: `--page-ground` `#121212`. The system's surfaces are white at 5 to 10 per cent,
+One value stays ours: `--page-ground`, at the time `#121212` and since moved to `#07080a` by 007. The system's surfaces are white at 5 to 10 per cent,
 so they are overlays with no ground of their own, and there is no `bg/base` variable to mirror.
 `#121212` is the canvas fill every component is composed on in Figma, so a component rendered on it
-composites to the value the designer saw. If a `bg/base` ever lands in Figma, this is the first thing
-to delete.
+composites to the value the designer saw. That reasoning is superseded by 007, which trades the exact
+composite for a deeper marketing ground and states what the trade costs.
 
 Consequences worth knowing, all measured by `npm run ds:contrast`: `accent/secondary` is the text
 accent at 9.4:1, `accent/primary` is a fill and scores 3.25:1 as text; `border/strong` is the only

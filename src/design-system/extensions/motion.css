@@ -21,6 +21,10 @@
   /* mirrors EASE_PRESS_POINTS. Overshoots past 1, for tap feedback only. */
   --motion-ease-press: cubic-bezier(0.34, 1.56, 0.64, 1);
 
+  /* EASE_TRAVEL_POINTS. Symmetric ease-in-out, for something that leaves rest,
+     travels, and comes back to rest in the same place. */
+  --motion-ease-travel: cubic-bezier(0.65, 0, 0.35, 1);
+
   /* mirrors DURATION.press */
   --motion-press: 100ms;
 

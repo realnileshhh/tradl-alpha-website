@@ -97,7 +97,7 @@ export const viewport: Viewport = {
   /* One value, not a light/dark pair. The design system has a single mode and
      the site runs on it, so there is nothing to switch between. This is the
      page ground from marketing/ground.css; keep the two in step. */
-  themeColor: "#121212",
+  themeColor: "#07080a",
   colorScheme: "dark",
 };
 

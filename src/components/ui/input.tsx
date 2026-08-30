@@ -22,22 +22,83 @@ import { cn } from "@/lib/utils";
  * recovered, `.ring-gradient` in the surface language is the technique for it.
  */
 
+/**
+ * MARKETING EXTENSION, not from Figma, and the same argument as the Button's:
+ * radius/input is what the design system draws, `pill` is for a marketing row
+ * where the field sits beside a pill CTA and the pair has to read as one
+ * control. It is a prop rather than a className because `cn` cannot resolve a
+ * radius conflict, so a class passed in would win or lose by emission order.
+ */
+type Shape = "default" | "pill";
+
+const SHAPE: Record<Shape, string> = {
+  default: "rounded-input",
+  pill: "rounded-full",
+};
+
+/**
+ * MARKETING EXTENSION, not from Figma.
+ *
+ * `well` is the ported spec: bg/elevated, black at 60 per cent, darker than
+ * what it sits on. That inversion is how the design system says "this is a hole
+ * you type into", and it works on the product's shell, which is lighter than
+ * the marketing ground.
+ *
+ * It does not work here. The site's ground is #07080a, so darkening it further
+ * produces a field that is very nearly the page: on the close and hero rows the
+ * control read as an absence next to a bright green button, and the placeholder
+ * looked like it was floating on the background. `raised` lifts the fill to
+ * bg/surface instead, which is the same move every other surface on this site
+ * makes, and it takes the placeholder from roughly 3.9:1 to 5.2:1 as a side
+ * effect.
+ */
+type Tone = "well" | "raised";
+
+/**
+ * The fill and the shadow travel together, because they are one decision.
+ *
+ * `well` keeps Figma's pairing: the darker fill plus glass/surface's drop, which
+ * is what makes a recessed field read as recessed on the product's shell.
+ *
+ * `raised` drops the shadow with the inversion. A lifted surface casting a 12px
+ * drop onto a near-black page reads as a smudge under the control rather than
+ * as depth, and the hairline plus the specular already do that job everywhere
+ * else on this site. The focus ring is declared per tone for the same reason:
+ * box-shadow replaces wholesale, so a shared focus rule would put the drop back.
+ */
+const TONE: Record<Tone, string> = {
+  well: "field-focus-well bg-elevated shadow-glass",
+  raised: "field-focus bg-surface",
+};
+
 type InputProps = Omit<InputHTMLAttributes<HTMLInputElement>, "size"> & {
   /** Rendered at the trailing edge, typically a submit affordance. */
   action?: ReactNode;
+  shape?: Shape;
+  tone?: Tone;
   containerClassName?: string;
 };
 
-export function Input({ action, className, containerClassName, ...props }: InputProps) {
+export function Input({
+  action,
+  shape = "default",
+  tone = "well",
+  className,
+  containerClassName,
+  ...props
+}: InputProps) {
   return (
     <div
       className={cn(
         "flex w-full max-w-[824px] items-center justify-between gap-[var(--ds-space-3)]",
-        "rounded-input border border-transparent bg-elevated p-[var(--ds-padding-card)]",
-        "shadow-glass",
-        // Focus lands on the inner control, so the visible ring is drawn here.
+        "border border-transparent p-[var(--ds-padding-card)]",
+        SHAPE[shape],
+        /* Fill, resting shadow and focus ring all come from the tone. The two
+           focus classes are defined in globals.css: written inline as an
+           arbitrary shadow, the colour function's commas break Tailwind's
+           parse and the ring silently does not exist. */
+        TONE[tone],
         "transition-shadow duration-[var(--motion-chrome)] ease-house",
-        "focus-within:shadow-[var(--focus-ring),var(--ds-shadow-glass-surface)]",
         containerClassName
       )}
     >

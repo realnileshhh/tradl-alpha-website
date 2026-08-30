@@ -90,11 +90,41 @@ export function Surface({
  * rather than lifted; stacking a strong bloom and a strong drop on the same
  * element is what makes a hero look like a sticker.
  */
-export function Frame({ className, children, ...props }: HTMLAttributes<HTMLDivElement>) {
+/**
+ * The two frame sizes, and the pairing is the point: docs/SURFACES.md requires
+ * concentric corners, inner radius = outer radius minus padding, and a radius
+ * or a padding passed in through className cannot be checked against its
+ * partner. Sizing is therefore a prop, and each row below is already concentric.
+ *
+ *   tight  radius/container 16, padding space/2 4  -> inner radius/base 12
+ *   bezel  radius/input 20, padding space/4 12     -> inner radius/md 8
+ *
+ * `bezel` is the marketing one: a device-style surround for a demo frame, where
+ * the border is thick enough to read as a housing rather than as a stroke.
+ */
+export type FrameSize = "tight" | "bezel";
+
+const FRAME_SIZE: Record<FrameSize, string> = {
+  tight: "rounded-container p-[var(--ds-space-2)]",
+  bezel: "rounded-input p-[var(--ds-space-4)]",
+};
+
+const FRAME_INNER_SIZE: Record<FrameSize, string> = {
+  tight: "rounded-base",
+  bezel: "rounded-md",
+};
+
+export function Frame({
+  size = "tight",
+  className,
+  children,
+  ...props
+}: HTMLAttributes<HTMLDivElement> & { size?: FrameSize }) {
   return (
     <div
       className={cn(
-        "relative rounded-container border border-line p-[var(--ds-space-2)]",
+        "relative border border-line",
+        FRAME_SIZE[size],
         "bg-elevated shadow-frame backdrop-blur-glass",
         // Own compositing layer. Without it Safari drops the backdrop-filter.
         "[transform:translate(0,0)]",
@@ -109,15 +139,17 @@ export function Frame({ className, children, ...props }: HTMLAttributes<HTMLDivE
 
 /** The panel inside a Frame. Halo instead of bloom, and the scanline texture. */
 export function FrameInner({
+  size = "tight",
   textured = true,
   className,
   children,
   ...props
-}: HTMLAttributes<HTMLDivElement> & { textured?: boolean }) {
+}: HTMLAttributes<HTMLDivElement> & { textured?: boolean; size?: FrameSize }) {
   return (
     <div
       className={cn(
-        "overflow-hidden rounded-base border border-line shadow-inner",
+        "overflow-hidden border border-line shadow-inner",
+        FRAME_INNER_SIZE[size],
         textured && "texture-scanline",
         className
       )}

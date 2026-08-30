@@ -217,9 +217,11 @@ numerals; it no longer switches family.
 
 **Ground.** The site runs dark, directly on the design system's one mode. There is no theme switch,
 no inverted scale and no wrapper class: every token renders exactly as drawn. Do not author light
-equivalents. The only value that is ours is `--page-ground` `#121212`, because the system's surfaces
-are white overlays with no ground of their own and Figma has no `bg/base`. The two registers differ
-by scale and density, not colour. See `docs/DECISIONS.md` 004.
+equivalents. The only value that is ours is `--page-ground` `#07080a`, because the system's surfaces
+are white overlays with no ground of their own and Figma has no `bg/base`. It is deeper than the
+#121212 canvas the components are drawn on in Figma, so every overlay composites one step darker
+here than it does there. The two registers differ by scale and density, not colour. See
+`docs/DECISIONS.md` 004 and 007.
 
 ---
 

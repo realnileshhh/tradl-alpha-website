@@ -65,3 +65,4 @@ reference/**/.DS_Store
 /docs/01-inspiration/
 /docs/02-product-context/
 /reference/
+.gstack/
