@@ -11,6 +11,164 @@ one greppable file is worth more than tidy folders until then.
 
 ---
 
+## 009 · Phones and tablets get a notice instead of the site, and that is temporary
+
+`31 Aug 2026` · Nilesh · **accepted** · expected to be reverted
+
+Every section has a narrow arrangement and they work: the toolkit stacks, the peek carriage becomes
+tabbed states, the engineering scene falls back to a painted still. What does not exist is a design
+pass over the whole page at phone and tablet width, and shipping the alpha with an unreviewed one is
+worse than shipping a note that says come back on a laptop. So on a phone or a tablet the document is
+one screen and nothing else.
+
+**Width alone does not identify a tablet, and the first version of this got that wrong.** It gated on
+`max-width: 1023.98px` and every tablet in landscape walked straight through: an iPad is 1024, 1180
+or 1366 points wide on its side, which is also a laptop. Three conditions, any of which gates:
+
+| Condition | Catches |
+|---|---|
+| `max-width: 1023.98px` | phones, and tablets held in portrait |
+| `(hover: none) and (pointer: coarse)` | any touch-primary device at any width, so a tablet on its side |
+| `html[data-narrow]` | an iPad driven by a trackpad, which CSS cannot see at all |
+
+The third exists because the second has one blind spot and it is not a rare one. An iPad with a Magic
+Keyboard reports `pointer: fine` and `hover: hover`, exactly as a laptop does, because at that moment
+it is being driven exactly as a laptop is; and since iPadOS 13 Safari there also reports itself as a
+Mac, so the user agent cannot be asked either. What it cannot hide is the touchscreen, and a Mac has
+none, so "claims to be a Mac and reports more than one touch point" is the test. It only ever adds an
+attribute: a Mac reports zero touch points, and a Windows laptop with a touchscreen fails both the Mac
+test and the tablet user-agent match. Verified against both of those, and against a Windows machine
+reporting ten touch points, which still gets the site.
+
+**Three things on it: an icon, a line, a line under it.** Somebody who cannot use the site does not
+want a paragraph about why. An earlier pass carried the wordmark, an eyebrow label, a fading rule and
+a warm beat, which is a section opener rather than a notice.
+
+**CSS, not React, and `display: none`, not an overlay.** A `useMediaQuery` branch has to guess on the
+server and whichever way it guesses is wrong for half the visitors: guess narrow and every desktop
+ships the notice as its first paint, guess wide and every phone downloads the whole homepage before
+replacing it. A media query answers at parse time and answers correctly for both. And the rest of the
+page is taken out of the box tree rather than covered, because a fixed pane leaves the entire site in
+the accessibility tree, so a screen reader on a phone would read a homepage that is not on screen,
+underneath a message saying it is not available.
+
+**Desktop is untouched, by construction.** `.viewport-gate` is `display: none` at rest and every
+other rule sits inside the `max-width` query, so above the breakpoint the element contributes no box,
+no stacking context and no layout. The breakpoint pair is 1023.98 / 1024 rather than 1023 / 1024,
+because a viewport can be a fractional CSS pixel on a scaled display and the integer pair leaves a
+gap that matches neither rule.
+
+**The cost, stated plainly: this is bad for search.** Google indexes mobile-first, so a crawler
+rendering at phone width sees a page with no content on it. It does not bite yet, because
+`env.shouldIndex` is false everywhere except the real production deployment, and it must be lifted
+before that deployment is indexed. It is the reason this entry exists rather than a commit message.
+
+**Rejected:** a fixed overlay over a live page (accessibility, and it keeps hydrating and observing
+behind a pane nobody can see); a React branch on a media query (a wrong first paint for half of all
+visitors); raising the width breakpoint until it covered landscape tablets, which would have taken
+every 1366x768 laptop with it; `(any-pointer: coarse)` as the touch test, which is true of any laptop
+with a touchscreen; shipping the unreviewed narrow layouts as they are.
+
+---
+
+## 008 · The bull is a re-materialised 98k-triangle mesh, turned by hand, and mobile never sees it
+
+`31 Aug 2026` · Nilesh · **accepted**
+
+The engineering section stands a 3D bull at the centre of a sticky stage while six construction rules
+assemble around it on scroll. Four decisions inside that are not recoverable from the code and
+constrain anything else 3D that lands on this site.
+
+**The asset is reduced by two orders of magnitude, offline, and the recipe is recorded.** The
+supplied `green bull 3d model.glb` was 57.4MB and 1,958,349 triangles, from a generative modeller
+that ships raw float32 geometry. That is not a marketing-page asset at any bitrate. Reduced with
+gltf-transform 4.4.2:
+
+```
+weld     in.glb  b1.glb
+simplify b1.glb  b2.glb  --ratio 0.05 --error 0.0015
+resize   b2.glb  b3.glb  --width 1024 --height 1024
+webp     b3.glb  b4.glb  --quality 82
+meshopt  b4.glb  out.glb --level medium
+```
+
+968KB and 97,913 triangles, which holds the silhouette, the horns and the muscle break at every size
+this section renders at. **Meshopt and not Draco**, because drei's `useGLTF` defaults its Draco
+decoder to a Google CDN and meshopt's ships inside three-stdlib: same compression, no third-party
+request. The source file is not in this repository, which is why the recipe is here.
+
+**The geometry is theirs, the material is ours.** The model arrives with a base colour that has its
+lighting baked in, in a duller and yellower green than `accent/secondary`. Rendered as authored it
+reads as an imported asset sitting on the page rather than as part of it. So the base colour map is
+dropped, the normal and roughness maps are kept because that is where the anatomy lives, and the
+surface is rebuilt as `grey/750` under an accent key, a cool fill, a deep back light and a fresnel
+rim injected into the standard shader. All four colours are read from the mirrored tokens on the DOM
+side and passed across the `<Canvas>` boundary as props, because three.js cannot read a custom
+property and `npm run check:surfaces` is right to ban the hex that would otherwise appear.
+
+**Below 768px there is no WebGL at all.** Doc 04 §5's binding constraint is a mid-range Android on
+4G, and three plus drei plus a 968KB model is not a cost that device should pay for a turn it has no
+room to see: six cards orbiting a bull at 390px is not a layout. The narrow arrangement is a 14KB
+painted still above a single-column stack, and the still is a screenshot of the real scene at its
+opening pose, captured by `scripts/capture-bull-still.mjs` against a dev-only route. Wide viewports
+paint the same still first and swap to WebGL in one frame when the model arrives; they do not
+cross-fade, because the still is at the opening pose and the canvas is at whatever pose the visitor
+has already scrolled to, and fading between them shows two bulls at two angles.
+
+**Two inputs turn it and they add.** Scroll carries it one full revolution across the track, which is
+what the scrubbed timeline writes; a drag is an offset the visitor holds on top of that. The scene
+sums the two, so neither writer has to know the other's value, and neither surface moves the other:
+the pointer is captured for the length of a drag so turning the bull never scrolls the page, and the
+timeline never writes the drag value so scrolling never undoes a pose set by hand. Horizontal only,
+because a free tumble reaches poses that are upside down, edge-on and unlit with no way back but a
+reload. `touch-action: pan-y` keeps vertical panning with the browser. Arrow keys do the same job at
+15 degrees a press, per doc 04 §7.
+
+**The timeline measures its angle from the frame the scene goes live.** While the painted still is on
+screen there is one fixed pose to look at, so an angle banked during that time is spent all at once
+the instant WebGL appears, as a jump from the pose in the picture to wherever the page had scrolled
+to. So the timeline re-zeroes until then, and the origin is captured on the `bullLive` transition
+rather than left wherever the tween's own `onUpdate` last ran: those are not the same moment, and a
+reload parked inside the section is exactly where they diverge, since it restores the offset, scrubs
+to the middle of the travel, and then loads the model seconds later with no scroll in between. With
+the poses guaranteed equal the hand-off can be a 240ms dissolve rather than a cut, which covers the
+one difference left, that a WebP of a render is not the render.
+
+**The six cards are glass, which costs two house rules.** They sit over a lit model, the one place on
+this site where a backdrop blur has something real to diffuse, so above 1024 they take a menu-tier
+blur over `bg/elevated`, Figma's own glass-pane fill, and hovering fades in an opaque backing so the
+card being read stops being a window. That breaks the two-blurred-surfaces-per-viewport ceiling in
+docs/SURFACES.md, scoped as tightly as it can be: never on the narrow layout, where the ground is
+flat and a blur is an expensive no-op. And it breaks "hover moves the stroke, never the fill", which
+here is the interaction rather than an oversight. `bg/elevated` is black at 60 per cent and not a
+white overlay for a reason that is not aesthetic: `bg/surface` composites to the same pixel over the
+page ground as the opaque state does, so a card built on it has no glass state to be in, and a fill
+that darkens rather than lightens keeps body copy legible over a lit model.
+
+**The still is cut out, and the script asserts it.** `omitBackground` removes the browser's own
+default white backdrop and nothing else, so the explicit `background-color` globals.css sets on
+`<body>` was painted and captured like any other pixel: the first version shipped with no alpha
+channel at all, an opaque near-black square that punched a hole through the section's bloom for as
+long as it was on screen. The fix is one stylesheet line in the capture; the reason it is worth a
+paragraph is that the failure is invisible in review, because flattened against the page ground for a
+look, an opaque still and a transparent one are the same picture. The script now fails if less than a
+tenth of the frame comes back transparent.
+
+**The still is captured twice and the two passes must agree.** The capture drives a dev server, and a
+dev server will serve a page compiled from the module graph as it was before the edit that prompted
+the re-capture. That failure is silent and it lasts: the still goes stale, the scene moves on, and
+the only symptom is a bull that changes pose the instant WebGL loads. It happened once during this
+build. Two passes across a reload catch it.
+
+**Rejected:** shipping the model as authored (57.4MB); Draco (a CDN request for the decoder);
+free-tumble orbit controls (unlit and upside-down poses, no way home);
+rendering the mesh as a wireframe, which fits the section's name but is noisy at 98k triangles and
+needs a second, coarser mesh; and `ScrollTrigger`'s `pin`, which injects a spacer and changes the
+document height every other trigger measured against, where `position: sticky` does the same job in
+CSS for nothing.
+
+---
+
 ## 007 · The marketing ground is deeper than the Figma canvas
 
 `30 Aug 2026` · Nilesh · **accepted** · supersedes the ground clause of 004

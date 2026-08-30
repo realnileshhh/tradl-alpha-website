@@ -541,6 +541,156 @@ export const FOUNDERS: Founder[] = [
 ];
 
 /* -----------------------------------------------------------------------------
+   The small-screen notice.
+
+   TEMPORARY, and it is worth saying so at the constant rather than only in a
+   commit message. The narrow layouts exist and work: every section has a stacked
+   arrangement, the engineering scene falls back to a painted still, and none of
+   that is deleted by this. What is missing is a pass over the whole page at
+   phone and tablet width, and shipping the alpha with an unreviewed one is worse
+   than shipping a note that says come back on a laptop.
+
+   NOT A CONVERSION DEVICE. Doc 03 §1.4 bans anything that uses a visitor's
+   position against them, and a full-screen interstitial is close enough to that
+   family to be worth the distinction: this one carries no ask, no field, no
+   countdown and no way to dismiss it into something else. It states a fact about
+   the build and gets out of the way.
+   -------------------------------------------------------------------------- */
+
+/**
+ * NEW COPY, needs sign-off. Not in the library at doc 05 §5.
+ *
+ * THE JOKE IS ON US, not on the visitor. Nobody can fix the size of the screen
+ * they are holding, so a notice that frames it as their problem lands badly. "We
+ * do not fit" puts the shortcoming where it belongs, and the plainest possible
+ * sentence about what a narrow window does to the layout is funnier than any
+ * apology would be.
+ *
+ * "THIS SCREEN", NOT "A PHONE". The notice covers tablets as well, in both
+ * orientations, and a headline about phones read on an iPad is a headline that
+ * is talking about somebody else.
+ *
+ * NO PIXEL COUNT IN THE SUBTITLE EITHER, and that is a correction. It used to
+ * say "anything 1024px and wider does the trick", which was true when width was
+ * the only condition and became a lie the moment tablets in landscape were
+ * included: an iPad on its side is 1180 points wide and still sees this. Naming
+ * the two machines it does work on is both shorter and still true.
+ *
+ * THREE THINGS AND NO MORE: an icon, a line, and a line under it. A visitor who
+ * cannot use the site does not want a paragraph about why, and an eyebrow label,
+ * a rule and a warm beat under it is a section opener rather than a notice.
+ *
+ * NO EXCLAMATION MARK, which is the constraint that shapes the whole thing. Doc
+ * 01 §7 bans them outright, so the warmth has to come from the words rather than
+ * from punctuation reaching for a laugh. Short declaratives, one idea each.
+ *
+ * The number is the emotion, per the same rule, and it is the real breakpoint
+ * rather than a rounded one.
+ */
+export const VIEWPORT_GATE_TITLE_LEAD = "We do not fit on this screen";
+export const VIEWPORT_GATE_TITLE_BEAT = "yet.";
+export const VIEWPORT_GATE_BODY =
+  "Come back on a laptop or a desktop. Everything lines up there.";
+
+/* -----------------------------------------------------------------------------
+   The engineering underneath.
+
+   NOT IN DOC 03 §3. The section comes from the v2 home prototype, which adds it
+   between the founders and the FAQ, and the substance is doc 02's backtesting
+   one-pager rather than the copy library: these are the six construction rules
+   the engine is actually built on, stated as the engine states them.
+
+   THREE EDITS FROM THE PROTOTYPE, each forced by doc 01 §7.
+
+   The em-dashes in cards 1 and 4 become commas. Card 1 also loses "the single
+   most common accidental look-ahead in the industry", which is a superlative
+   with no number attached; "the accidental look-ahead almost every backtester
+   ships with" makes the same claim and is checkable. Card 3 loses the word
+   "target": it is banned in a price context and a profit exit is exactly that,
+   so the sentence names the behaviour instead.
+
+   The prototype's closing kicker, "Deliberately conservative. Deterministic to
+   the last paisa. Descriptive, never advisory.", is deliberately not here. The
+   six cards make all three claims in their own words; a line restating them
+   under a rule reads as a caption apologising for the section above it. The RA
+   perimeter is stated in full in the sitewide footer regardless.
+   -------------------------------------------------------------------------- */
+
+export const ENGINEERING_EYEBROW = "THE ENGINEERING UNDERNEATH";
+
+/**
+ * NEW COPY, needs sign-off. The prototype reads "Built the hard way, so the
+ * numbers can be trusted the easy way."
+ *
+ * Shortened, because the section opener sets its headline at a 20ch measure and
+ * the long form breaks to three lines with a short third. "Trusted" also goes:
+ * it is a claim about how a reader should feel, and everything else on this
+ * page is a claim about what the engine does.
+ */
+export const ENGINEERING_TITLE_LEAD = "Built the hard way, so the numbers";
+export const ENGINEERING_TITLE_BEAT = "hold up.";
+
+export const ENGINEERING_DEK =
+  "None of these is a feature you would ask for. Together they are the difference between analysis and fantasy.";
+
+export type EngineeringPillar = {
+  /** The rule as the engine writes it. Monospace, accent, never translated. */
+  code: string;
+  /** What the rule does, in one clause. */
+  title: string;
+  /** Why it matters, in two sentences. */
+  copy: string;
+};
+
+export const ENGINEERING_PILLARS: EngineeringPillar[] = [
+  {
+    code: "bars.completed_only()",
+    title: "The forming bar is never read",
+    copy: "The accidental look-ahead almost every backtester ships with, and it flatters every entry. We evaluate completed bars only.",
+  },
+  {
+    code: "fill = bar[t+1].open",
+    title: "Signals fill at the next open",
+    copy: "Never at the signal bar's close. A few percent of imaginary edge, refused on principle.",
+  },
+  {
+    code: "stop.fills_first()",
+    title: "When both hit, the stop fills first",
+    copy: "An engine that quietly settles the profit exit first inflates its own win rate. Ours resolves against us, every time.",
+  },
+  {
+    code: "assert run(a) == run(a)",
+    title: "Deterministic to the last paisa",
+    copy: "Same strategy, same dates, same data. Bit-for-bit identical trade logs, every run, forever.",
+  },
+  {
+    code: "greeks.from_chain()",
+    title: "Greeks read, never modelled",
+    copy: "Delta and IV come from the actual chain snapshot. No pricing model sits between you and your result.",
+  },
+  {
+    code: "expiry.from_metadata()",
+    title: "Real contract metadata",
+    copy: "Expiry weekdays and lot sizes have changed repeatedly. We resolve from real contracts, never a weekday formula.",
+  },
+];
+
+/** Read out to anyone who cannot see the object the pillars are arranged around. */
+export const ENGINEERING_STAGE_ALT =
+  "A bull, lit in green, standing at the centre of the six engineering rules.";
+
+/**
+ * The accessible name of the turntable, applied only once it is operable.
+ *
+ * It names the axis, because the axis is the whole affordance: there is nothing
+ * to discover beyond left and right, and saying so is shorter than letting
+ * somebody find it out.
+ */
+export const ENGINEERING_STAGE_LABEL =
+  "Bull. Drag left or right, or use the arrow keys, to turn it.";
+
+
+/* -----------------------------------------------------------------------------
    FAQ, doc 03 §5 T6's pattern on the homepage.
 
    The prototype's five pairs. Two answers carried em-dashes and are repunctuated

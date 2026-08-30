@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import { AppProviders } from "@/components/providers/app-providers";
+import { ViewportGate } from "@/components/site/viewport-gate";
+import { DEVICE_SCRIPT } from "@/lib/device";
 import { RESTORE_SCRIPT } from "@/lib/scroll-restoration";
 import { env } from "@/lib/env";
 import {
@@ -160,6 +162,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             window; the provider clears it the moment the page is back where it
             was. See src/lib/scroll-restoration.ts. */}
         <script dangerouslySetInnerHTML={{ __html: RESTORE_SCRIPT }} />
+
+        {/* Blocking for the same reason: it decides what the first paint shows.
+            It only ever adds an attribute, and only on a touchscreen tablet that
+            reports itself as a laptop. See src/lib/device.ts. */}
+        <script dangerouslySetInnerHTML={{ __html: DEVICE_SCRIPT }} />
+
+        {/* Below 1024px this replaces the page; above it, it is `display: none`
+            and contributes nothing at all. See components/site/viewport-gate. */}
+        <ViewportGate />
 
         <AppProviders>{children}</AppProviders>
         <script

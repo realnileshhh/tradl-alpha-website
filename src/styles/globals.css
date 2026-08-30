@@ -170,6 +170,14 @@
     visibility: hidden;
   }
 
+  /* The small-screen notice is not what the restore is waiting for: there is no
+     pinned section below 1024px and therefore no offset to put back, so a stale
+     flag from a wider session must not hide it. Visibility inherits, so the
+     child simply takes it back. */
+  html[data-restoring] body .viewport-gate {
+    visibility: visible;
+  }
+
   body {
     background-color: var(--page-ground);
     color: var(--ds-text-primary);
@@ -258,7 +266,8 @@
        branch ever fails to run, content must still be readable rather than
        hidden behind a start state nothing will clear. */
     [data-reveal],
-    [data-reveal-group] > * {
+    [data-reveal-group] > *,
+    [data-orbit-item] {
       opacity: 1;
       will-change: auto;
     }
@@ -1395,4 +1404,455 @@
     0 0 0 1px var(--ds-accent-primary),
     0 0 0 5px color-mix(in srgb, var(--ds-accent-secondary) 10%, transparent),
     var(--ds-shadow-glass-surface);
+}
+
+/* =============================================================================
+   THE ENGINEERING ORBIT
+
+   The bull turns at the centre of a sticky stage while six rules assemble
+   around it. The choreography is in components/site/engineering-orbit.tsx; what
+   is here is the arrangement it animates, and the two things that arrangement
+   needs which no utility gives.
+
+   THE STAGE IS STICKY, WHICH MAKES CLIPPING FATAL. `position: sticky` is
+   cancelled outright by any ancestor with `overflow` other than `visible`, and
+   it fails silently: the element simply scrolls away and the section looks like
+   a broken animation. Nothing on this path may clip.
+
+   THE CARDS ARE OPAQUE, WHICH IS THE ONE DEVIATION. `bg-surface` is white at
+   6 per cent. Over a flat page that composites to a card; over a lit 3D model it
+   composites to a window onto that model, and six windows is not a design. So
+   the identical pixel is built explicitly instead, with --page-ground as the
+   colour and the surface step and the directional fill stacked over it as
+   images. Same composite, nothing showing through. Everything else about the
+   card is the house `.surface` composition, specular included.
+   ============================================================================= */
+
+@layer components {
+  .orbit-scroll {
+    position: relative;
+  }
+
+  /* Narrow and reduced-motion default: ordinary flow, no stage, no sticky. */
+  .orbit-stage {
+    position: relative;
+  }
+
+  .orbit-grid {
+    display: grid;
+    gap: var(--ds-space-5);
+  }
+
+  /* ---------------------------------------------------------------------------
+     The card
+
+     `.surface` and `.surface-lit` carry the hairline, the specular, the radius
+     and the hover transition, and the fill they come with is already
+     translucent: --ds-bg-surface is white at 6 per cent. Below the orbit that is
+     all a card needs, because the page behind it is flat and the composite is
+     indistinguishable from an opaque fill.
+
+     Inside the orbit it is glass, and the two rules that costs are stated at the
+     media query below.
+     ------------------------------------------------------------------------- */
+
+  /* ---------------------------------------------------------------------------
+     The stage the model renders on
+
+     A square box: the still and the canvas both fill it, so swapping one for the
+     other cannot move the layout by a pixel. The canvas is absolutely positioned
+     over the still and fades in when the model has actually arrived, which is
+     the "painted static first, JS upgrades it" contract from doc 04 §5.
+
+     Only opacity animates. The canvas keeps its box whether it is visible or
+     not, so nothing here reflows.
+     ------------------------------------------------------------------------- */
+  .bull-stage {
+    position: relative;
+    aspect-ratio: 1;
+    isolation: isolate;
+  }
+
+  /* ---------------------------------------------------------------------------
+     The turntable
+
+     Applied only while `data-live` is set, which is only once WebGL is on
+     screen. A grab cursor over a static image is a promise the page cannot keep.
+
+     `touch-action: pan-y` is the load-bearing one. The handler reads horizontal
+     movement and the browser keeps vertical panning, so a finger dragged up the
+     page still scrolls the page and only the sideways component is ours. Without
+     it a touch that starts on the bull traps the page.
+     ------------------------------------------------------------------------- */
+  .bull-stage[data-live] {
+    cursor: grab;
+    touch-action: pan-y;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .bull-stage[data-dragging] {
+    cursor: grabbing;
+  }
+
+  /* An outline rather than a ring, per docs/SURFACES.md, and offset outward so
+     it traces the stage rather than cutting across the model. */
+  .bull-stage[data-live]:focus-visible {
+    outline: 2px solid var(--ds-accent-secondary);
+    outline-offset: 6px;
+    border-radius: var(--ds-radius-container);
+  }
+
+
+  .bull-still,
+  .bull-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* A SHORT CROSS-FADE, and it is only safe because the poses agree.
+     An earlier version cut between them in a single frame, because the still
+     was at the resting pose while the canvas arrived at whatever the page had
+     scrolled to, and fading between two angles shows two bulls. The section's
+     timeline now measures its rotation from the frame the scene goes live, so
+     the canvas's first render is the pose the still was showing. What is left to
+     hide is only that a WebP of a render is not the render, and 240ms of
+     dissolve hides it. Opacity is the only property that moves. */
+  .bull-still,
+  .bull-canvas {
+    transition: opacity 240ms var(--motion-ease);
+  }
+
+  .bull-still {
+    object-fit: contain;
+  }
+
+  .bull-still[data-hidden] {
+    opacity: 0;
+  }
+
+  .bull-canvas {
+    opacity: 0;
+  }
+
+  .bull-canvas[data-ready] {
+    opacity: 1;
+  }
+
+  /* The room the model stands in. A wide, very low alpha accent bloom, so the
+     fresnel rim has something to separate from; without it the green edge sits
+     on flat ground and the model reads as a cut-out rather than as lit. */
+  .orbit-core-glow {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    z-index: 0;
+    width: min(84vw, 900px);
+    aspect-ratio: 1;
+    translate: -50% -50%;
+    pointer-events: none;
+    background: radial-gradient(
+      circle at 50% 50%,
+      color-mix(in srgb, var(--ds-accent-secondary) 7%, transparent) 0%,
+      color-mix(in srgb, var(--ds-accent-primary) 4%, transparent) 38%,
+      transparent 68%
+    );
+  }
+
+  /* ---------------------------------------------------------------------------
+     Narrow: the still sits above a two-up stack and nothing turns.
+     ------------------------------------------------------------------------- */
+  .orbit-bull-still {
+    width: min(86vw, 440px);
+    margin-inline: auto;
+  }
+
+  /* ---------------------------------------------------------------------------
+     Wide: the sticky stage and the orbit itself
+
+     1024, not 768. The orbit needs three things at once: a model big enough to
+     be worth turning, two card columns wide enough to hold four lines of body
+     copy, and a gutter the middle row can be pushed out into. At 820 all three
+     are true only by taking from each other, and what comes out is a 250px card
+     with the arc offset hanging off the edge of the screen. Between 768 and 1024
+     the two-up stack is simply the better layout, and it is already built.
+     ------------------------------------------------------------------------- */
+  @media (min-width: 1024px) {
+    .orbit-stage {
+      /* The nav is sticky and 100px tall including its gutter, so a stage that
+         centres in the full viewport centres one nav-height too high and the top
+         row of cards slides under the pane. Padding moves the optical centre
+         down; the model, which is absolutely positioned and ignores padding,
+         takes half of it as an offset instead. */
+      --orbit-nav-inset: 100px;
+      /* The gap the cards leave for the model. The model itself is wider than
+         this and overlaps the columns, which is what makes it read as big. */
+      /* Capped at 380 rather than tracking vw all the way up: the grid stops
+         growing at 1240, so a core that keeps widening past that takes its
+         extra width out of the cards, and the columns get narrower on a larger
+         screen. */
+      --orbit-core: clamp(200px, 24vw, 380px);
+
+      position: sticky;
+      top: 0;
+      display: grid;
+      place-items: center;
+      height: 100vh;
+      padding-top: var(--orbit-nav-inset);
+    }
+
+    .orbit-bull {
+      position: absolute;
+      left: 50%;
+      top: calc(50% + var(--orbit-nav-inset) / 2);
+      /* Above the grid's own box but below the cards, which take the pointer
+         back with `pointer-events: auto`. The stage has to be reachable or there
+         is nothing to drag; the cards have to win where they overlap it, or a
+         drag started on a card would turn the model behind it. */
+      z-index: 1;
+      /* Bounded by the viewport in both directions. Height alone is not enough:
+         a short, wide window and a tall, narrow one both want a smaller bull
+         than 74vh gives them, and the vw term is what stops the model swallowing
+         the card columns on the second one. */
+      width: min(70vh, 700px, 62vw);
+      translate: -50% -50%;
+    }
+
+    .orbit-grid {
+      position: relative;
+      z-index: 2;
+      grid-template-columns: minmax(0, 1fr) var(--orbit-core) minmax(0, 1fr);
+      grid-template-rows: repeat(3, auto);
+      align-items: center;
+      width: min(100%, 1240px);
+      margin-inline: auto;
+      /* Wider than the page gutter, because the middle row is pushed outward by
+         space/6 and has to land inside the window rather than on its edge. At
+         1024 this leaves 17px of clear ground outside the pulled cards; with the
+         plain 24px gutter they sat at exactly x=0 and x=100%, which reads as two
+         cards falling off the screen rather than as an arc. */
+      padding-inline: clamp(24px, 4vw, 64px);
+      column-gap: clamp(16px, 2.6vw, 40px);
+      row-gap: clamp(12px, 2vh, 24px);
+      /* The grid is a layout, not a surface. Only the cards take the pointer,
+         so the empty middle column never sits in front of anything. */
+      pointer-events: none;
+    }
+
+    /* -------------------------------------------------------------------------
+       Glass, and the two house rules it breaks
+
+       These six cards sit over a lit 3D model, which is the one place on the
+       site where a backdrop blur has something real to diffuse. So they are
+       glass: the translucent fill `.surface` already gives them, over a
+       panel-tier blur, with the model reading through as shape and colour rather
+       than as detail.
+
+       1 · THE BLUR BUDGET. docs/SURFACES.md caps a viewport at two blurred
+           surfaces and this is six. It is scoped as tightly as it can be: only
+           at 1024 and up, which is the only arrangement that has a model behind
+           the cards at all, and never on the narrow layout, where the ground is
+           flat and a blur would be an expensive no-op. The canvas underneath is
+           `frameloop="demand"` and renders only while the model is actually
+           turning, so the two costs rarely land in the same frame.
+
+       2 · HOVER CHANGES THE FILL. The same document says hover moves the stroke
+           or adds a wash and never touches the fill. Here it does: hovering
+           fades in an opaque backing, so a card being read stops being a window
+           and the copy sits on a solid ground. That is the point of the
+           interaction rather than an oversight, and the stroke still moves as
+           well, through `.surface-interactive`.
+
+       The backing is a pseudo-element at z-index -1, which paints above the
+       card's own background and below its text, so only its opacity animates and
+       the blur is never transitioned. `transform: translate(0, 0)` is not
+       decoration: without its own compositing layer Safari drops the
+       backdrop-filter outright, and `npm run check:surfaces` fails a blur that
+       has no transform beside it.
+       ---------------------------------------------------------------------- */
+    .pillar {
+      pointer-events: auto;
+      isolation: isolate;
+      transform: translate(0, 0);
+      /* Menu tier, 24px, not the 10px panel tier. Ten reads as a slightly dirty
+         window over something this soft; twenty-four is where the thing behind
+         stops being legible and becomes light, which is the whole difference
+         between a translucent card and glass. */
+      -webkit-backdrop-filter: blur(var(--glass-menu));
+      backdrop-filter: blur(var(--glass-menu));
+      /* A pane needs a visible edge and a lit top or it has no thickness. Both
+         are one step up from the resting card: the interactive stroke rather
+         than the faint one, and the high specular the window stack uses. */
+      border-color: var(--stroke-visible);
+      box-shadow: var(--spec-high);
+      /* --ds-bg-elevated is black at 60 per cent, and docs/SURFACES.md already
+         names it the glass pane fill. It is the right value here for a reason
+         that is not aesthetic: `.surface`'s own white-6 composites to the same
+         pixel over the page ground as the opaque hover state does, so a card
+         built on it has no glass state to be in. Black-60 does have one. It
+         darkens whatever is behind rather than lightening it, which keeps the
+         body copy legible over a lit model (doc 04 §7 wants contrast to hold on
+         the actual surface, not on a convenient one), and over the near-black
+         ground it is almost nothing, so a card with no model behind it looks
+         the way it always did. */
+      background-color: var(--ds-bg-elevated);
+    }
+
+    .pillar::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      border-radius: inherit;
+      pointer-events: none;
+      opacity: 0;
+      background-color: var(--page-ground);
+      background-image:
+        var(--fill-lit),
+        linear-gradient(0deg, var(--ds-bg-surface), var(--ds-bg-surface));
+      transition: opacity var(--motion-chrome) var(--motion-ease);
+    }
+
+    .pillar:hover::before,
+    .pillar:focus-within::before {
+      opacity: 1;
+    }
+
+    /* Two columns of three. DOM order is reading order, row by row, so what a
+       screen reader announces and what the eye follows are the same sequence. */
+    .pillar[data-slot="0"] {
+      grid-area: 1 / 1;
+    }
+    .pillar[data-slot="1"] {
+      grid-area: 1 / 3;
+    }
+    .pillar[data-slot="2"] {
+      grid-area: 2 / 1;
+    }
+    .pillar[data-slot="3"] {
+      grid-area: 2 / 3;
+    }
+    .pillar[data-slot="4"] {
+      grid-area: 3 / 1;
+    }
+    .pillar[data-slot="5"] {
+      grid-area: 3 / 3;
+    }
+
+    /* The arc. The middle row sits furthest from the centre, which is where an
+       ellipse around the model is widest, so the six read as an orbit rather
+       than as two columns. Margin rather than a transform: the timeline owns
+       every transform on these elements and a second author would fight it. */
+    .pillar[data-slot="2"] {
+      margin-inline-start: calc(-1 * var(--ds-space-6));
+    }
+    .pillar[data-slot="3"] {
+      margin-inline-end: calc(-1 * var(--ds-space-6));
+    }
+  }
+
+  /* Pre-hidden in CSS rather than in JavaScript, exactly as [data-reveal] is and
+     for the same reason: setting the start state in JS paints the card visible
+     for one frame and then blinks it out. Inside `scripting: enabled` so a
+     browser that cannot run the timeline shows the cards instead of a blank
+     stage. */
+  @media (scripting: enabled) {
+    [data-orbit-item] {
+      opacity: 0;
+    }
+  }
+}
+
+/* =============================================================================
+   THE SMALL-SCREEN NOTICE
+
+   Phones and tablets get one page that says to come back on a laptop.
+   TEMPORARY: the narrow layouts exist and none of them are deleted by this. What
+   is missing is a design pass over the whole page at phone and tablet width.
+
+   THREE CONDITIONS, AND WIDTH ALONE IS NOT ENOUGH. That was the first version
+   and it let every tablet in landscape straight through: an iPad is 1024, 1180
+   or 1366 points wide on its side, which is the same as a laptop. So:
+
+     max-width: 1023.98px            phones, and tablets held in portrait
+     (hover: none) and              any touch-primary device at any width,
+       (pointer: coarse)            which is a tablet on its side
+     html[data-narrow]              an iPad driven by a trackpad, which reports
+                                    itself as a wide laptop in every way CSS can
+                                    see. Set by the script in @/lib/device.
+
+   None of the three can match a mouse-driven desktop, which is the property that
+   matters most here.
+
+   DESKTOP MUST BE BIT-FOR-BIT UNCHANGED, which is why `.viewport-gate` carries
+   its whole appearance at rest but `display: none` with it, and the conditions
+   above flip nothing but `display`. An element that generates no box contributes
+   no layout, no stacking context and no paint, so the rules below are unreachable
+   on a wide screen rather than merely overridden there.
+
+   1023.98 rather than 1023, because a viewport can be a fractional CSS pixel on
+   a scaled display and `max-width: 1023px` plus `min-width: 1024px` leaves a gap
+   between them that renders neither. The pair meets exactly.
+
+   `display: none` on the rest of the body, not a fixed overlay. An overlay
+   leaves the whole site in the accessibility tree, so a screen reader on a phone
+   reads a homepage that is not on screen underneath a message saying it is not
+   available. It also leaves it painting, hydrating and running its observers
+   behind a pane nobody can see.
+   ============================================================================= */
+
+@layer components {
+  /* The whole appearance, declared once and unconditionally, with `display: none`
+     holding it out of the document. The three conditions below then flip exactly
+     one property each, rather than repeating this block three times. */
+  .viewport-gate {
+    display: none;
+    place-items: center;
+    /* Dynamic viewport height: a phone's address bar collapses on scroll and
+       100vh is measured against the expanded state, which leaves the notice
+       taller than the screen and scrolling by the height of the bar. */
+    min-height: 100dvh;
+    padding: var(--ds-space-7) var(--content-gutter);
+    text-align: center;
+  }
+
+  .viewport-gate-inner {
+    /* The measure, not the page's. One short headline and one sentence want a
+       narrower column than a marketing section does. */
+    width: min(100%, 42ch);
+  }
+
+  .viewport-gate-tile {
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    margin-inline: auto;
+    border-radius: var(--ds-radius-container);
+  }
+
+  /* Phones, tablets in portrait, and every touch-primary device at any width.
+     Scripts are already out of the box tree; the selector names them anyway so
+     the intent does not rest on that. */
+  @media (max-width: 1023.98px), (hover: none) and (pointer: coarse) {
+    body > *:not(.viewport-gate) {
+      display: none !important;
+    }
+
+    .viewport-gate {
+      display: grid;
+    }
+  }
+
+  /* The one case CSS cannot see: an iPad with a trackpad attached, which reports
+     a fine pointer, real hover and a laptop-width viewport. See @/lib/device. */
+  html[data-narrow] body > *:not(.viewport-gate) {
+    display: none !important;
+  }
+
+  html[data-narrow] .viewport-gate {
+    display: grid;
+  }
 }
