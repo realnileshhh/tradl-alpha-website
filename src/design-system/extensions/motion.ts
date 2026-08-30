@@ -40,16 +40,33 @@ export const EASE_PATH = `M0,0 C${EASE_POINTS[0]},${EASE_POINTS[1]} ${EASE_POINT
 /** cubic-bezier() form, for anywhere a string is needed at runtime. */
 export const EASE_CSS = `cubic-bezier(${EASE_POINTS.join(", ")})`;
 
+/**
+ * The press curve. Overshoots past 1 and settles back, which is what makes a
+ * button feel like it has a spring under it rather than a fade.
+ *
+ * CSS-facing only, and deliberately so. Press feedback is chrome: it answers a
+ * pointer directly, it lasts 100ms, and routing it through GSAP would put a
+ * JavaScript frame between the finger and the response for no gain. Nothing in
+ * the reveal layer should use it.
+ *
+ * The second control point is above 1 on purpose. That is the overshoot; a
+ * bezier clamped to 1 cannot express it and reads as a plain ease-out.
+ */
+export const EASE_PRESS_POINTS = [0.34, 1.56, 0.64, 1] as const;
+export const EASE_PRESS_CSS = `cubic-bezier(${EASE_PRESS_POINTS.join(", ")})`;
 
 /**
  * Seconds. Doc 04's rule, made numeric: chrome reacts faster than content
  * reveals, so a nav bar or a chip never feels like it is waiting for the page.
  *
+ *   press       tap and active feedback. Must land inside the ~100ms window
+ *               where a response still reads as caused by the finger
  *   chrome      nav, chips, hover, docks, anything that answers an input
  *   instrument  the default content reveal: dense modules, ledgers, tables
  *   statement   full-bleed typographic scenes, section openers and closes
  */
 export const DURATION = {
+  press: 0.1,
   chrome: 0.3,
   instrument: 0.5,
   statement: 0.8,

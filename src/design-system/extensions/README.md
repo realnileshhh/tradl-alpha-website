@@ -11,6 +11,7 @@ until a designer signs it off.
 |---|---|---|---|
 | Display scale above 42px | `display-scale.css` | **proposed**, awaiting sign-off | 30 Aug 2026 |
 | Motion vocabulary | `motion.ts` + `motion.css` | **proposed**, awaiting sign-off | 30 Aug 2026 |
+| Surface and elevation | `surface.css` | **proposed**, awaiting sign-off | 30 Aug 2026 |
 | Serif italic for the warm beat | not written | **proposed**, not wired | 30 Aug 2026 |
 
 ---
@@ -50,6 +51,36 @@ run, so this is reported as unread rather than as absent. Every value here is a 
 
 **Open question for design.** Whether the product surfaces already move to a defined curve. If they
 do, the marketing site should use it rather than this one, and the whole entry is deleted.
+
+---
+
+## Surface and elevation
+
+**Why.** Figma defines colour, type, radii, spacing and two glass effect styles. It does not define
+how a surface is lit: where the highlight sits, how a pane separates from what is behind it, what a
+hover does, how deep a blur goes for a nav versus a popover. Every component was answering that
+question for itself.
+
+**What.** A specular highlight ladder, shadow atoms and six canonical stacks, bloom, a hover wash,
+five blur tiers, a directional fill, top-lit radials, a panel texture, fading dividers, and two
+keycap elevations. The handbook is `docs/SURFACES.md`.
+
+**Smaller than it sounds.** Most of the alphas this language needs already exist in the mirror:
+`--ds-border-subtle` and `--ds-border-default` are the two strokes, `--ds-color-white-10` is the
+default specular, `--ds-bg-elevated` is the glass fill, `--ds-color-black-60` is the contact ring,
+and `--ds-shadow-glass-surface` is the drop. What is invented here is the specular, the bloom, the
+hero-scale drop, the blur tiers, the divider and the texture. Everything else references a token.
+
+**No colour.** Every invented value is an achromatic alpha of pure white or pure black, which is
+light and shadow rather than palette, or a length or an angle. `npm run check:surfaces` fails the
+build on a raw hex in a component.
+
+**Open question for design.** The directional fill uses Figma's two surface steps, which are 6 per
+cent and 5 per cent. One point apart makes the gradient nearly invisible. A pronounced lit fill needs
+a real `bg/surface-lit` pair in Figma; deriving one here would be inventing colour.
+
+**Second open question.** Whether the product surfaces already have a specular convention. If they
+do, the marketing site should use theirs and this entry shrinks to the marketing-only parts.
 
 ---
 
