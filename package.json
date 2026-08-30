@@ -12,7 +12,7 @@
     "check:copy": "node scripts/check-copy.mjs",
     "check:motion": "node scripts/check-motion.mjs",
     "check:surfaces": "node scripts/check-surfaces.mjs",
-    "verify": "npm run typecheck && npm run check:copy && npm run check:motion && npm run build",
+    "verify": "npm run typecheck && npm run check:copy && npm run check:motion && npm run check:surfaces && npm run build",
     "ds:tokens": "node scripts/build-tokens.mjs",
     "ds:icons": "node scripts/extract-icons.mjs && node scripts/verify-icons.mjs",
     "ds:brand": "node scripts/build-brand.mjs",
