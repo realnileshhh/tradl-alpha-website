@@ -1,0 +1,156 @@
+/* ============================================================
+   Tradl AI — global stylesheet. The only global CSS in the app.
+
+   Order matters:
+   1. Tailwind, so its layers exist before anything registers into them.
+   2. The design-system tokens, verbatim from the Figma export.
+   3. fonts.css last, because it re-points the family tokens that
+      typography.css defines, and last declaration wins.
+   4. @theme inline, which exposes the tokens to Tailwind as utilities.
+   5. A minimal base layer. Nothing visual lives here beyond what a blank
+      page needs — the site has no UI yet, by design.
+   ============================================================ */
+
+@import "tailwindcss";
+
+@import "./tokens/colors.css";
+@import "./tokens/typography.css";
+@import "./tokens/spacing.css";
+@import "./tokens/effects.css";
+@import "./tokens/fonts.css";
+
+/* ------------------------------------------------------------
+   Tokens → Tailwind utilities.
+
+   `inline` makes each generated utility emit `var(--surface-l1)` rather
+   than the resolved value. That is what keeps `[data-theme="light"]`
+   working: flipping the attribute re-resolves every utility, with no
+   duplicate class output and no dark: variant sprawl.
+
+   NAMING RULE, and it is load-bearing: a @theme key must never repeat a
+   custom property the token files already declare. Tailwind emits its
+   theme keys back into :root, so `--radius-md: var(--radius-md)` would
+   land after effects.css and resolve to itself — the value collapses and
+   the utility silently emits nothing. That is why radii, shadows and
+   families below use distinct suffixes rather than mirroring the token
+   names. Colours and spacing are safe because the token names differ
+   from the Tailwind namespace already (--surface-l1 vs --color-*).
+
+   Only tokens that earn a utility are mapped. Anything unmapped is still
+   reachable as a plain custom property, e.g. `var(--surface-badge)`.
+   ------------------------------------------------------------ */
+@theme inline {
+  /* --- Text: text-primary, text-positive, … --- */
+  --color-primary: var(--text-primary);
+  --color-secondary: var(--text-secondary);
+  --color-tertiary: var(--text-tertiary);
+  --color-inverse: var(--text-inverse);
+  --color-positive: var(--text-positive);
+  --color-warning: var(--text-warning);
+  --color-negative: var(--text-negative);
+
+  /* --- Surfaces: bg-l1 … bg-l5 --- */
+  --color-l1: var(--surface-l1);
+  --color-l2: var(--surface-l2);
+  --color-l3: var(--surface-l3);
+  --color-l4: var(--surface-l4);
+  --color-l5: var(--surface-l5);
+
+  /* --- Borders: border-strong, border-subtle, … --- */
+  --color-strong: var(--border-strong);
+  --color-medium: var(--border-medium);
+  --color-subtle: var(--border-subtle);
+  --color-faint: var(--border-faint);
+
+  /* --- Category accents: text-column, border-metric, … --- */
+  --color-column: var(--accent-column);
+  --color-metric: var(--accent-metric);
+  --color-rule: var(--accent-rule);
+
+  /* --- Families: font-text (all prose), font-number (all figures) --- */
+  --font-text: var(--font-sans);
+  --font-number: var(--font-num);
+
+  /* --- 4px rhythm, matching the export's --space-* scale --- */
+  --spacing: 4px;
+
+  /* --- Radii: rounded-chip … rounded-container --- */
+  --radius-chip: var(--radius-xs);
+  --radius-control: var(--radius-sm);
+  --radius-card: var(--radius-md);
+  --radius-panel: var(--radius-lg);
+  --radius-container: var(--radius-xl);
+
+  /* --- Elevation: shadow-e1 … shadow-e5 --- */
+  --shadow-e1: var(--shadow-xs);
+  --shadow-e2: var(--shadow-sm);
+  --shadow-e3: var(--shadow-md);
+  --shadow-e4: var(--shadow-lg);
+  --shadow-e5: var(--shadow-xl);
+
+  /* --- Content frame: max-w-content (1040px, the specimen width) --- */
+  --container-content: var(--layout-max-width);
+}
+
+@layer base {
+  html {
+    /* Lenis owns scrolling; native smooth would fight it. */
+    scroll-behavior: auto;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--surface-l1);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    font-size: var(--type-body-size);
+    line-height: var(--type-body-line);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Numbers are Lato everywhere, per the design system. Opt-in rather
+     than global, so prose stays IBM Plex Sans. */
+  .num {
+    font-family: var(--font-num);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Doc 04 §7: visible keyboard focus everywhere. */
+  :focus-visible {
+    outline: 2px solid var(--border-positive);
+    outline-offset: 2px;
+  }
+
+  /* Doc 04 §5: prefers-reduced-motion is honoured globally. The JS side
+     reads the same query through useReducedMotion so animation code can
+     skip the work rather than run it invisibly. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* ------------------------------------------------------------
+   Lenis. Required for the virtual scroll to take over from native.
+   Inlined rather than importing lenis/dist/lenis.css so the whole global
+   surface stays readable in one file.
+   ------------------------------------------------------------ */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis:not(.lenis-autoToggle).lenis-stopped {
+  overflow: clip;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
