@@ -57,10 +57,32 @@ regulatory framing and density conventions the global set does not.
 | `backtesting-one-pagers.md` | `uploads/Tradl_Backtesting_Module_One_Pagers.md` |
 | `explore-surface-one-pagers.md` | `uploads/Tradl_Explore_Surface_One_Pagers (1).md` |
 
-## `03-decisions/` · empty, on purpose
+---
 
-Design and engineering decisions made during the build get filed here, one file per decision, so the
-brief above stays a clean record of what arrived rather than what was decided later.
+## What we author
+
+Everything above is **received** material, copied in verbatim and never edited. The two files below
+are **ours**, written during the build. They are separate from the brief so it stays a clean record
+of what arrived rather than what we decided afterwards.
+
+| File | What it is | When you read it |
+|---|---|---|
+| `DECISIONS.md` | Append-only log of choices that constrain future work, with the reasoning | Onboarding, or when questioning why something is the way it is |
+| `DESIGN-SYSTEM.md` | How the Figma system mirrors into the repo, what is in it, and every sync's diff | Any time you touch tokens, icons, or brand assets |
+
+Three surfaces total, split by **lifecycle and reader**, not by topic:
+
+- **`CLAUDE.md`** is loaded into context every session, so it carries rules only. No procedure, no
+  history. Every line there costs tokens on every single request, which is the discipline that keeps
+  it short.
+- **`docs/DECISIONS.md`** is append-only and rarely re-read in full.
+- **`docs/DESIGN-SYSTEM.md`** is a handbook plus a log, read on demand.
+
+Machine-written state lives in `src/design-system/provenance.json` and never in prose, because prose
+records of machine state go stale silently.
+
+`DECISIONS.md` carries its own scaling threshold at the top (when to split by year), so a future
+session does not have to invent structure under pressure.
 
 ---
 

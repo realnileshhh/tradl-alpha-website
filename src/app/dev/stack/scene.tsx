@@ -71,7 +71,7 @@ export function DemoScene() {
       shadows
       camera={{ position: [0, 0.5, 6], fov: 45 }}
       fallback={
-        <div className="grid h-full place-items-center text-tertiary">
+        <div className="grid h-full place-items-center text-fg-3">
           reduced motion: WebGL not mounted
         </div>
       }

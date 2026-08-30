@@ -1,0 +1,254 @@
+{
+  "$schema": "./variables.mcp-harvest.schema.md",
+  "$comment": "Verbatim record of every Figma variable resolved through the MCP on 2026-08-30. This is an INPUT to scripts/build-tokens.mjs, not generated output. Values are exactly as Figma returned them; nothing here is inferred, normalised or filled in. Superseded the moment variables.json (full plugin export) lands beside it.",
+  "source": {
+    "fileKey": "ZRYpUf3iulUMH0Rbdb68hk",
+    "library": "Tradl Design System",
+    "readAt": "2026-08-30",
+    "method": "get_variable_defs on nodes that consume each variable",
+    "readFromNodes": {
+      "63:154": "Components - General / CTAs",
+      "347:1076": "Components - General / Navigation",
+      "347:1075": "Components - General / Toggles",
+      "350:1077": "Components - General / Patterns",
+      "350:1079": "Components - General / Badges-Tags",
+      "320:450": "Components - Backtesting / Backtesting Components",
+      "185:187": "Typography / Heading"
+    },
+    "collectionNote": "get_variable_defs does not report which collection a variable belongs to. Variables are therefore grouped below by their name prefix, which is directly observable, rather than by collection, which would be a guess. Collection membership is recorded only where search_design_system confirmed it."
+  },
+  "colorPrimitives": {
+    "color/white": "#ffffff",
+    "color/white-6": "#ffffff0f",
+    "color/white-10": "#ffffff1a",
+    "color/black-60": "#00000099",
+    "color/grey-300": "#bababa",
+    "color/grey-500": "#8a8a8a",
+    "color/grey-700": "#5e5e5e",
+    "color/grey-750": "#393939",
+    "color/grey-750-20": "#39393933",
+    "color/grey-750-80": "#393939cc",
+    "color/green-400": "#3fcf8e",
+    "color/green-700": "#18744b",
+    "color/red-400": "#ff5a5f",
+    "color/red-500": "#e5484d",
+    "color/olive-16": "#74966329"
+  },
+  "colorSemantic": {
+    "text/primary": "#ffffff",
+    "text/secondary": "#bababa",
+    "text/tertiary": "#8a8a8a",
+    "text/muted": "#8a8a8a",
+    "text/disabled": "#5e5e5e",
+    "placeholder": "#5e5e5e",
+    "icon/default": "#ffffff",
+    "icon/secondary": "#bababa",
+    "bg/surface": "#ffffff0f",
+    "bg/surface-raised": "#ffffff0d",
+    "bg/elevated": "#00000099",
+    "bg/toolbar": "#393939cc",
+    "border/subtle": "#ffffff0f",
+    "border/default": "#ffffff1a",
+    "border/medium": "#393939",
+    "border/strong": "#bababa",
+    "accent/primary": "#18744b",
+    "accent/secondary": "#3fcf8e",
+    "accent/negative": "#e5484d",
+    "table/Card/bg": "#39393933",
+    "table/Card/Card-bg": "#3939394d"
+  },
+  "highlights": {
+    "Highlight 1": "#b067ff",
+    "Highlight 1-12": "#b067ff1f",
+    "Highlight 5": "#ca940d"
+  },
+  "heatmap": {
+    "Neutral": "#ffffff0f",
+    "Positive-Moderate": "#1b4332",
+    "Positive-Strong": "#1a3a2a",
+    "Negative-Mild": "#6b1520",
+    "Negative-Moderate": "#8b1a2b",
+    "Negative-Strong": "#a02040"
+  },
+  "dimensions": {
+    "radius/zero": 0,
+    "radius/sm": 4,
+    "radius/radius-6": 6,
+    "radius/md": 8,
+    "radius/card": 8,
+    "radius/base": 12,
+    "radius/lg": 16,
+    "radius/container": 16,
+    "radius/input": 20,
+    "radius/full": 999,
+    "space/0": 0,
+    "space/1": 2,
+    "space/2": 4,
+    "space/3": 8,
+    "space/4": 12,
+    "space/5": 16,
+    "space/6": 24,
+    "space/7": 32,
+    "padding/zero": 0,
+    "padding/nav": 12,
+    "padding/card": 16,
+    "padding/card-lg": 24,
+    "gap/default": 8,
+    "item spacing/10": 10,
+    "stroke weight/1": 1
+  },
+  "typography": {
+    "$comment": "Every type token is Inter. Note that the */bold styles resolve to weight 500 (Inter Medium), not 700. Only Display XXXL is 700. Recorded as read.",
+    "text-xs/regular": {
+      "family": "Inter",
+      "size": 10,
+      "weight": 400,
+      "lineHeight": 14,
+      "letterSpacing": 0
+    },
+    "text-xs/bold": {
+      "family": "Inter",
+      "size": 10,
+      "weight": 500,
+      "lineHeight": 14,
+      "letterSpacing": 0
+    },
+    "text-sm/regular": {
+      "family": "Inter",
+      "size": 12,
+      "weight": 400,
+      "lineHeight": 16,
+      "letterSpacing": 0
+    },
+    "text-sm/medium": {
+      "family": "Inter",
+      "size": 12,
+      "weight": 500,
+      "lineHeight": 16,
+      "letterSpacing": 0
+    },
+    "text-sm/bold": {
+      "family": "Inter",
+      "size": 12,
+      "weight": 500,
+      "lineHeight": 16,
+      "letterSpacing": 0
+    },
+    "text-md/regular": {
+      "family": "Inter",
+      "size": 14,
+      "weight": 400,
+      "lineHeight": 20,
+      "letterSpacing": 0
+    },
+    "text-md/bold": {
+      "family": "Inter",
+      "size": 14,
+      "weight": 500,
+      "lineHeight": 20,
+      "letterSpacing": 0
+    },
+    "text-lg/regular": {
+      "family": "Inter",
+      "size": 18,
+      "weight": 400,
+      "lineHeight": 24,
+      "letterSpacing": 0
+    },
+    "text-lg/bold": {
+      "family": "Inter",
+      "size": 18,
+      "weight": 500,
+      "lineHeight": 24,
+      "letterSpacing": 0
+    },
+    "Display XXXL": {
+      "family": "Inter",
+      "size": 42,
+      "weight": 700,
+      "lineHeight": 100,
+      "letterSpacing": 0,
+      "lineHeightUnresolved": true
+    }
+  },
+  "gradients": {
+    "$comment": "get_variable_defs returns an empty string for gradient-valued variables. These were recovered from get_design_context on a node that paints with them, which reports the resolved stops. Read, not inferred.",
+    "accent/gradient": {
+      "css": "linear-gradient(180deg, #0f8f63 0%, #0b7350 100%)",
+      "readFrom": "63:201 Primary Buttons"
+    }
+  },
+  "effects": {
+    "glass/surface": {
+      "dropShadow": {
+        "color": "#00000059",
+        "offsetX": 0,
+        "offsetY": 12,
+        "radius": 12,
+        "spread": 0
+      },
+      "glassBlur": 4
+    },
+    "glass/table": {
+      "glassBlur": 4
+    }
+  },
+  "unresolved": [
+    {
+      "name": "border/glass",
+      "reason": "Gradient. Same as above.",
+      "action": "Not emitted."
+    },
+    {
+      "name": "Display XXXL lineHeight",
+      "reason": "Figma returned 100. Every other token returns line height in px (text-sm 12px/16), which would make this 100px on a 42px face, i.e. 2.4x. The superseded Bento export recorded the equivalent as 100%, so this is likely a percentage.",
+      "action": "Emitted verbatim as 100px and flagged. Do not consume it until the design team confirms which it is."
+    }
+  ],
+  "excluded": {
+    "$comment": "Present in Figma, deliberately kept out of the mirror. Re-check on each sync in case any becomes real.",
+    "sdsTemplateLeftovers": [
+      "var(--sds-size-space-100)",
+      "var(--sds-size-space-200)",
+      "var(--sds-size-radius-200)",
+      "var(--sds-size-space-300)",
+      "var(--sds-color-text-neutral-default)",
+      "var(--sds-color-icon-default-default)"
+    ],
+    "sdsReason": "Left over from Figma's stock Simple Design System starter template. Not Tradl tokens.",
+    "duplicateAliases": [
+      "grey-300",
+      "grey-700",
+      "grey-750-80"
+    ],
+    "duplicateReason": "Bare-name duplicates shadowing their color/-prefixed originals, which are already mirrored."
+  },
+  "knownButUnread": {
+    "$comment": "Confirmed to exist via search_design_system, but no value could be resolved because no node read so far consumes them. These are gaps, not omissions. Resolved by the variables.json plugin export.",
+    "Semantics": [
+      "radius/button",
+      "radius/table",
+      "icon/on-accent",
+      "table/Card/tools-bg",
+      "table/Card/header-bg",
+      "table/Card/Card-bg-80"
+    ],
+    "Primitives": [
+      "color/black",
+      "color/white-5",
+      "color/yellow"
+    ],
+    "Shadows": [
+      "Modal Surface/Color",
+      "Modal Surface/X",
+      "Modal Surface/Y",
+      "Modal Surface/blur",
+      "Modal Surface/spread"
+    ],
+    "Typography": [
+      "text-xl/regular",
+      "text-xl/bold"
+    ],
+    "ChartsColors": "all 18, none reachable"
+  }
+}

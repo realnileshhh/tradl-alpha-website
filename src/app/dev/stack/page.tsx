@@ -16,39 +16,40 @@ import { SceneMount } from "./scene-mount";
  *
  * Delete it once the real pages exist.
  */
-
-
 export default function StackPage() {
   if (env.isProduction) notFound();
 
   return (
-    <main className="mx-auto max-w-content px-6 py-16">
-      <FadeIn>
-        <h1 className="font-text text-2xl font-bold">Stack check</h1>
-        <p className="mt-2 text-secondary">
-          Scroll: motion is smooth (lenis). The panel below pins and scrubs sideways
-          (gsap + ScrollTrigger). The cube spins, a ball drops and bounces (fiber, drei,
-          rapier), under bloom and grain (postprocessing). Numbers update live (zustand).
-        </p>
-      </FadeIn>
+    <main className="min-h-screen">
+      <div className="mx-auto max-w-content px-6 py-16">
+        <FadeIn>
+          <h1 className="font-sans text-2xl font-bold">Stack check</h1>
+          <p className="mt-2 text-fg-2">
+            Scroll: motion is smooth (lenis). The panel below pins and scrubs sideways
+            (gsap + ScrollTrigger). The cube spins, a ball drops and bounces (fiber, drei,
+            rapier), under bloom and grain (postprocessing). Numbers update live (zustand).
+          </p>
+        </FadeIn>
 
-      <div className="mt-10 h-[60vh] overflow-hidden rounded-panel border border-subtle bg-l2">
-        <SceneMount />
+        <div className="mt-10 h-[60vh] overflow-hidden rounded-lg border border-line bg-surface">
+          <SceneMount />
+        </div>
+
+        <div className="mt-10 rounded-card border border-line bg-surface p-6">
+          <Readouts />
+        </div>
+
+        <FadeIn delay={0.1}>
+          <p className="mt-24 text-fg-3">Keep scrolling for the pinned section.</p>
+        </FadeIn>
+
+        <div className="mt-10 -mx-6">
+          <PinnedPanel />
+        </div>
+
+        <p className="py-32 text-fg-3">End. Pin released.</p>
+
       </div>
-
-      <div className="mt-10 rounded-card border border-subtle bg-l2 p-6">
-        <Readouts />
-      </div>
-
-      <FadeIn delay={0.1}>
-        <p className="mt-24 text-tertiary">Keep scrolling for the pinned section.</p>
-      </FadeIn>
-
-      <div className="mt-10 -mx-6">
-        <PinnedPanel />
-      </div>
-
-      <p className="py-32 text-tertiary">End. Pin released.</p>
     </main>
   );
 }

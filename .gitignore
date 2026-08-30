@@ -36,3 +36,11 @@ yarn-error.log*
 
 # source material is large binary; keep it tracked but ignore OS cruft inside
 reference/**/.DS_Store
+
+# The global ignore file (~/.gitignore_global) carries `Icon?`, the macOS
+# `Icon\r` resource-fork pattern. This filesystem is case-insensitive, so that
+# pattern also matches any directory named `icons` — which silently excluded the
+# 84 generated icon components and the manifest PNGs from every commit.
+# Re-include them explicitly. A repo .gitignore takes precedence over the global.
+!src/components/ui/icons/
+!public/icons/
