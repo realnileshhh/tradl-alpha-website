@@ -22,12 +22,13 @@ import { cn } from "@/lib/utils";
 
 type Variant = "primary" | "secondary" | "tertiary";
 type Size = "sm" | "lg";
+type Shape = "default" | "pill";
 
 /* `press` carries the full transition set and the tap feedback. Do not add a
    Tailwind `transition-*` utility alongside it: the utility replaces the
    property outright and the press would stop animating. */
 const BASE =
-  "press relative inline-flex items-center justify-center whitespace-nowrap rounded-md " +
+  "press relative inline-flex items-center justify-center whitespace-nowrap " +
   "shadow-spec " +
   "disabled:pointer-events-none disabled:opacity-30 aria-disabled:pointer-events-none aria-disabled:opacity-30";
 
@@ -46,6 +47,22 @@ const VARIANT: Record<Variant, string> = {
   tertiary: "border border-line text-fg-2 hover:border-line-2 hover:text-fg",
 };
 
+/**
+ * MARKETING EXTENSION, not from Figma. The design system draws one radius on
+ * this control, radius/md, and `default` is it.
+ *
+ * `pill` exists because radius is a prop rather than a className here, and it
+ * has to be: `cn` is a plain join with no tailwind-merge, so a `rounded-full`
+ * passed in from outside does not reliably beat the base `rounded-md`. Which
+ * one wins depends on the order Tailwind happens to emit its radius utilities
+ * in, which is not something a call site should be betting on. A prop is a
+ * choice between two known values; a className is a race.
+ */
+const SHAPE: Record<Shape, string> = {
+  default: "rounded-md",
+  pill: "rounded-full",
+};
+
 const SIZE: Record<Size, string> = {
   /* Design-system exact. */
   sm: "h-[30px] gap-[var(--ds-space-2)] px-[var(--ds-space-3)] text-sm",
@@ -60,6 +77,7 @@ const SIZE: Record<Size, string> = {
 type CommonProps = {
   variant?: Variant;
   size?: Size;
+  shape?: Shape;
   /** Rendered before the label, at the design system's 14px icon size. */
   iconStart?: ReactNode;
   /** Rendered after the label, at the design system's 14px icon size. */
@@ -77,6 +95,7 @@ type ButtonAsLink = CommonProps &
 export function Button({
   variant = "primary",
   size = "sm",
+  shape = "default",
   iconStart,
   iconEnd,
   children,
@@ -87,6 +106,7 @@ export function Button({
     BASE,
     VARIANT[variant],
     SIZE[size],
+    SHAPE[shape],
     size === "sm" && "touch-target",
     className
   );

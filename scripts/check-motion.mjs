@@ -52,6 +52,7 @@ const ms = (key) => {
 const MIRRORED = [
   ["--motion-ease", bezier("EASE_POINTS")],
   ["--motion-ease-press", bezier("EASE_PRESS_POINTS")],
+  ["--motion-ease-travel", bezier("EASE_TRAVEL_POINTS")],
   ["--motion-press", ms("press")],
   ["--motion-chrome", ms("chrome")],
 ];

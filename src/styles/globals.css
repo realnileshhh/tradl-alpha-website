@@ -564,3 +564,649 @@
     }
   }
 }
+
+/* =============================================================================
+   MARKETING CHROME
+
+   Site-only compositions that are not part of the surface language and not
+   worth a component: things a page needs exactly once. Keep this short. If a
+   second page needs one of these, it has become a component.
+   ============================================================================= */
+
+@layer components {
+  /* ---------------------------------------------------------------------------
+     Ticker track
+
+     The market strip's loop. Its list is rendered twice and the track travels
+     exactly half its own width, so the seam lands on an identical frame and the
+     restart is invisible.
+
+     transform only. A marquee that animates `left` or `margin` runs layout on
+     every frame of a loop that never ends, which is the most expensive thing a
+     page can do while a visitor reads the hero.
+
+     Under prefers-reduced-motion the global rule above collapses this to a
+     single 0.01ms pass, which parks the track at -50 per cent: the start of the
+     second copy, which is the frame it starts on. The strip stands still and is
+     complete rather than jumping.
+     ------------------------------------------------------------------------- */
+  .ticker-track {
+    animation: ticker-scroll var(--ticker-duration, 42s) linear infinite;
+    will-change: transform;
+  }
+
+  /* A moving number is one you cannot read. */
+  .ticker-track:hover {
+    animation-play-state: paused;
+  }
+
+  @keyframes ticker-scroll {
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+    to {
+      transform: translate3d(-50%, 0, 0);
+    }
+  }
+}
+
+/* =============================================================================
+   SPARK RING
+
+   A light that travels once around the hero CTA's edge, rests, and goes again.
+   It is the page's one piece of unprompted motion, and therefore the page's
+   whole decorative motion budget: nothing else should move on its own.
+
+   WHY SVG AND NOT A CONIC GRADIENT. The first version rotated a conic gradient
+   masked to the border, and it was not smooth, for a reason that is worth
+   writing down so nobody rebuilds it that way. A conic gradient sweeps at a
+   constant rate in ANGLE, and a 172x44 pill is nowhere near a circle: a degree
+   of angle covers a lot of edge along the long sides and almost none around the
+   end caps. The light therefore sprints down the straights and crawls through
+   the corners, and no easing fixes it, because the unevenness is geometric
+   rather than temporal.
+
+   A dashed stroke on the same rounded rectangle is measured in ARC LENGTH, so
+   `stroke-dashoffset` moves the light the same number of pixels per frame
+   wherever it happens to be on the path. That is what makes it smooth, and it
+   is also what lets the lap start and stop at an exact place on the edge, which
+   an angle cannot address.
+
+   WHERE IT STARTS AND STOPS. `pathLength="100"` normalises the perimeter to 100
+   units, so a dash offset is a percentage of the way round. At the CTA's
+   proportions the bottom-right corner arc runs from about 41 to 50, and the
+   head parks at 45: the middle of that corner. One lap returns it to exactly
+   the same spot, so the rest reads as the light waiting rather than as an
+   animation that ended somewhere arbitrary.
+
+   HOW IT MOVES. --motion-ease-travel, the symmetric ease-in-out, because this
+   is a thing that leaves rest and comes back to rest in the same place. The
+   house ease-out would launch it at full speed and let it stop dead on arrival.
+   The lap takes roughly 4.7 seconds of a 9 second cycle; the rest of the cycle
+   is dark, and that pause is what separates a gesture from a spinner.
+
+   REDUCED MOTION, doc 04 §5: the global rule collapses this to one 0.01ms pass,
+   landing on the last keyframe, and the last keyframe is opacity 0. A visitor
+   who asked for stillness gets a plain outlined button rather than a comet
+   frozen mid-edge.
+   ============================================================================= */
+
+@layer components {
+  .spark-ring {
+    position: relative;
+  }
+
+  /* The SVG sits exactly over the button's border box. `overflow: visible` so
+     the stroke, which is centred on the path, is not clipped in half. */
+  .spark-ring-track {
+    position: absolute;
+    inset: 0;
+    height: 100%;
+    width: 100%;
+    overflow: visible;
+    pointer-events: none;
+    fill: none;
+    /* The halo. Static: an animated filter repaints the element every frame,
+       which is the thing the surface rules ban. Only the offset and the opacity
+       move. */
+    filter: drop-shadow(0 0 4px color-mix(in srgb, var(--ds-accent-secondary) 55%, transparent));
+  }
+
+  /* One rule for every segment of the comet. What each segment IS, its place in
+     the train, its opacity and its width, is set at the call site, because that
+     is data about the shape of a falloff rather than a rule about how a ring
+     behaves. See SEGMENTS in components/site/spark-button.tsx. */
+  .spark-ring-track rect {
+    stroke: var(--ds-accent-secondary);
+    stroke-linecap: round;
+    opacity: 0;
+    animation: spark-lap 9s var(--motion-ease-travel) infinite;
+  }
+
+  /* The dash length is animated as well as its position, and that is what makes
+     the lap begin and end without an edit. At 0 length a round cap still paints
+     a dot, so the light starts as a point on the corner, draws itself out into a
+     comet as it leaves, and pulls back into a point as it returns to the same
+     corner. Fading opacity alone would have it appear already full length and
+     vanish still full length, which is the pop this replaces. */
+  @keyframes spark-lap {
+    0% {
+      stroke-dashoffset: var(--spark-from);
+      stroke-dasharray: 0 100;
+      opacity: 0;
+    }
+    5% {
+      opacity: var(--spark-opacity, 1);
+    }
+    14% {
+      stroke-dasharray: 2.5 97.5;
+    }
+    40% {
+      stroke-dasharray: 2.5 97.5;
+    }
+    52% {
+      stroke-dashoffset: var(--spark-to);
+      stroke-dasharray: 0 100;
+      opacity: var(--spark-opacity, 1);
+    }
+    56% {
+      stroke-dashoffset: var(--spark-to);
+      stroke-dasharray: 0 100;
+      opacity: 0;
+    }
+    100% {
+      stroke-dashoffset: var(--spark-to);
+      stroke-dasharray: 0 100;
+      opacity: 0;
+    }
+  }
+}
+
+/* =============================================================================
+   PARTICLE FIELD
+
+   The scattered dots behind the hero's call to action. Three layers, three
+   depths, and every dot is a radial gradient in a tiled background rather than
+   an element: one paint per layer instead of one node per particle.
+
+   TILES, NOT A LIST. A single tiled layer repeats visibly as a grid. Three
+   tiles whose sizes share no common factor (137x111, 211x149, 89x173) land on a
+   combined pattern longer than any viewport, which is the cheap way to look
+   scattered without shipping an image or running a random number generator.
+
+   EVERY DOT HAS A HALO. Each layer paints its dots twice: a hard 1 to 1.6px
+   point, and a soft 5 to 7px wash at a tenth of the alpha underneath it. That
+   second pass is the glow, and it costs another gradient rather than a
+   `filter`, which would force a repaint of the whole field on every frame the
+   opacity animates.
+
+   THE TWINKLE is opacity on each layer, on three periods that do not divide
+   into each other, so the field never breathes in unison. Nothing translates
+   here except the parallax below, and nothing animates a layout property.
+
+   THE PARALLAX comes from the pointer, written onto the container as
+   --pointer-x and --pointer-y by components/site/particle-field.tsx. Each layer
+   multiplies those by its own depth, so the near layer travels three times as
+   far as the far one. The transition is what smooths it: the layers trail the
+   cursor and settle rather than being welded to it.
+
+   REDUCED MOTION: the global rule collapses each animation to its last
+   keyframe, which is deliberately mid-brightness rather than transparent, so
+   the field stays visible and simply stops moving. The pointer listener is
+   never attached.
+   ============================================================================= */
+
+@layer components {
+  .particle-field {
+    --pointer-x: 0;
+    --pointer-y: 0;
+    --particle: color-mix(in srgb, var(--ds-color-white) 72%, transparent);
+    --particle-dim: color-mix(in srgb, var(--ds-color-white) 34%, transparent);
+    --particle-accent: color-mix(in srgb, var(--ds-accent-secondary) 70%, transparent);
+    --glow: color-mix(in srgb, var(--ds-color-white) 9%, transparent);
+    --glow-accent: color-mix(in srgb, var(--ds-accent-secondary) 12%, transparent);
+
+    pointer-events: none;
+  }
+
+  .particle-layer {
+    position: absolute;
+    inset: 0;
+    background-repeat: repeat;
+    /* The layers trail the pointer instead of snapping to it. */
+    translate: calc(var(--pointer-x) * var(--depth)) calc(var(--pointer-y) * var(--depth));
+    transition: translate 700ms var(--motion-ease);
+    /* Strongest behind the buttons, gone by its own edges, so the field never
+       reads as a rectangle of stars. */
+    -webkit-mask-image: radial-gradient(52% 58% at 50% 46%, #000 20%, transparent 100%);
+    mask-image: radial-gradient(52% 58% at 50% 46%, #000 20%, transparent 100%);
+  }
+
+  .particle-layer-near {
+    --depth: 18px;
+    background-image:
+      radial-gradient(6px 6px at 18% 24%, var(--glow), transparent 100%),
+      radial-gradient(1.6px 1.6px at 18% 24%, var(--particle), transparent 100%),
+      radial-gradient(5px 5px at 68% 62%, var(--glow), transparent 100%),
+      radial-gradient(1.2px 1.2px at 68% 62%, var(--particle), transparent 100%);
+    background-size: 137px 111px;
+    animation: particle-breathe-near 6.5s var(--motion-ease-travel) infinite;
+  }
+
+  .particle-layer-mid {
+    --depth: 11px;
+    background-image:
+      radial-gradient(7px 7px at 83% 17%, var(--glow-accent), transparent 100%),
+      radial-gradient(1.4px 1.4px at 83% 17%, var(--particle-accent), transparent 100%),
+      radial-gradient(5px 5px at 41% 86%, var(--glow), transparent 100%),
+      radial-gradient(1.2px 1.2px at 41% 86%, var(--particle-dim), transparent 100%),
+      radial-gradient(5px 5px at 12% 71%, var(--glow), transparent 100%),
+      radial-gradient(1px 1px at 12% 71%, var(--particle-dim), transparent 100%);
+    background-size: 211px 149px;
+    background-position: 37px 19px;
+    animation: particle-breathe-mid 9.3s var(--motion-ease-travel) infinite;
+  }
+
+  .particle-layer-far {
+    --depth: 6px;
+    background-image:
+      radial-gradient(4px 4px at 54% 39%, var(--glow), transparent 100%),
+      radial-gradient(1px 1px at 54% 39%, var(--particle-dim), transparent 100%),
+      radial-gradient(4px 4px at 29% 8%, var(--glow), transparent 100%),
+      radial-gradient(1px 1px at 29% 8%, var(--particle-dim), transparent 100%),
+      radial-gradient(4px 4px at 76% 91%, var(--glow), transparent 100%),
+      radial-gradient(1px 1px at 76% 91%, var(--particle-dim), transparent 100%);
+    background-size: 89px 173px;
+    background-position: -23px 61px;
+    animation: particle-breathe-far 12.7s var(--motion-ease-travel) infinite;
+  }
+
+  /* Three curves, three ranges. The last keyframe of each is mid-brightness, so
+     a reduced-motion visitor gets a lit field rather than a dark one. */
+  @keyframes particle-breathe-near {
+    0% {
+      opacity: 0.45;
+    }
+    50% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0.45;
+    }
+  }
+
+  @keyframes particle-breathe-mid {
+    0% {
+      opacity: 0.8;
+    }
+    45% {
+      opacity: 0.3;
+    }
+    100% {
+      opacity: 0.8;
+    }
+  }
+
+  @keyframes particle-breathe-far {
+    0% {
+      opacity: 0.28;
+    }
+    60% {
+      opacity: 0.7;
+    }
+    100% {
+      opacity: 0.28;
+    }
+  }
+}
+
+/* =============================================================================
+   SECTION RULE
+
+   A hairline that runs the full width of a section with the eyebrow sitting on
+   it, lit from behind. It is the opener for every section below the hero, so it
+   is the page's structural rhythm rather than decoration: when one of these
+   appears, a new argument has started.
+
+   Three parts. Two rules that run out to the page edges and fade as they go,
+   brightest where they meet the label. A radial behind the label, so the light
+   reads as coming from the words rather than from the line. And the label
+   itself, which sits above both.
+
+   The gradient carries the accent only in its last stretch, near the label.
+   Running the accent the whole width would draw a green line across the page,
+   which is a different and much louder object.
+   ============================================================================= */
+
+@layer components {
+  .section-rule {
+    height: 1px;
+    background-image: linear-gradient(
+      to right,
+      transparent 0%,
+      var(--ds-border-subtle) 22%,
+      var(--ds-border-default) 62%,
+      color-mix(in srgb, var(--ds-accent-secondary) 85%, transparent) 100%
+    );
+  }
+
+  /* The mirror image, for the run on the other side of the label. Written out
+     rather than flipped with a transform: a scaled element is a compositing
+     layer and a 1px line is not worth one. */
+  .section-rule-end {
+    height: 1px;
+    background-image: linear-gradient(
+      to left,
+      transparent 0%,
+      var(--ds-border-subtle) 22%,
+      var(--ds-border-default) 62%,
+      color-mix(in srgb, var(--ds-accent-secondary) 85%, transparent) 100%
+    );
+  }
+
+  /* The bloom under the label. Wide and very low alpha: at this size anything
+     legible as a colour has become a badge. */
+  /* Four stops and a blur, rather than one stop and a hard stop.
+     A two-stop radial has a visible boundary where it reaches transparent,
+     which on a near-black ground reads as an ellipse drawn around the label. A
+     long tail plus a static blur removes the edge entirely and takes the
+     banding with it. The blur is constant and nothing here animates, so it
+     costs one paint. */
+  .section-rule-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: min(760px, 92vw);
+    height: 190px;
+    translate: -50% -50%;
+    pointer-events: none;
+    filter: blur(22px);
+    background-image: radial-gradient(
+      50% 50% at 50% 50%,
+      color-mix(in srgb, var(--ds-accent-secondary) 20%, transparent) 0%,
+      color-mix(in srgb, var(--ds-accent-secondary) 9%, transparent) 34%,
+      color-mix(in srgb, var(--ds-accent-secondary) 3%, transparent) 60%,
+      transparent 84%
+    );
+  }
+}
+
+/* =============================================================================
+   TOOL CARD STACK
+
+   The toolkit's preview deck. Every tool's card is in the DOM at once, stacked
+   in the frame, and scrolling moves which one is on top: the next card rises
+   from below the frame, the current one settles, and the ones already seen
+   compress into a stack behind it.
+
+   The transition lives here rather than in an inline style because the
+   surface rules read `transition:` declarations out of source, and a
+   transition assembled in JavaScript is a transition nobody can check. Only
+   transform and opacity move, so the deck composites and never runs layout.
+   ============================================================================= */
+
+@layer components {
+  .tool-card {
+    position: absolute;
+    inset: 0;
+    transition:
+      transform 520ms var(--motion-ease),
+      opacity 520ms var(--motion-ease);
+    will-change: transform, opacity;
+  }
+}
+
+/* =============================================================================
+   THE ACCENT WORD
+
+   One word per headline carries the brand gradient, painted through the
+   glyphs: "here." in the hero, "Act" in the toolkit, and whatever the next
+   section's last beat turns out to be.
+
+   It is a class rather than a set of utilities repeated per call site because
+   it is a rule about the page, not a decision about one headline: every
+   headline's accent word should be the same green, and that green should be
+   the one the primary button is filled with, so the word an argument lands on
+   and the control it lands you on match.
+
+   The flat accent stays set as `color` underneath. Where background-clip: text
+   is unsupported the fill is transparent only in browsers that understand
+   -webkit-text-fill-color, so the fallback is a solid accent word rather than
+   an invisible one.
+   ============================================================================= */
+
+@layer components {
+  .text-brand-gradient {
+    background-image: var(--ds-accent-gradient);
+    background-clip: text;
+    color: var(--ds-accent-secondary);
+    -webkit-text-fill-color: transparent;
+  }
+}
+
+/* =============================================================================
+   FOUNDERS AURA
+
+   The light the founder cards are glass over.
+
+   A backdrop blur needs a backdrop: over a flat near-black page it blurs
+   nothing and costs a compositing layer for no result. This is that backdrop,
+   two wide lobes sitting under the two cards, at an alpha low enough to read as
+   depth rather than as colour. One carries the accent, one is achromatic, so
+   the pair is warm on one side and neutral on the other rather than a symmetric
+   glow that reads as a graphic.
+   ============================================================================= */
+
+@layer components {
+  .founders-aura {
+    position: absolute;
+    inset: -12% -6%;
+    z-index: -1;
+    pointer-events: none;
+    background-image:
+      radial-gradient(
+        38% 60% at 28% 45%,
+        color-mix(in srgb, var(--ds-accent-secondary) 9%, transparent) 0%,
+        transparent 70%
+      ),
+      radial-gradient(
+        34% 56% at 76% 55%,
+        color-mix(in srgb, var(--ds-color-white) 6%, transparent) 0%,
+        transparent 72%
+      );
+  }
+}
+
+/* =============================================================================
+   STAGE SHOWCASE
+
+   Three panels, one per lifecycle stage. Pointing at one widens it, dims the
+   other two, and brings up a second line of copy inside it. No clicks: the
+   panels are not links and there is nothing behind them to open.
+
+   PURE CSS, no state hook and nothing to hydrate. `:has()` is what makes that
+   possible: the row can style its own children based on which one is hovered,
+   so React never learns that a pointer moved. In a browser without `:has()` the
+   panels stay equal and the second line stays hidden, which is the resting
+   state and is perfectly readable.
+
+   THE ONE ANIMATED LAYOUT PROPERTY ON THIS SITE, and it is deliberate.
+   docs/SURFACES.md bans animating layout because a scroll-coupled or
+   continuously running layout animation re-runs layout every frame. This is
+   neither: it is three siblings, one bounded 420ms transition, fired by a
+   pointer that has already stopped moving. `flex-grow` is also the only honest
+   way to express "this panel takes more of the row": a transform would scale
+   the type with it, and a width transition on a flex child is the same cost
+   with worse behaviour when the row wraps.
+
+   Under prefers-reduced-motion the global rule collapses the transition and the
+   panels change size instantly, which is the correct answer: the information is
+   in the size, not in the movement.
+   ============================================================================= */
+
+@layer components {
+  .stage-panels {
+    --stage-ink: var(--ds-text-primary);
+  }
+
+  .stage-panel {
+    /* The flex basis lives here, not as a `flex-1` utility at the call site.
+       Tailwind emits utilities after this layer, so a `flex-1` shorthand would
+       reset flex-grow after every rule below it and the panels would never
+       resize. This is the same emission-order trap the radius props avoid. */
+    flex: 1 1 0%;
+    transition:
+      flex-grow 420ms var(--motion-ease),
+      opacity 420ms var(--motion-ease),
+      border-color var(--motion-chrome) var(--motion-ease);
+  }
+
+  /* Everything recedes while any panel is pointed at, and the pointed-at one
+     comes back. Two rules rather than a hover-and-not-hover pair, so the
+     resting state is untouched. */
+  .stage-panels:has(.stage-panel:hover) .stage-panel {
+    flex-grow: 0.82;
+    opacity: 0.55;
+  }
+
+  /* The selector repeats the :has() on purpose. `:has()` takes the specificity
+     of its argument, so the rule above scores four class selectors and a plain
+     `.stage-panels .stage-panel:hover` scores three: the dim would win on the
+     hovered panel too, and every panel would recede together. Matching the
+     :has() and adding the :hover puts this at five. */
+  .stage-panels:has(.stage-panel:hover) .stage-panel:hover {
+    flex-grow: 1.55;
+    opacity: 1;
+  }
+
+  /* The second line rises into place rather than fading in place. It starts
+     10px low, which is far enough to read as arriving and short enough that it
+     never looks like a separate animation from the panel widening around it.
+
+     `translate` rather than `transform`, so nothing else on the element has to
+     know about it, and the property is composited either way.
+
+     Two timings on purpose, and the delay is the point. Entering, it waits
+     300ms, which is most of the panel's 420ms widen: the panel opens, and then
+     the line arrives in the space the panel just made. At 90ms the two moved
+     together and read as one thing sliding, which is what it looked like
+     before. Leaving, it goes immediately and faster, because an exit that takes
+     as long as its entrance reads as lag once the pointer has moved on. */
+  .stage-panel-more {
+    opacity: 0;
+    translate: 0 10px;
+    transition:
+      opacity 200ms var(--motion-ease),
+      translate 200ms var(--motion-ease);
+  }
+
+  .stage-panels:has(.stage-panel:hover) .stage-panel:hover .stage-panel-more {
+    opacity: 1;
+    translate: 0 0;
+    transition-duration: 320ms;
+    transition-delay: 300ms;
+  }
+
+  /* Below the breakpoint the row is a column and nothing expands: on a phone
+     there is no pointer to hover with, and a panel that grows on tap would move
+     the content under the finger. */
+  @media (width < 64rem) {
+    .stage-panels:has(.stage-panel:hover) .stage-panel,
+    .stage-panels:has(.stage-panel:hover) .stage-panel:hover {
+      flex-grow: 1;
+      opacity: 1;
+    }
+
+    .stage-panel-more {
+      opacity: 1;
+      translate: 0 0;
+    }
+  }
+}
+
+/* =============================================================================
+   FAQ DISCLOSURE
+
+   A native <details> that opens smoothly instead of snapping.
+
+   This is the second and last animated layout property on the site, and like
+   the first (the lifecycle panels' flex-grow) it is deliberate and bounded: one
+   element, one 340ms transition, started by a click, and only one panel can be
+   open at a time. docs/SURFACES.md bans layout animation because a
+   scroll-coupled or continuously running one re-runs layout every frame. This
+   runs once per click and then stops.
+
+   HOW IT WORKS. `interpolate-size: allow-keywords` is what makes `auto` an
+   animatable height at all; without it there is nothing to transition to.
+   `::details-content` is the browser's own wrapper around everything after the
+   <summary>, so the panel animates without a wrapper div of our own, and
+   `content-visibility` with `allow-discrete` keeps the content rendered for the
+   length of the collapse rather than vanishing on the first frame.
+
+   In a browser that does not support `::details-content` yet, none of these
+   rules match and the panel opens instantly, which is exactly what it did
+   before. Nothing is broken by the absence of the enhancement, and no
+   JavaScript is involved either way.
+   ============================================================================= */
+
+:root {
+  interpolate-size: allow-keywords;
+}
+
+@layer components {
+  .faq-item::details-content {
+    block-size: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition:
+      block-size 340ms var(--motion-ease),
+      content-visibility 340ms allow-discrete,
+      opacity 220ms var(--motion-ease);
+  }
+
+  .faq-item[open]::details-content {
+    block-size: auto;
+    opacity: 1;
+    /* The text catches up a beat after the panel starts opening, so it reads as
+       arriving in the space rather than being stretched into view with it. */
+    transition-delay: 0s, 0s, 80ms;
+  }
+}
+
+/* =============================================================================
+   FIELD FOCUS
+
+   The input's focus ring, as a class rather than an arbitrary Tailwind value.
+
+   It was written inline as `focus-within:shadow-[...]` with a `color-mix()` in
+   the second layer, and Tailwind silently produced nothing: a shadow arbitrary
+   value is split on commas, and a comma inside a colour function breaks the
+   parse. The class was on the element and no rule existed, so the field had no
+   focus ring at all. Two-line CSS has no such failure mode, and it fails loudly
+   if it fails at all.
+
+   Not the 2px --focus-ring the rest of the site uses. On a field this wide that
+   ring is a bright green outline the length of the hero. This is accent/primary,
+   the deep green the buttons are filled with, at hairline weight, with a soft
+   halo of the bright green behind it: the same signal over two quiet layers
+   instead of one loud one. accent/primary clears 3:1 against the ground, which
+   is what a focus indicator owes, and doc 04 §7 asks that focus be visible, not
+   that it be 2px.
+   ============================================================================= */
+
+/* Deliberately unlayered. Tailwind's utilities layer also declares `box-shadow`
+   for anything in the shadow family, and a layered rule loses to it whatever
+   its specificity; unlayered CSS outranks every @layer. */
+.field-focus:focus-within {
+  box-shadow:
+    0 0 0 1px var(--ds-accent-primary),
+    0 0 0 5px color-mix(in srgb, var(--ds-accent-secondary) 10%, transparent);
+}
+
+/* The recessed tone keeps Figma's drop under the ring. */
+.field-focus-well:focus-within {
+  box-shadow:
+    0 0 0 1px var(--ds-accent-primary),
+    0 0 0 5px color-mix(in srgb, var(--ds-accent-secondary) 10%, transparent),
+    var(--ds-shadow-glass-surface);
+}

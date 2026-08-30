@@ -20,16 +20,21 @@
      overlays and carry no ground of their own: in the product that ground is
      the app shell, and there is no `bg/base` or `bg/app` variable to mirror.
 
-     #121212 is the fill every design-system page and component is composed on
-     in Figma (the canvas fill, present in every asset export before it was
-     stripped). Using it means a component rendered here sits on the ground the
-     designer drew it on, so every bg/* and border/* overlay composites to the
-     value they were designed to produce.
+     #07080a is a marketing decision, taken 30 Aug 2026, and it is deeper than
+     the #121212 canvas the components are drawn on in Figma. What that costs is
+     worth being precise about, because it is a real cost: every bg/* and
+     border/* overlay composites one step darker here than it does on the Figma
+     canvas. bg/surface, white at 6 per cent, lands on #16171a rather than
+     #1e1e1e. Nothing changes hue, nothing loses a token, and every text pairing
+     gains contrast rather than losing it, which `npm run ds:contrast` checks.
 
-     If a `bg/base` variable ever lands in Figma, this is the first thing to
-     delete: the mirrored token wins and this stops being ours.
+     The product keeps its own shell. This value is the marketing site's ground
+     and must not be read by a product surface.
+
+     If a `bg/base` variable ever lands in Figma, the product ground is the
+     mirrored token and this stays site-only. See docs/DECISIONS.md 007.
      ------------------------------------------------------------------------- */
-  --page-ground: #121212;
+  --page-ground: #07080a;
 
   /* ---------------------------------------------------------------------------
      Measure

@@ -1,5 +1,6 @@
 /**
- * Homepage. Intentionally empty — the design starts here from scratch.
+ * Homepage. The shell is in: the persistent nav (doc 03 §3 H0) and the market
+ * strip under it. Everything below them is still to come.
  *
  * What is already wired and waiting, so none of it needs rebuilding:
  *   Design tokens .......... src/design-system/tokens/, generated from Figma
@@ -35,6 +36,29 @@
  * Browse the system at /dev/design-system. See /dev/stack for the animation
  * stack, and CLAUDE.md for the rules that bind the copy and the budget.
  */
+import { AnnouncementBar } from "@/components/site/announcement-bar";
+import { Hero } from "@/components/site/hero";
+import { CloseSection } from "@/components/site/close-section";
+import { FaqSection } from "@/components/site/faq-section";
+import { FoundersSection } from "@/components/site/founders-section";
+import { SiteFooter } from "@/components/site/site-footer";
+import { SiteHeader } from "@/components/site/site-header";
+import { ToolkitSection } from "@/components/site/toolkit-section";
+
 export default function HomePage() {
-  return <main />;
+  return (
+    <>
+      <AnnouncementBar />
+      <SiteHeader />
+      <main>
+        <Hero />
+        <ToolkitSection />
+        <FoundersSection />
+        <FaqSection />
+        <CloseSection />
+      </main>
+
+      <SiteFooter />
+    </>
+  );
 }
