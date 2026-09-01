@@ -288,13 +288,13 @@ function OrbitLayout() {
  */
 function StackLayout() {
   return (
-    <div className="px-[var(--content-gutter)]">
+    <div className="px-(--content-gutter)">
       <div className="mx-auto max-w-content">
         <BullStage live={false} className="orbit-bull-still" />
 
         <Reveal
           stagger
-          className="mt-[var(--ds-space-7)] grid gap-[var(--ds-space-5)] sm:grid-cols-2"
+          className="mt-(--ds-space-7) grid gap-(--ds-space-5) sm:grid-cols-2"
         >
           {ENGINEERING_PILLARS.map((pillar) => (
             <PillarCard key={pillar.code} pillar={pillar} />
