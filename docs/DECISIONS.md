@@ -127,6 +127,25 @@ because a free tumble reaches poses that are upside down, edge-on and unlit with
 reload. `touch-action: pan-y` keeps vertical panning with the browser. Arrow keys do the same job at
 15 degrees a press, per doc 04 §7.
 
+**The rotation the model owes while it loads is spent, not written off.** This took two goes. Until
+the model has downloaded the bull on screen is a photograph and cannot turn, so the timeline holds
+the written angle at zero and records how far ahead it has got. The first version then discarded that
+debt, measuring every later angle from wherever the timeline stood when the model landed. On a warm
+load that is zero and costs nothing, which is exactly why it survived review. On a cold load over 4G
+the model arrives about five and a half seconds in, by which time a reader is already a third of the
+way down the track, and a third of the revolution had been deleted; scroll faster than that and the
+whole revolution went, which is a bull that never turns at all. Reported as "it does not rotate the
+first time, then it does after a refresh", and that is precisely the shape of a cache. The debt is
+now tweened to zero over up to 1.1 seconds when the scene appears, so the canvas still arrives at the
+pose the still was showing and then turns itself to where the page actually is.
+
+**The angle tween is a `fromTo`, because `invalidateOnRefresh` re-reads start values.** That flag is
+right for anything measured off the DOM and wrong for a plain number: a `to` re-reads `angle` as
+whatever it currently is and silently re-bases the revolution from there. Refreshes are not rare and
+on a cold load they are late, since `document.fonts.ready` fires one and a font still downloading
+fires it after the reader is inside the section. Pinning the start at zero made a cold load's pose
+match a warm one at the same scroll position to within measurement noise, where before it did not.
+
 **The timeline measures its angle from the frame the scene goes live.** While the painted still is on
 screen there is one fixed pose to look at, so an angle banked during that time is spent all at once
 the instant WebGL appears, as a jump from the pose in the picture to wherever the page had scrolled
