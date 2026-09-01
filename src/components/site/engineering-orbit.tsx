@@ -28,15 +28,26 @@ import { PillarCard } from "./engineering/pillar-card";
  * moves the other's surface: dragging the model never scrolls the page, and
  * scrolling the page never fights a pose somebody set by hand, it carries it.
  *
- * THE TIMELINE RE-ZEROES ITSELF UNTIL THE SCENE IS LIVE. While the still is on
- * screen there is one fixed pose to look at, so an angle banked during that time
- * would be spent the instant WebGL appeared, as a jump from the pose in the
- * picture to wherever the page had scrolled to. Instead the tween keeps moving
- * and the store keeps reading zero, and the offset the angle is measured from is
- * whatever it had reached when the model landed. In practice the model is loaded
- * a viewport and a half before the track even starts, so that offset is zero and
- * this costs nothing; on a slow connection it is the difference between a
- * hand-off and a glitch.
+ * THE CATCH-UP, and it is the part that took two goes to get right.
+ *
+ * Until the model has downloaded, the bull on screen is a photograph. It cannot
+ * turn, so the timeline holds the written angle at zero and records how far
+ * ahead it has got as a debt. That much was always true.
+ *
+ * What the first version then did was write that debt off: it measured every
+ * later angle from wherever the timeline happened to be when the model landed.
+ * On a fast connection that is zero and costs nothing. On a cold load over 4G
+ * the model arrives around five seconds in, by which time a reader is already
+ * a third of the way down the track, and a third of the revolution had simply
+ * been deleted. Scroll far enough while it loads and the whole revolution went,
+ * which is a bull that never turns at all: exactly the bug that was reported,
+ * and exactly why it went away on the second load, where the model was cached.
+ *
+ * So the debt is spent rather than discarded. The canvas still appears at the
+ * pose the still was showing, because the offset is still whole at that instant;
+ * then it is tweened to zero over up to 1.1 seconds, and the model turns itself
+ * to where the page actually is. After that the mapping is exact and the section
+ * delivers its full revolution however slowly it loaded.
  *
  * The breakpoint is 1024 and not 768 because the orbit needs a model worth
  * turning, two columns wide enough for four lines of body copy, and a gutter to
@@ -146,43 +157,74 @@ function OrbitLayout() {
          reports raw scroll progress, a tween inside the timeline reports the
          eased-out position the timeline is actually at.
 
-         `origin` is where the angle is measured from. See the note at the top
-         of this file. */
+         `offset` is the debt the model owes the scroll: how far behind the
+         timeline it is being held. See THE CATCH-UP at the top of this file. */
       const turn = { angle: 0 };
-      let origin = 0;
+      const offset = { value: 0 };
+      let settled = false;
+      let catchUp: gsap.core.Tween | null = null;
 
-      /* Capturing `origin` at the exact frame the scene goes live, rather than
-         letting the tween's own onUpdate leave it wherever it last ran. Those
-         are not the same moment and the difference is visible: a reload parked
-         inside this section restores the offset, scrubs the timeline to the
-         middle of its travel, and then loads the model some seconds later with
-         no scroll in between, so onUpdate has long since stopped firing. Reading
-         the tween here, on the transition, is what makes the canvas's first
-         frame the same pose as the still it replaces. */
-      const unsubscribe = useAppStore.subscribe((state, previous) => {
-        if (!state.bullLive || previous.bullLive) return;
-        origin = turn.angle;
-        if (useAppStore.getState().bullScroll !== 0) state.setBullScroll(0);
-      });
+      const write = () => useAppStore.getState().setBullScroll(turn.angle - offset.value);
 
-      timeline.to(
+      /* `fromTo`, not `to`, and the explicit zero is load-bearing.
+         `invalidateOnRefresh` below clears every tween's recorded start value so
+         it is re-read on the next render, which is right for anything measured
+         off the DOM and wrong for a plain number: a `to` would re-read `angle`
+         as whatever it currently is and silently re-base the whole revolution
+         from there. Refreshes are not rare either, and on a cold load they are
+         late: `document.fonts.ready` fires one, and a font that is still
+         downloading fires it after the reader is already inside this section.
+         Pinning the start at zero makes the mapping from scroll to angle the
+         same on every refresh, and therefore the same on a cold load as on a
+         warm one. */
+      timeline.fromTo(
         turn,
+        { angle: 0 },
         {
           angle: FULL_TURN,
           duration: 1,
           ease: "none",
           onUpdate: () => {
-            const store = useAppStore.getState();
-            if (!store.bullLive) {
-              origin = turn.angle;
-              if (store.bullScroll !== 0) store.setBullScroll(0);
-              return;
-            }
-            store.setBullScroll(turn.angle - origin);
+            /* Before the model exists the visible bull is a photograph and
+               cannot turn, so the offset tracks the timeline exactly and the
+               angle written stays zero. Nothing is lost: the debt is recorded
+               and paid the moment there is something to pay it to. */
+            if (!useAppStore.getState().bullLive) offset.value = turn.angle;
+            write();
           },
         },
         0,
       );
+
+      /* THE HAND-OFF. Fires on the frame the canvas takes over, which is not the
+         frame `onUpdate` last ran: a visitor can arrive with the section already
+         on screen and stand still while the model downloads, and a reload parked
+         inside the section does exactly that. Reading the tween here rather than
+         relying on the last scroll update is what makes the canvas's first frame
+         the same pose as the still it replaces. */
+      const unsubscribe = useAppStore.subscribe((state, previous) => {
+        if (!state.bullLive || previous.bullLive || settled) return;
+        settled = true;
+
+        const debt = Math.abs(offset.value);
+        if (debt < 0.01) {
+          offset.value = 0;
+          write();
+          return;
+        }
+
+        /* Spend the debt as motion rather than discarding it. Longer for a
+           larger correction, so half a revolution does not snap, and capped so
+           the model is never still turning by the time the reader has moved on.
+           The house curve, because this is a thing arriving, not a thing being
+           dragged by the scrollbar. */
+        catchUp = gsap.to(offset, {
+          value: 0,
+          duration: Math.min(1.1, 0.3 + (debt / (Math.PI * 2)) * 0.9),
+          ease: EASE,
+          onUpdate: write,
+        });
+      });
 
       cards.forEach((card, index) => {
         timeline.fromTo(
@@ -199,9 +241,13 @@ function OrbitLayout() {
         );
       });
 
-      /* useGSAP reverts the tweens it created; the store subscription is not
-         one of them. */
-      return unsubscribe;
+      /* useGSAP reverts the tweens created inside its own synchronous run. The
+         store subscription is not one, and neither is the catch-up, which is
+         created later from a callback. */
+      return () => {
+        unsubscribe();
+        catchUp?.kill();
+      };
     },
     { scope },
   );
@@ -242,13 +288,13 @@ function OrbitLayout() {
  */
 function StackLayout() {
   return (
-    <div className="px-[var(--content-gutter)]">
+    <div className="px-(--content-gutter)">
       <div className="mx-auto max-w-content">
         <BullStage live={false} className="orbit-bull-still" />
 
         <Reveal
           stagger
-          className="mt-[var(--ds-space-7)] grid gap-[var(--ds-space-5)] sm:grid-cols-2"
+          className="mt-(--ds-space-7) grid gap-(--ds-space-5) sm:grid-cols-2"
         >
           {ENGINEERING_PILLARS.map((pillar) => (
             <PillarCard key={pillar.code} pillar={pillar} />

@@ -71,8 +71,20 @@ const PALETTE_TOKENS = {
   fill: "--ds-color-grey-300",
 } as const;
 
-/** How early the scene starts loading, as a share of the viewport height. */
-const PRELOAD_MARGIN = "150%";
+/**
+ * How early the scene starts loading, as a share of the viewport height.
+ *
+ * 400, not 150, and the difference is measured rather than guessed. The chunk is
+ * about 600KB and the model another 968KB; on the mid-range Android over 4G that
+ * doc 04 §5 names as the binding device, the model lands about five and a half
+ * seconds after the request. 150 per cent of a 900px viewport is 1350px of lead,
+ * which a reader covers in a second or two, so the scene was routinely still
+ * downloading well after the track had started. 400 per cent starts it around
+ * the sneak peek, several sections earlier, which is enough on that connection
+ * and still tied to a reader who is actually heading this way rather than being
+ * spent on everyone who opens the page.
+ */
+const PRELOAD_MARGIN = "400%";
 
 export function BullStage({
   live: wantsLive = true,
