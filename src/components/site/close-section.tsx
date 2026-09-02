@@ -10,7 +10,7 @@ import {
   START_FREE_LABEL,
 } from "@/lib/site";
 import { EmailCapture } from "./email-capture";
-import { ParticleField } from "./particle-field";
+import { CloseVideo } from "./close-video";
 
 /**
  * H9 · The close, doc 03 §3. Statement register, and the last thing on the page.
@@ -28,7 +28,8 @@ import { ParticleField } from "./particle-field";
  * they are.
  *
  * The scene is sealed top and bottom rather than fading into the footer: a
- * fading rule above, the dot field behind, and a warm beat under the headline.
+ * fading rule above, the background video behind, and a warm beat under the
+ * headline.
  *
  * The beat is the page's one warm line, doc 01 §7. The rule asks for serif
  * italic; there is no serif on this site (docs/DECISIONS.md 002), so it is
@@ -41,8 +42,12 @@ import { ParticleField } from "./particle-field";
  */
 export function CloseSection() {
   return (
-    <section className="relative isolate overflow-hidden py-[128px] text-center">
-      <ParticleField className="absolute inset-0 -z-10" />
+    <section className="relative isolate overflow-hidden py-[var(--section-pad-statement)] text-center">
+      {/* The scene's one ambient element. It used to be the dot field; the
+          video's own dust is doing that job now, and doc 02 §2.3 allows one per
+          viewport. <ParticleField> is untouched but now has no call sites.
+          See components/site/close-video. */}
+      <CloseVideo />
 
       <div className="divider-fade absolute inset-x-0 top-0" aria-hidden="true" />
 
