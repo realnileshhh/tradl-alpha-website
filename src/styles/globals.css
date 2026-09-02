@@ -414,6 +414,12 @@
     background-image: var(--hero-veil);
   }
 
+  /* The same, for the close. It hems at both ends rather than one: nothing
+     hides its top edge the way the nav hides the hero's. See --close-veil. */
+  .close-veil {
+    background-image: var(--close-veil);
+  }
+
   /* Top-anchored radial for controls under about 64px, so the light source
      agrees with the specular. */
   .fill-top-lit {
@@ -1622,8 +1628,19 @@
       /* Bounded by the viewport in both directions. Height alone is not enough:
          a short, wide window and a tall, narrow one both want a smaller bull
          than 74vh gives them, and the vw term is what stops the model swallowing
-         the card columns on the second one. */
-      width: min(70vh, 700px, 62vw);
+         the card columns on the second one.
+
+         82vh AND 860px, up from 70vh and 700px, and the pixel cap is the half
+         that mattered. The model is centred in a stage a viewport tall, so the
+         empty ground above its horns is half the difference between the stage
+         and the model: at 1440 by 900 that was 185px, and on a 2000 by 1100
+         window the 700px cap bound before the vh term did, so the model got
+         relatively smaller as the screen grew and the band grew with it, to
+         250px. Measured from the dek to the first lit pixel of the model, the
+         whole entry to the section was 283px of ground at 1440 and 352px at
+         2000. A larger model closes it from the inside without moving the
+         centre the middle card row is aligned to. */
+      width: min(82vh, 860px, 62vw);
       translate: -50% -50%;
     }
 

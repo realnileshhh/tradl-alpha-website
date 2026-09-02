@@ -56,8 +56,23 @@ export function Hero() {
           `relative isolate` is what the video hangs off. The isolation matters
           as much as the positioning: the video layer sits at -z-10, and without
           a stacking context of its own here it would go behind the page rather
-          than behind this section's content. */}
-      <section className="spill-top relative isolate overflow-x-clip border-b border-line">
+          than behind this section's content.
+
+          NO BOTTOM BORDER, and it is not an oversight. This section carried
+          `border-b border-line` and the rule was unanchored, because a border
+          paints at the box edge and this box is pinned. Measured at 1440 by 900
+          the line landed at y=1487 while the toolkit's headline did not start
+          until 2048: a full-bleed hairline floating 560px above anything it
+          could be separating. Worse, the distance is a function of viewport
+          height, so on a shorter screen the same line lands inside the toolkit's
+          cards and gets cut by them.
+
+          The fix is not to move it. Doc 04 §2 puts hairline separators between
+          instrument-register sections only and separates statement scenes by
+          space, and this is the page's opening statement scene. Every other
+          boundary on this page draws its rule as `border-t` on the section
+          BELOW, which is a box nothing transforms. */}
+      <section className="spill-top relative isolate overflow-x-clip">
         {/* The background video, its scrim, and the control that unmutes it.
             Renders a still first and upgrades to the video after idle, so the
             hero's first paint is an 11KB picture and never a video decode.
@@ -67,7 +82,7 @@ export function Hero() {
         {/* Gutter outside, measure inside, so the demo frame's edges land on
             the same verticals as the nav pane above it, not 24px inside them. */}
         <div className="px-[var(--content-gutter)]">
-          <div className="mx-auto max-w-content pt-[var(--ds-space-7)] pb-[72px] text-center sm:pt-[72px]">
+          <div className="mx-auto max-w-content pt-[var(--ds-space-7)] pb-[var(--section-gap)] text-center sm:pt-[var(--section-pad)]">
             <div data-hero-copy>
               {/* The doctrine, as a label. No glyph: the ◈ is the brief's mark
                   for AI-derived content, and this line is a statement of
@@ -89,7 +104,8 @@ export function Hero() {
               {/* The action cluster. It used to stand in its own field of
                   dots; the background video is now the hero's one ambient
                   element, and doc 02 §2.3 allows exactly one per viewport.
-                  <ParticleField> is untouched and still used elsewhere. */}
+                  <ParticleField> itself is untouched, but it now has no
+                  call sites: the close took a video too. */}
               <div>
                 {/* The same control the close uses, so the page asks the
                     same way twice. See components/site/email-capture. */}
@@ -116,7 +132,7 @@ export function Hero() {
                 nav pane above it. At 16:9 that is about 700px tall including
                 the bezel, which still leaves air above and below when the
                 choreography parks it in the centre of a laptop viewport. */}
-            <Frame size="bezel" data-hero-frame className="mt-[64px] w-full text-left">
+            <Frame size="bezel" data-hero-frame className="mt-[var(--section-gap)] w-full text-left">
               <FrameInner size="bezel" className="relative aspect-video">
                 <span className="absolute inset-0 flex flex-col items-center justify-center gap-[var(--ds-space-4)]">
                   <span className="grid size-14 place-items-center rounded-full border border-line bg-surface text-fg-2 shadow-spec">

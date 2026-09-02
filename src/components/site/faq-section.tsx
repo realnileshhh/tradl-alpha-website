@@ -43,7 +43,7 @@ import {
  */
 export function FaqSection() {
   return (
-    <section className="border-t border-line py-[96px]">
+    <section className="border-t border-line py-[var(--section-pad)]">
       <div className="px-[var(--content-gutter)]">
         <Reveal
           register="instrument"

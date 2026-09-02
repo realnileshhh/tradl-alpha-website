@@ -32,7 +32,7 @@ import { SectionOpener } from "./section-opener";
  */
 export function FoundersSection() {
   return (
-    <section className="relative isolate overflow-hidden border-t border-line py-[96px]">
+    <section className="relative isolate overflow-hidden border-t border-line py-[var(--section-pad)]">
       <SectionOpener
         eyebrow={FOUNDERS_EYEBROW}
         title={
@@ -42,7 +42,7 @@ export function FoundersSection() {
         }
       />
 
-      <div className="relative mt-[56px] px-[var(--content-gutter)]">
+      <div className="relative mt-[var(--section-gap)] px-[var(--content-gutter)]">
         {/* What the glass has to work with. Two lobes, sitting under the two
             cards, at an alpha low enough that it reads as depth rather than as
             a colour. */}

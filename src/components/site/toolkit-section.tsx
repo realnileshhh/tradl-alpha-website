@@ -29,7 +29,7 @@ import { TOOLKIT_DEK, TOOLKIT_EYEBROW, TOOLKIT_TITLE_BEAT, TOOLKIT_TITLE_LEAD } 
  */
 export function ToolkitSection() {
   return (
-    <section className="relative py-[96px]">
+    <section className="relative py-[var(--section-pad)]">
       <SectionOpener
         eyebrow={TOOLKIT_EYEBROW}
         dek={TOOLKIT_DEK}
@@ -40,11 +40,11 @@ export function ToolkitSection() {
         }
       />
 
-      <div className="mt-[64px]">
+      <div className="mt-[var(--section-gap)]">
         <StageShowcase />
       </div>
 
-      <div className="mt-[96px]">
+      <div className="mt-[var(--section-gap)]">
         <ToolkitExplorer />
       </div>
     </section>
