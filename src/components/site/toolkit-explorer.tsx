@@ -4,6 +4,7 @@ import { useRef, useState, type ComponentType, type SVGProps } from "react";
 import { gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
 import { StatusPill } from "@/components/ui/badge";
 import {
+  IconArrowNavigate,
   IconArrowPointRight,
   IconCalendar,
   IconCandleChart,
@@ -23,8 +24,9 @@ import { scrollTo } from "@/lib/scroll";
 import { useReducedMotion } from "@/lib/use-reduced-motion";
 import {
   TOOLS,
-  TOOL_GROUPS,
+  TOOL_STAGES,
   TOOL_PREVIEW_PLACEHOLDER,
+  type ToolStage,
   type ToolStatus,
 } from "@/lib/site";
 import { cn } from "@/lib/utils";
@@ -43,6 +45,11 @@ import { cn } from "@/lib/utils";
  * Browsing by build status makes a list of things a visitor cannot have;
  * browsing by lifecycle makes an argument about how the product is used, and
  * the status still shows on every card as a fact rather than a gate.
+ *
+ * This paragraph described the intent for a while and the code did the opposite:
+ * it filtered on `status` while the tabs wore the lifecycle words, so Act held
+ * Pattern Sniper and the counts read 5, 1 and 5. Corrected 2 Sep 2026 on the
+ * founder's note; they are the wireframe's 6, 4 and 2 now.
  *
  * ONE TRIGGER, AND IT IS NOT SCRUBBED. Doc 04 §5 allows four scrubbed triggers
  * a page and the hero already owns one. This one reads `progress` in `onUpdate`
@@ -70,6 +77,7 @@ const TOOL_ICONS: Record<string, ComponentType<SVGProps<SVGSVGElement>>> = {
   explore: IconExplore,
   "table-view": IconTableView,
   "live-signals": IconLiveSignals,
+  "arrow-navigate": IconArrowNavigate,
 };
 
 /** Viewport heights of scrolling per tool. Eleven tools, so the section runs
@@ -79,16 +87,15 @@ const SCROLL_PER_TOOL = 45;
 
 const countLabel = (n: number) => `${n} ${n === 1 ? "tool" : "tools"}`;
 
-const toolsIn = (group: ToolStatus) => TOOLS.filter((tool) => tool.status === group);
+const toolsIn = (stage: ToolStage) => TOOLS.filter((tool) => tool.stage === stage);
 
-const firstIndexOf = (group: ToolStatus) => TOOLS.findIndex((tool) => tool.status === group);
+const firstIndexOf = (stage: ToolStage) => TOOLS.findIndex((tool) => tool.stage === stage);
 
 /**
- * The chevron on the selected row takes the tool's own build state, and with
- * the stage caption gone it is now the only thing on the list that carries it:
- * the tabs are labelled with the lifecycle words, so the group a tool sits in
- * says nothing about whether it has shipped. The card on the right still spells
- * it out in words.
+ * The chevron on the selected row takes the tool's own build state, and it is
+ * the only thing on the list that carries it: the tabs are the lifecycle now,
+ * so where a tool sits says nothing about whether it has shipped. The card on
+ * the right still spells it out in words.
  */
 const STATUS_INK: Record<ToolStatus, string> = {
   live: "text-accent-2",
@@ -129,8 +136,8 @@ export function ToolkitExplorer() {
   /* TOOLS is a non-empty literal, but the index signature does not know that
      and a fallback is cheaper than an assertion that could go stale. */
   const current = TOOLS[index] ?? TOOLS[0]!;
-  const group = current.status;
-  const groupTools = toolsIn(group);
+  const stage = current.stage;
+  const stageTools = toolsIn(stage);
 
   useGSAP(
     () => {
@@ -203,10 +210,10 @@ export function ToolkitExplorer() {
           <SegmentedControl
             label="Jump to a group of the toolkit"
             size="lg"
-            value={group}
-            onValueChange={(next) => goTo(firstIndexOf(next as ToolStatus))}
+            value={stage}
+            onValueChange={(next) => goTo(firstIndexOf(next as ToolStage))}
             className="w-full max-w-[520px]"
-            options={TOOL_GROUPS.map((option) => ({
+            options={TOOL_STAGES.map((option) => ({
               value: option.value,
               label: option.label,
               hint: countLabel(toolsIn(option.value).length),
@@ -218,8 +225,8 @@ export function ToolkitExplorer() {
           {/* Keyed on the stage so the rows replay their entrance when the list
               is replaced. The entrance is the shared chrome stagger, not a
               scroll reveal: this answers a scroll position, not a viewport. */}
-          <ul key={group} className="flex flex-col gap-[var(--ds-space-1)]">
-            {groupTools.map((tool, position) => {
+          <ul key={stage} className="flex flex-col gap-[var(--ds-space-1)]">
+            {stageTools.map((tool, position) => {
               const Icon = TOOL_ICONS[tool.icon];
               const isActive = current.name === tool.name;
 
