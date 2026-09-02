@@ -58,7 +58,10 @@ import { useAppStore } from "@/store/use-app-store";
  * the React tree each time to produce the same elements.
  */
 
-const MODEL_URL = "/models/bull.glb";
+/* Shared with bull-stage.tsx, which starts this downloading before the scene
+   is ever asked for. See ./bull-asset. */
+export { MODEL_URL } from "./bull-asset";
+import { MODEL_URL } from "./bull-asset";
 
 /** Height the model is normalised to, in world units, before the camera frames it. */
 const MODEL_HEIGHT = 1;

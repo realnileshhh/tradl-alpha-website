@@ -77,8 +77,20 @@ import { PillarCard } from "./engineering/pillar-card";
  * anything that maps scroll position continuously onto a property, because a
  * curve there reads as the page slipping under the finger. These are not that:
  * each card is a discrete arrival occupying a fifth of the track, and an arrival
- * with no deceleration does not land, it stops. `scrub: 0.6` supplies the
- * smoothing, the same figure the hero uses.
+ * with no deceleration does not land, it stops. The curve stays on the tweens.
+ *
+ * `scrub: true`, NOT A NUMBER, AND THE REASON IS LENIS. A numeric scrub eases
+ * the timeline's playhead toward the scroll position over that many seconds,
+ * which is a second interpolation of a signal Lenis has already interpolated:
+ * the page's scroll is smoothed at `lerp: 0.12` before ScrollTrigger ever reads
+ * it. Doubling it up is invisible at reading speed and very visible on a throw.
+ *
+ * Measured on a fling through the whole track: at two thirds of the way down,
+ * every card was still at opacity 0, and all six then arrived at once as the
+ * timeline caught up behind the reader. That is the "the cards appear one by
+ * one" report, and it is the smoothing rather than the choreography. `true`
+ * binds the playhead to the scroll exactly, so the six are wherever the reader
+ * has actually scrolled to, and Lenis still supplies the softness.
  */
 
 /**
@@ -147,7 +159,7 @@ function OrbitLayout() {
           trigger: root,
           start: "top top",
           end: "bottom bottom",
-          scrub: 0.6,
+          scrub: true,
           invalidateOnRefresh: true,
         },
       });
@@ -305,7 +317,7 @@ function OrbitLayout() {
  */
 function StackLayout() {
   return (
-    <div className="px-(--content-gutter)">
+    <div className="mt-[var(--section-gap)] px-(--content-gutter)">
       <div className="mx-auto max-w-content">
         <BullStage live={false} className="orbit-bull-still" />
 
