@@ -11,7 +11,7 @@ import type { BullPalette } from "./bull-scene";
 import { useBullTurntable } from "./use-bull-turntable";
 
 /**
- * The stage the bull turns on, and the three gates that keep it cheap.
+ * The stage the bull turns on, and the four gates that keep it cheap.
  *
  * 1 · THE LAZY BOUNDARY. three + drei + postprocessing is about 600KB gzipped
  *     and the model is another 968KB. `next/dynamic` with `ssr: false` is what
@@ -34,6 +34,11 @@ import { useBullTurntable } from "./use-bull-turntable";
  *     cross-fade: see the note on `.bull-still` in globals.css. If the scene
  *     never arrives at all, what stays on screen is a picture of a bull rather
  *     than a hole in the layout.
+ *
+ * 4 · THE HEAD START. The gate decides when WebGL mounts, not when the bytes
+ *     start moving. Those are started after `load` and an idle callback, from
+ *     the top of the page, so the model is already in cache by the time the
+ *     gate opens. The long note on the effect says why.
  *
  * Under `prefers-reduced-motion`, and wherever the caller passes `live={false}`,
  * the still is the whole component: the chunk is never requested and WebGL is
@@ -135,6 +140,64 @@ export function BullStage({
 
     observer.observe(host.current);
     return () => observer.disconnect();
+  }, [wantsLive, prefersReducedMotion]);
+
+  /**
+   * 4 · THE HEAD START, which is the one that decides whether the bull turns at
+   *     all on a first visit.
+   *
+   * The viewport gate above is the right shape and the wrong clock. It starts
+   * the download when the reader is a few viewports away, and on a hard refresh
+   * the chunk and the model together are about 1.5MB, so the reader routinely
+   * arrives first. While they wait, the bull on screen is the still, the still
+   * is one fixed pose, and the section's timeline holds the written angle at
+   * zero: measured on a throttled cold load, the timeline advanced 2.5 radians,
+   * two fifths of its whole revolution, with nothing on screen moving. That is
+   * the "the bull is stuck" report, and the catch-up in `engineering-orbit.tsx`
+   * repays it as a spin afterwards rather than preventing it.
+   *
+   * So the fetch is started from the top of the page instead, and the gate above
+   * is left as the gate on mounting WebGL. Two conditions keep it honest against
+   * doc 04 §5. It waits for `load`, so nothing here competes for bandwidth with
+   * the LCP element, which is the only thing the 2.0s budget is about. And it
+   * waits for an idle callback after that, so it yields to anything still
+   * settling. By the time the reader has read the sections above, the model is
+   * in drei's cache and `useGLTF` resolves in the same frame the scene mounts.
+   *
+   * Importing the module is the whole mechanism: `bull-scene.tsx` ends with
+   * `useGLTF.preload`, so evaluating it starts the model download too. One
+   * import warms both halves, and it is the same module specifier `next/dynamic`
+   * uses above, so the two share a chunk rather than racing for two.
+   */
+  useEffect(() => {
+    if (!wantsLive || prefersReducedMotion) return;
+
+    let cancelled = false;
+    let idle = 0;
+
+    const warm = () => {
+      const start = () => {
+        if (!cancelled) void import("./bull-scene");
+      };
+      /* Safari only shipped requestIdleCallback in 17. A short timeout is the
+         same intent on the versions that predate it: after the current work,
+         not during it. */
+      idle =
+        typeof requestIdleCallback === "function"
+          ? requestIdleCallback(start, { timeout: 2000 })
+          : window.setTimeout(start, 200);
+    };
+
+    if (document.readyState === "complete") warm();
+    else window.addEventListener("load", warm, { once: true });
+
+    return () => {
+      cancelled = true;
+      window.removeEventListener("load", warm);
+      if (!idle) return;
+      if (typeof cancelIdleCallback === "function") cancelIdleCallback(idle);
+      else clearTimeout(idle);
+    };
   }, [wantsLive, prefersReducedMotion]);
 
   /* Stable, so the scene's ready effect fires once rather than on every render

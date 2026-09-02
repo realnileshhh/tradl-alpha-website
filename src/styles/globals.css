@@ -407,6 +407,13 @@
     background-image: var(--spill-top);
   }
 
+  /* The scrim over the hero video: hides its top edge, holds the headline's
+     contrast, and hems the video into the ground before the section ends. The
+     stops and the reasoning are on --hero-veil in marketing/ground.css. */
+  .hero-veil {
+    background-image: var(--hero-veil);
+  }
+
   /* Top-anchored radial for controls under about 64px, so the light source
      agrees with the specular. */
   .fill-top-lit {

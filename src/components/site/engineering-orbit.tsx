@@ -161,7 +161,6 @@ function OrbitLayout() {
          timeline it is being held. See THE CATCH-UP at the top of this file. */
       const turn = { angle: 0 };
       const offset = { value: 0 };
-      let settled = false;
       let catchUp: gsap.core.Tween | null = null;
 
       const write = () => useAppStore.getState().setBullScroll(turn.angle - offset.value);
@@ -203,8 +202,26 @@ function OrbitLayout() {
          relying on the last scroll update is what makes the canvas's first frame
          the same pose as the still it replaces. */
       const unsubscribe = useAppStore.subscribe((state, previous) => {
-        if (!state.bullLive || previous.bullLive || settled) return;
-        settled = true;
+        if (state.bullLive === previous.bullLive) return;
+
+        /* Going the other way, which happens when the stage unmounts with the
+           section still on screen. Whatever is left of a correction has to stop:
+           from here the timeline is re-zeroing itself again, and a tween still
+           writing into `offset` would be arguing with it. */
+        if (!state.bullLive) {
+          catchUp?.kill();
+          catchUp = null;
+          return;
+        }
+
+        /* ON EVERY EDGE, NOT ONLY THE FIRST. This used to latch after one
+           hand-off, which is right for the load the section was written for and
+           wrong for every later one. A stage that goes live, unmounts and comes
+           back leaves the timeline re-zeroing against a canvas that is on screen
+           and able to turn: the written angle stays at zero for the rest of the
+           page's life and the model never moves again. Re-arming costs one
+           comparison and removes a state the section cannot recover from. */
+        catchUp?.kill();
 
         const debt = Math.abs(offset.value);
         if (debt < 0.01) {

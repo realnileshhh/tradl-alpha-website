@@ -31,6 +31,11 @@
   /* mirrors DURATION.chrome */
   --motion-chrome: 300ms;
 
+  /* mirrors DURATION.statement. The slow one, for a full-bleed scene arriving
+     rather than a control answering a pointer. The hero video crosses over its
+     own still on this. */
+  --motion-statement: 800ms;
+
   /* mirrors DWELL.slide. How long the sneak peek holds one window. Read by the
      progress rail's keyframe, which is also what advances the carriage. */
   --motion-dwell-slide: 7000ms;

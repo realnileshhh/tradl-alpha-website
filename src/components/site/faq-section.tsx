@@ -47,7 +47,7 @@ export function FaqSection() {
       <div className="px-[var(--content-gutter)]">
         <Reveal
           register="instrument"
-          className="mx-auto grid max-w-content gap-[var(--ds-space-7)] lg:grid-cols-[minmax(0,360px)_minmax(0,1fr)] lg:gap-[80px]"
+          className="mx-auto grid max-w-content gap-[var(--ds-space-7)] lg:grid-cols-[minmax(0,360px)_minmax(0,1fr)] lg:items-center lg:gap-[80px]"
         >
           <div className="lg:sticky lg:top-[120px] lg:self-start">
             <p className="text-xs tracking-[0.18em] text-accent-2 uppercase">{FAQ_EYEBROW}</p>
