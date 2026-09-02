@@ -275,11 +275,19 @@ export const TOOLKIT_DEK =
    because that is the argument, and each tool still carries its status as a pill
    in the frame, because that is the fact.
 
-   The array order is the order the scroll walks, and it runs group by group:
-   the five in LIVE, then the one in PREVIEW, then the five in PRIVATE ACCESS.
-   Interleaving them would make the control jump backwards and forwards between
-   tabs as a visitor scrolls in one direction, which reads as a bug. It also
-   starts on AI Screener and ends on Position Co-pilot, as specified.
+   The array order is the order the scroll walks, and it runs stage by stage:
+   the six in Discover, the four in Analyse, then the two in Act. Interleaving
+   them would make the control jump backwards and forwards between tabs as a
+   visitor scrolls in one direction, which reads as a bug. It also starts on AI
+   Screener and ends on Position Co-pilot, as specified.
+
+   THIRTEEN IN DOC 05, TWELVE HERE, and the missing one is a decision rather
+   than an oversight. Doc 05 §3 lists Smart Charts alongside Tradl AI Charts and
+   says in as many words that merging the two is a naming-freeze amendment to be
+   flagged to Nilesh. It has been: the v2 home prototype carries one charts tile,
+   and the founder's counts for the three stages are 6, 4 and 2, which only add
+   up with Smart Charts absent. If it comes back, it is an Analyse tool and the
+   count on that tab becomes five.
 
    One naming correction, and it is the brief's rather than mine. The list came
    in with "Charts"; doc 05 §7 freezes the name as "Tradl AI Charts" and retires
@@ -292,29 +300,24 @@ export const TOOLKIT_DEK =
    -------------------------------------------------------------------------- */
 
 /**
- * The three groups the toolkit is browsed by, as specified on 30 Aug 2026.
+ * Doc 05 §3's build states. The pill on every card, and nothing else.
  *
- * READ THIS BEFORE CHANGING IT. The groups are doc 05 §3's build states, LIVE,
- * PREVIEW and PRIVATE ACCESS, wearing the lifecycle words as labels. They are
- * not the lifecycle: the "Act" group holds Pattern Sniper, whose own stage is
- * Discover, and every row prints its real stage underneath its name, so a
- * visitor can see a row captioned DISCOVER sitting under a tab called Act.
- *
- * That is what was asked for and it is what ships. The two ways to make the
- * words agree with the contents, when someone wants to: label the tabs LIVE,
- * PREVIEW and PRIVATE ACCESS and keep these groups, or group by `stage` and let
- * the tabs keep these labels. Either is one edit here.
+ * IT USED TO BE THE GROUPING KEY, and that was the bug the founder caught on
+ * 2 Sep 2026: the toolkit's three tabs were labelled with the lifecycle words
+ * but filtered by build state, so the Act tab held Pattern Sniper, whose own
+ * stage is Discover, and the counts came out 5, 1 and 5. The note that stood
+ * here said the fix was to group by `stage` and let the tabs keep their labels.
+ * That is what has happened, and the counts are now the wireframe's 6, 4 and 2.
  */
-export const TOOL_GROUPS = [
-  { value: "live", label: "Discover" },
-  { value: "preview", label: "Analyse" },
-  { value: "private", label: "Act" },
-] as const;
+export type ToolStatus = "live" | "preview" | "private";
 
-/** Doc 05 §3's build states. The grouping key, and the pill on every card. */
-export type ToolStatus = (typeof TOOL_GROUPS)[number]["value"];
-
-/** Doc 05 §7's lifecycle, printed under each tool's name. */
+/**
+ * Doc 05 §7's lifecycle, and now the axis the toolkit is browsed by.
+ *
+ * The labels were always these words. What changed is that the contents behind
+ * them are the lifecycle too, so a row captioned Discover can no longer appear
+ * under a tab called Act.
+ */
 export const TOOL_STAGES = [
   { value: "discover", label: "Discover" },
   { value: "analyse", label: "Analyse" },
@@ -339,6 +342,7 @@ export type Tool = {
 };
 
 export const TOOLS: Tool[] = [
+  /* Discover · six */
   {
     name: "AI Screener",
     tagline: "3,000 stocks funnel down to your sentence.",
@@ -361,6 +365,29 @@ export const TOOLS: Tool[] = [
     icon: "calendar",
   },
   {
+    name: "Pattern Sniper",
+    tagline: "Crosshairs on every chart.",
+    stage: "discover",
+    status: "private",
+    icon: "pattern-sniper",
+  },
+  {
+    name: "Insights Engine",
+    tagline: "The anomaly stands out because everything is measured.",
+    stage: "discover",
+    status: "private",
+    icon: "insights-feed",
+  },
+  {
+    name: "F&O Discovery",
+    tagline: "Call and put flow, crossing where it matters.",
+    stage: "discover",
+    status: "private",
+    icon: "explore",
+  },
+
+  /* Analyse · four */
+  {
     name: "AI Backtesting",
     tagline: "Your setup, replayed honestly across history.",
     stage: "analyse",
@@ -382,32 +409,22 @@ export const TOOLS: Tool[] = [
     icon: "candle-chart",
   },
   {
-    name: "Pattern Sniper",
-    tagline: "Crosshairs on every chart.",
-    stage: "discover",
-    status: "private",
-    icon: "pattern-sniper",
-  },
-  {
-    name: "Insights Engine",
-    tagline: "The anomaly stands out because everything is measured.",
-    stage: "discover",
-    status: "private",
-    icon: "insights-feed",
-  },
-  {
-    name: "F&O Discovery",
-    tagline: "Call and put flow, crossing where it matters.",
-    stage: "discover",
-    status: "private",
-    icon: "explore",
-  },
-  {
     name: "Smart Chain",
     tagline: "The strike ladder, climbing with open interest.",
     stage: "analyse",
     status: "private",
     icon: "table-view",
+  },
+
+  /* Act · two */
+  {
+    /* Doc 05 §3 lists it and the v2 home prototype carries it; it was simply
+       missing here, which is why the Act tab held one tool instead of two. */
+    name: "Strategy Copilot",
+    tagline: "A read becomes a route.",
+    stage: "act",
+    status: "private",
+    icon: "arrow-navigate",
   },
   {
     name: "Position Co-pilot",
@@ -470,6 +487,18 @@ export type PeekSurface = {
   /** One sentence, under the well. */
   caption: string;
 };
+
+/**
+ * What each window holds until the interface captures exist.
+ *
+ * Doc 05 §6 lists the recordings as assets that are not made yet. The four
+ * surfaces that stood here were drawings of them, and they came out on 2 Sep
+ * 2026 because a drawing of an unfinished screen is a claim about the product
+ * that nobody signed off. The window, its title bar and its caption stay: those
+ * say which surface is coming and what it will do, which is the whole job of a
+ * sneak peek.
+ */
+export const PEEK_PLACEHOLDER = "Interface capture lands here.";
 
 export const PEEK_SURFACES: PeekSurface[] = [
   {

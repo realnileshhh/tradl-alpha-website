@@ -157,17 +157,29 @@ export function BullStage({
    * repays it as a spin afterwards rather than preventing it.
    *
    * So the fetch is started from the top of the page instead, and the gate above
-   * is left as the gate on mounting WebGL. Two conditions keep it honest against
-   * doc 04 §5. It waits for `load`, so nothing here competes for bandwidth with
-   * the LCP element, which is the only thing the 2.0s budget is about. And it
-   * waits for an idle callback after that, so it yields to anything still
-   * settling. By the time the reader has read the sections above, the model is
-   * in drei's cache and `useGLTF` resolves in the same frame the scene mounts.
+   * is left as the gate on mounting WebGL.
    *
-   * Importing the module is the whole mechanism: `bull-scene.tsx` ends with
-   * `useGLTF.preload`, so evaluating it starts the model download too. One
-   * import warms both halves, and it is the same module specifier `next/dynamic`
-   * uses above, so the two share a chunk rather than racing for two.
+   * IT DOES NOT WAIT FOR `load`, AND THAT WAS THE WHOLE PROBLEM. It used to.
+   * Measured on a throttled cold load with the reader sitting still: LCP landed
+   * at 1.0s, DOMContentLoaded at 1.5s, `load` at 5.2s, and the model did not
+   * start until 13.3s and finished at 17.0s. Three things in series, only one of
+   * them useful. `load` waits on every image and the hero video; then the
+   * dynamic import fetches 600KB of chunk; and only when that chunk evaluates
+   * does its `useGLTF.preload` begin the 968KB model. A reader who flings the
+   * page reaches the orbit in about two seconds and finds a photograph, which is
+   * exactly the report.
+   *
+   * So the import is taken on an idle callback at mount rather than after
+   * `load`, which is the one link in that chain that was pure waiting. The rest
+   * of the chain is real: the chunk has to arrive before its `useGLTF.preload`
+   * can ask for the model, and trying to overlap the two by fetching the model
+   * here as well downloaded it twice. See the note at the call.
+   *
+   * The LCP budget is still what governs the timing, and the idle callback is
+   * what respects it: doc 04 §5 binds the 2.0s figure to the LCP element, and an
+   * idle callback by construction runs when nothing more urgent is pending. The
+   * 3s timeout is a floor for a main thread that never idles, not a target.
+   * Measured after this change, LCP was unmoved.
    */
   useEffect(() => {
     if (!wantsLive || prefersReducedMotion) return;
@@ -175,25 +187,29 @@ export function BullStage({
     let cancelled = false;
     let idle = 0;
 
-    const warm = () => {
-      const start = () => {
-        if (!cancelled) void import("./bull-scene");
-      };
-      /* Safari only shipped requestIdleCallback in 17. A short timeout is the
-         same intent on the versions that predate it: after the current work,
-         not during it. */
-      idle =
-        typeof requestIdleCallback === "function"
-          ? requestIdleCallback(start, { timeout: 2000 })
-          : window.setTimeout(start, 200);
+    const start = () => {
+      if (cancelled) return;
+
+      /* One request, not two. An earlier pass fetched the model here as well,
+         to overlap it with the chunk, and production said what that actually
+         costs: two entries in resource timing, 777KB each, because a response
+         the origin marks `max-age=0` cannot be shared between an in-flight
+         fetch and the loader's own. Overlapping two downloads that add up to
+         double the bytes is not an optimisation. The import alone it is: the
+         chunk arrives, evaluates, and its `useGLTF.preload` starts the model. */
+      void import("./bull-scene");
     };
 
-    if (document.readyState === "complete") warm();
-    else window.addEventListener("load", warm, { once: true });
+    /* Safari only shipped requestIdleCallback in 17. A short timeout is the
+       same intent on the versions that predate it: after the current work, not
+       during it. */
+    idle =
+      typeof requestIdleCallback === "function"
+        ? requestIdleCallback(start, { timeout: 3000 })
+        : window.setTimeout(start, 1200);
 
     return () => {
       cancelled = true;
-      window.removeEventListener("load", warm);
       if (!idle) return;
       if (typeof cancelIdleCallback === "function") cancelIdleCallback(idle);
       else clearTimeout(idle);

@@ -5,7 +5,6 @@ import { ScrollTrigger, useGSAP } from "@/lib/gsap";
 import { IconArrowPointLeft, IconArrowPointRight } from "@/components/ui/icons";
 import { Frame, FrameInner } from "@/components/ui/surface";
 import { useReducedMotion } from "@/lib/use-reduced-motion";
-import { STAGED_LABEL, STAGED_TITLE } from "@/lib/peek-data";
 import {
   PEEK_GROUP_LABEL,
   PEEK_NEXT_LABEL,
@@ -223,30 +222,21 @@ export function PeekCarousel({ panels }: { panels: ReactNode[] }) {
               >
                 <Frame size="bezel" className="flex h-full w-full flex-col">
                   <FrameInner size="bezel" className="flex min-h-0 flex-1 flex-col">
-                    {/* The window's own bar. The surface and its claim on the
-                        left; on the right, the two facts a reader needs about
-                        what is under it: which of the four this is, and that
-                        every figure in it is staged. */}
+                    {/* The window's own bar: the surface and its claim on the
+                        left, which of the four this is on the right. It used to
+                        carry a STAGED badge as well, for the figures in the
+                        drawings that used to be under it. There are no figures
+                        now, so there is nothing for it to declare. */}
                     <div className="flex shrink-0 items-center justify-between gap-[var(--ds-space-4)] border-b border-line bg-toolbar px-[var(--ds-space-5)] py-[var(--ds-space-4)]">
                       <span className="truncate text-xs tracking-[0.12em] text-fg-3 uppercase">
                         {surface.chrome}
                       </span>
-                      <span className="flex shrink-0 items-center gap-[var(--ds-space-3)]">
-                        <span
-                          title={STAGED_TITLE}
-                          className="rounded-sm border px-[var(--ds-space-2)] py-px text-[8px] leading-none tracking-[0.1em] [border-color:color-mix(in_srgb,var(--ds-highlight-5)_45%,transparent)] [color:var(--ds-highlight-5)]"
-                        >
-                          {STAGED_LABEL}
-                        </span>
-                        <span className="num text-xs text-fg-disabled">
-                          {pad(surfaceIndex + 1)} / {pad(COUNT)}
-                        </span>
+                      <span className="num shrink-0 text-xs text-fg-disabled">
+                        {pad(surfaceIndex + 1)} / {pad(COUNT)}
                       </span>
                     </div>
 
-                    {/* The surface. Rendered on the server and handed in, so
-                        four dense screens' worth of markup never enters the
-                        client bundle. */}
+                    {/* The panel. Rendered on the server and handed in. */}
                     <div className="min-h-0 flex-1 overflow-hidden">
                       {mounted ? panels[surfaceIndex] : null}
                     </div>

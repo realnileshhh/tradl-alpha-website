@@ -41,7 +41,7 @@ import { SectionOpener } from "./section-opener";
  */
 export function EngineeringSection() {
   return (
-    <section id="engineering" className="relative border-t border-line pt-[96px] pb-[96px]">
+    <section id="engineering" className="relative border-t border-line py-[var(--section-pad)]">
       <SectionOpener
         eyebrow={ENGINEERING_EYEBROW}
         dek={ENGINEERING_DEK}
@@ -52,9 +52,10 @@ export function EngineeringSection() {
         }
       />
 
-      <div className="mt-[56px]">
-        <EngineeringOrbit />
-      </div>
+      {/* No gap here. The two arrangements below need different ones: the
+          orbit's sticky stage opens with most of a screen above the model
+          already, and the stack does not. Each takes its own. */}
+      <EngineeringOrbit />
     </section>
   );
 }

@@ -46,6 +46,8 @@ import { useReducedMotion } from "@/lib/use-reduced-motion";
  */
 export function HeroChoreography({ children }: { children: ReactNode }) {
   const scope = useRef<HTMLDivElement>(null);
+  /* Outside the pin, so GSAP never reverts what is written to it. See THE HEM. */
+  const hem = useRef<HTMLDivElement>(null);
   const prefersReducedMotion = useReducedMotion();
 
   useGSAP(
@@ -62,10 +64,53 @@ export function HeroChoreography({ children }: { children: ReactNode }) {
          layout offset and does not depend on where the page happens to be
          scrolled when this runs. */
       const travelToCentre = () => {
-        const rootTop = root.getBoundingClientRect().top;
-        const rect = frame.getBoundingClientRect();
-        const offsetWithinScene = rect.top - rootTop;
-        return (window.innerHeight - rect.height) / 2 - offsetWithinScene;
+        /* `offsetTop` and `offsetHeight` rather than a rect, because a rect
+           carries whatever transform is currently on the frame and this figure
+           is read again on every refresh. Measuring the layout means the answer
+           cannot drift by however far the last scroll had already moved it. */
+        let offsetWithinScene = 0;
+        for (
+          let el: HTMLElement | null = frame;
+          el && el !== root;
+          el = el.offsetParent as HTMLElement | null
+        ) {
+          offsetWithinScene += el.offsetTop;
+        }
+        return (window.innerHeight - frame.offsetHeight) / 2 - offsetWithinScene;
+      };
+
+      /**
+       * THE HEM, and it is the whole reason this scene stopped leaving a hole
+       * under itself.
+       *
+       * The frame is carried up to the middle of the screen and its layout slot
+       * stays exactly where it was, so once the pin releases there is a band of
+       * ground under the frame as tall as the distance it rose. Measured at 1440
+       * by 900 that was 458px, and it is what sat between the hero and the
+       * toolkit's eyebrow.
+       *
+       * The pin length is not the lever, which took a wrong turn to establish:
+       * the spacer is scroll distance, and the band is section height. Shortening
+       * the pin only makes the choreography twice as fast and leaves the band
+       * exactly where it was.
+       *
+       * So the section gives back the height the frame vacates, and it has to be
+       * given back somewhere GSAP does not manage. Two places that do not work,
+       * both tried: the pinned element itself, whose inline `cssText` GSAP saves
+       * and restores on every refresh, so the margin is wiped; and the pin
+       * spacer, which does not exist yet at `onRefreshInit` and, written at
+       * `onRefresh`, moves the document after every trigger on the page has been
+       * measured. That last one is not a nicety. It put every trigger below the
+       * hero 458px out, and opening a question in the FAQ, which refreshes
+       * ScrollTrigger, made the whole page jump.
+       *
+       * This element is ours. It wraps the pin rather than being pinned, so
+       * nothing reverts it, and it is written before the first measurement and
+       * again at `onRefreshInit`, which is before every later one.
+       */
+      const closeTheHem = () => {
+        const el = hem.current;
+        if (el) el.style.marginBottom = `${Math.round(Math.min(0, travelToCentre()))}px`;
       };
 
       const timeline = gsap.timeline({
@@ -77,6 +122,9 @@ export function HeroChoreography({ children }: { children: ReactNode }) {
           pin: true,
           anticipatePin: 1,
           invalidateOnRefresh: true,
+          /* Before the measuring. The travel depends on the viewport height, so
+             it is re-read on every refresh a resize causes. */
+          onRefreshInit: closeTheHem,
         },
       });
 
@@ -89,6 +137,8 @@ export function HeroChoreography({ children }: { children: ReactNode }) {
           0,
         );
 
+      closeTheHem();
+
       /* The pin adds a spacer, which changes the document height that every
          other trigger measured against. */
       ScrollTrigger.refresh();
@@ -96,5 +146,9 @@ export function HeroChoreography({ children }: { children: ReactNode }) {
     { scope, dependencies: [prefersReducedMotion] },
   );
 
-  return <div ref={scope}>{children}</div>;
+  return (
+    <div ref={hem}>
+      <div ref={scope}>{children}</div>
+    </div>
+  );
 }

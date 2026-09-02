@@ -47,6 +47,39 @@
   --content-gutter: 24px;
 
   /* ---------------------------------------------------------------------------
+     Section rhythm
+
+     Site-only, and ours: the mirrored scale stops at --ds-space-7, 32px, because
+     Figma's spacing variables describe the inside of components rather than the
+     distance between sections of a landing page. Doc 04 §2 asks for "consistent
+     top/bottom section padding" and names no figure, so the figure is a decision
+     and this is where it is taken once instead of eleven times.
+
+     WHY THESE ARE SMALLER THAN WHAT THEY REPLACED. Every section carried
+     `py-[96px]`, so a boundary between two of them was 192px of ground, and the
+     close carried 128. Measured at 1440 by 900, the band between the orbit and
+     the FAQ came to 188px of pure ground with the reader's eye crossing it
+     twice. That is a magazine's rhythm on a site whose register is an
+     instrument: doc 04 §1 asks the instrument default to be dense, and density
+     is a property of the gaps as much as of the tables.
+
+     72 rather than 96 puts a boundary at 144. Statement scenes get more, because
+     doc 04 §2 separates them by space rather than by a rule and the space is
+     therefore load-bearing; the close is the only one on this page.
+
+     Added 2 Sep 2026.
+     ------------------------------------------------------------------------- */
+
+  /* Top and bottom of an instrument-register section. */
+  --section-pad: 72px;
+
+  /* The same, for a statement scene, where the space does a rule's job. */
+  --section-pad-statement: 96px;
+
+  /* Opener to content, and between blocks inside one section. */
+  --section-gap: 56px;
+
+  /* ---------------------------------------------------------------------------
      Hero video veil
 
      The hero runs a background video. Site-only by definition: no product
@@ -86,5 +119,38 @@
     color-mix(in srgb, var(--page-ground) 84%, transparent) 54%,
     color-mix(in srgb, var(--page-ground) 96%, transparent) 68%,
     var(--page-ground) 80%
+  );
+
+  /* ---------------------------------------------------------------------------
+     Close video veil
+
+     The same job as --hero-veil for the page's last scene, and it differs in
+     one structural way: it goes to solid ground at BOTH ends.
+
+     The hero only hems at the bottom, because its top edge is hidden under the
+     sticky nav. This scene has nothing hiding either edge. It is sealed above
+     by a .divider-fade hairline and it runs straight into the footer below, so
+     a picture that reached either boundary would put a visible rectangle in the
+     page.
+
+     It also sits lower overall than the hero's. This scene carries three small
+     grey elements in its lower half: the warm beat, the note under the email
+     row, and the three proof chips. The chips are the binding constraint and
+     not the type on them, because they are drawn on white at 6 per cent. That
+     is a hairline surface, and anything lit behind it shows straight through
+     until the chip stops reading as a surface at all. From the chip row down,
+     this is effectively ground.
+
+     Added 3 Sep 2026.
+     ------------------------------------------------------------------------- */
+  --close-veil: linear-gradient(
+    to bottom,
+    var(--page-ground) 0%,
+    color-mix(in srgb, var(--page-ground) 58%, transparent) 10%,
+    color-mix(in srgb, var(--page-ground) 50%, transparent) 38%,
+    color-mix(in srgb, var(--page-ground) 77%, transparent) 47%,
+    color-mix(in srgb, var(--page-ground) 86%, transparent) 58%,
+    color-mix(in srgb, var(--page-ground) 96%, transparent) 74%,
+    var(--page-ground) 100%
   );
 }
