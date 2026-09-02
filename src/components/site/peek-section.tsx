@@ -1,11 +1,14 @@
 import { Reveal } from "@/components/motion/reveal";
 import { AccentWord } from "@/components/ui/accent-word";
-import { PEEK_DEK, PEEK_EYEBROW, PEEK_TITLE_BEAT, PEEK_TITLE_LEAD } from "@/lib/site";
+import {
+  PEEK_DEK,
+  PEEK_EYEBROW,
+  PEEK_PLACEHOLDER,
+  PEEK_SURFACES,
+  PEEK_TITLE_BEAT,
+  PEEK_TITLE_LEAD,
+} from "@/lib/site";
 import { PeekCarousel } from "./peek-carousel";
-import { SurfaceBacktest } from "./peek/surface-backtest";
-import { SurfaceExplore } from "./peek/surface-explore";
-import { SurfaceRotation } from "./peek/surface-rotation";
-import { SurfaceScreens } from "./peek/surface-screens";
 import { SectionOpener } from "./section-opener";
 
 /**
@@ -27,7 +30,7 @@ import { SectionOpener } from "./section-opener";
  */
 export function PeekSection() {
   return (
-    <section className="relative isolate overflow-hidden border-t border-line py-[96px]">
+    <section className="relative isolate overflow-hidden border-t border-line py-[var(--section-pad)]">
       <SectionOpener
         eyebrow={PEEK_EYEBROW}
         dek={PEEK_DEK}
@@ -38,20 +41,31 @@ export function PeekSection() {
         }
       />
 
-      <Reveal register="instrument" className="mt-[56px]">
-        {/* The four surfaces are rendered here, on the server, and handed to
-            the client carousel as children. A dense product miniature is a lot
-            of markup and none of it is interactive, so none of it belongs in
-            the JavaScript bundle. The order is PEEK_SURFACES' order. */}
-        <PeekCarousel
-          panels={[
-            <SurfaceExplore key="explore" />,
-            <SurfaceScreens key="screens" />,
-            <SurfaceBacktest key="backtest" />,
-            <SurfaceRotation key="rotation" />,
-          ]}
-        />
+      <Reveal register="instrument" className="mt-[var(--section-gap)]">
+        {/* One panel per surface, in PEEK_SURFACES' order, still rendered here
+            on the server and handed to the client carousel: the carousel is the
+            only interactive part and nothing in a panel belongs in its bundle.
+            Drawings of the four screens stood here until 2 Sep 2026; see the
+            note on PEEK_PLACEHOLDER for why they came out. */}
+        <PeekCarousel panels={PEEK_SURFACES.map((surface) => <PeekPanel key={surface.name} />)} />
       </Reveal>
     </section>
+  );
+}
+
+/**
+ * The well inside a window.
+ *
+ * Textured rather than blank, the same way the lifecycle band's wells are: a
+ * large dark rectangle with nothing in it reads as a hole, and with the scanline
+ * over it reads as a surface waiting for its content. The window's own bar names
+ * the surface and its caption says what it does, so this line is the only thing
+ * left to say.
+ */
+function PeekPanel() {
+  return (
+    <div className="texture-scanline grid h-full place-items-center px-[var(--ds-space-6)]">
+      <p className="text-center text-sm text-fg-disabled">{PEEK_PLACEHOLDER}</p>
+    </div>
   );
 }

@@ -20,7 +20,7 @@
  *
  * Run: node scripts/check-copy.mjs
  */
-import { readFileSync, readdirSync, statSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { join, relative, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -36,7 +36,7 @@ const EXTENSIONS = [".tsx", ".ts", ".txt"];
  * peek surfaces, and a symbol, a screen name and a column head are read by a
  * visitor exactly as a meta description is.
  */
-const COPY_MODULES = ["src/lib/site.ts", "src/lib/peek-data.ts"];
+const COPY_MODULES = ["src/lib/site.ts"];
 
 /** Doc 01 §7, hard bans. No judgement required. */
 const ERRORS = [
@@ -119,9 +119,13 @@ function extractCopy(source, file) {
   return found;
 }
 
+/* A declared copy module that no longer exists is not an error: the list names
+   where copy lives, and a module can be retired. Silently dropping a file that
+   is still there would be, which is why this only skips what is actually gone
+   rather than wrapping the read in a try. */
 const files = [
   ...SCAN_DIRS.flatMap((d) => walk(join(ROOT, d))),
-  ...COPY_MODULES.map((m) => join(ROOT, m)),
+  ...COPY_MODULES.map((m) => join(ROOT, m)).filter((f) => existsSync(f)),
 ];
 
 let errors = 0;
