@@ -187,6 +187,21 @@ export const SEE_IT_COMPUTE_LABEL = "See it compute";
 export const SEE_IT_COMPUTE_HREF = "/edge";
 
 /* -----------------------------------------------------------------------------
+   The hero video sound control.
+
+   Two labels rather than one, because the control's name is the outcome it
+   produces and that outcome flips (doc 05 §7: buttons name outcomes, never
+   mechanisms). "Sound" and not "audio": the site speaks plainly and a visitor
+   reaching for a speaker icon is not thinking the word audio.
+
+   The video ships muted, per doc 04 §5, and nothing here can start sound without
+   the visitor asking for it.
+   -------------------------------------------------------------------------- */
+
+export const SOUND_ON_LABEL = "Turn sound on";
+export const SOUND_OFF_LABEL = "Turn sound off";
+
+/* -----------------------------------------------------------------------------
    The hero demo frame.
 
    A placeholder. Doc 05 §6 lists the Playground presets and re-recorded demos
@@ -195,6 +210,7 @@ export const SEE_IT_COMPUTE_HREF = "/edge";
    -------------------------------------------------------------------------- */
 
 export const DEMO_LABEL = "THE PLAYGROUND";
+
 export const DEMO_PLACEHOLDER = "Demo recording lands here.";
 
 

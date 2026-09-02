@@ -45,4 +45,46 @@
      ------------------------------------------------------------------------- */
   --content-max: 1200px;
   --content-gutter: 24px;
+
+  /* ---------------------------------------------------------------------------
+     Hero video veil
+
+     The hero runs a background video. Site-only by definition: no product
+     surface has one, and Figma has nothing to say about a scrim over video.
+
+     ONE gradient does three jobs in one paint, which is what keeps the video
+     layer a single composited element rather than a stack of three:
+
+       top     nearly solid ground, so the video has no visible upper edge under
+               the sticky nav
+       upper   about 40 per cent ground. This band is where the video reads, and
+               the only type over it is the eyebrow, the display headline and
+               the dek: large, and white or near-white.
+       lower   ground takes over from the middle down, so the action cluster,
+               its small print and the demo frame all sit on clean ground and
+               the video dissolves into the page rather than stopping at a line
+
+     WHY IT IS BOTTOM-WEIGHTED rather than even. The cut puts its bright subject
+     in the lower third of frame twice out of three shots: the white keyboard,
+     then the cup. Measured against the brightest of them, HERO_NOTE at
+     --ds-text-tertiary (#8a8a8a, 12px) scored 2.6:1 over an even veil, against
+     the 4.5:1 doc 04 §7 requires. The stops below put it at about 12:1. The
+     headline, white and 68px, is never the constraint; the small grey line under
+     the email row always is.
+
+     Tuned against the brightest frames rather than the average: the average is
+     nearly black and would have allowed a veil that fails twice per loop.
+
+     Added 2 Sep 2026.
+     ------------------------------------------------------------------------- */
+  --hero-veil: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--page-ground) 88%, transparent) 0%,
+    color-mix(in srgb, var(--page-ground) 44%, transparent) 11%,
+    color-mix(in srgb, var(--page-ground) 40%, transparent) 32%,
+    color-mix(in srgb, var(--page-ground) 74%, transparent) 44%,
+    color-mix(in srgb, var(--page-ground) 84%, transparent) 54%,
+    color-mix(in srgb, var(--page-ground) 96%, transparent) 68%,
+    var(--page-ground) 80%
+  );
 }

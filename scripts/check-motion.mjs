@@ -55,6 +55,7 @@ const MIRRORED = [
   ["--motion-ease-travel", bezier("EASE_TRAVEL_POINTS")],
   ["--motion-press", ms("press")],
   ["--motion-chrome", ms("chrome")],
+  ["--motion-statement", ms("statement")],
   ["--motion-dwell-slide", ms("slide")],
 ];
 

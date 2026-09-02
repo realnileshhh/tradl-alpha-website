@@ -14,7 +14,7 @@ import {
 } from "@/lib/site";
 import { EmailCapture } from "./email-capture";
 import { HeroChoreography } from "./hero-choreography";
-import { ParticleField } from "./particle-field";
+import { HeroVideo } from "./hero-video";
 import { SparkButton } from "./spark-button";
 
 /**
@@ -45,14 +45,25 @@ import { SparkButton } from "./spark-button";
 export function Hero() {
   return (
     <HeroChoreography>
-      {/* `overflow-x: clip`, and it is a bug fix rather than housekeeping. The
-          particle field is inset -18 per cent on each side, which on a phone is
-          38px past the page on both edges. The section does not clip it, the
-          pin spacer around this scene does not either, and the document ends up
-          38px wider than the viewport: the whole page scrolls sideways. `clip`
-          rather than `hidden` because `hidden` would make this a scroll
-          container and the pin inside it would have nothing to pin against. */}
-      <section className="spill-top overflow-x-clip border-b border-line">
+      {/* `overflow-x: clip`, and it is a bug fix rather than housekeeping. An
+          inset background layer is wider than the page on both edges. The
+          section does not clip it, the pin spacer around this scene does not
+          either, and the document ends up wider than the viewport: the whole
+          page scrolls sideways. `clip` rather than `hidden` because `hidden`
+          would make this a scroll container and the pin inside it would have
+          nothing to pin against.
+
+          `relative isolate` is what the video hangs off. The isolation matters
+          as much as the positioning: the video layer sits at -z-10, and without
+          a stacking context of its own here it would go behind the page rather
+          than behind this section's content. */}
+      <section className="spill-top relative isolate overflow-x-clip border-b border-line">
+        {/* The background video, its scrim, and the control that unmutes it.
+            Renders a still first and upgrades to the video after idle, so the
+            hero's first paint is an 11KB picture and never a video decode.
+            See components/site/hero-video. */}
+        <HeroVideo />
+
         {/* Gutter outside, measure inside, so the demo frame's edges land on
             the same verticals as the nav pane above it, not 24px inside them. */}
         <div className="px-[var(--content-gutter)]">
@@ -75,10 +86,11 @@ export function Hero() {
                 {HERO_DEK}
               </p>
 
-              {/* The action cluster, standing in its own field of dots. */}
-              <div className="relative isolate">
-                <ParticleField className="absolute -inset-x-[18%] -inset-y-[45%] -z-10" />
-
+              {/* The action cluster. It used to stand in its own field of
+                  dots; the background video is now the hero's one ambient
+                  element, and doc 02 §2.3 allows exactly one per viewport.
+                  <ParticleField> is untouched and still used elsewhere. */}
+              <div>
                 {/* The same control the close uses, so the page asks the
                     same way twice. See components/site/email-capture. */}
                 <EmailCapture label={START_FREE_LABEL} className="mt-[var(--ds-space-7)]" />
