@@ -55,7 +55,16 @@ function walk(dir, out = []) {
     const full = join(dir, entry);
     const rel = relative(ROOT, full);
     if (EXCLUDE.some((x) => rel === x || rel.startsWith(x + "/"))) continue;
-    if (statSync(full).isDirectory()) walk(full, out);
+    let stats;
+    try {
+      stats = statSync(full);
+    } catch {
+      /* A dangling symlink: it resolves to nothing, so there is nothing to read.
+         Skipping beats throwing, because one dead link should not take the whole
+         check down and make `verify` look like a rule failure. */
+      continue;
+    }
+    if (stats.isDirectory()) walk(full, out);
     else if (/\.(tsx|ts|css)$/.test(entry)) out.push(full);
   }
   return out;
@@ -117,7 +126,7 @@ const stripComments = (src) =>
     .replace(/\/\*[\s\S]*?\*\//g, (m) => m.replace(/[^\n]/g, " "))
     .replace(/(^|[^:])\/\/[^\n]*/g, (m) => m.replace(/[^\n]/g, " "));
 
-for (const file of walk(ROOT).length ? SCAN.flatMap((d) => walk(join(ROOT, d))) : []) {
+for (const file of SCAN.flatMap((d) => walk(join(ROOT, d)))) {
   const rel = relative(ROOT, file);
   const src = readFileSync(file, "utf8");
   const isCss = file.endsWith(".css");

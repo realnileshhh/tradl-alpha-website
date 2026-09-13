@@ -123,6 +123,17 @@ const ENTRY_DURATION = 0.18;
  * and the top and bottom rows carry a vertical component as well, so all six
  * read as having been thrown outward by the turn rather than typed into a grid.
  */
+/**
+ * The angle debt above which the catch-up is written off rather than tweened,
+ * in radians.
+ *
+ * A fifth of a revolution. Below it the correction reads as the model settling
+ * into place; above it the reader is watching it travel somewhere they already
+ * are, which is the "the bull is stuck and then spins" report rather than a
+ * softening of it.
+ */
+const SNAP_DEBT = (Math.PI * 2) / 5;
+
 const ENTRY_FROM = [
   { xPercent: -18, yPercent: -14 }, // row 1, left
   { xPercent: 18, yPercent: -14 }, // row 1, right
@@ -242,11 +253,33 @@ function OrbitLayout() {
           return;
         }
 
-        /* Spend the debt as motion rather than discarding it. Longer for a
-           larger correction, so half a revolution does not snap, and capped so
-           the model is never still turning by the time the reader has moved on.
-           The house curve, because this is a thing arriving, not a thing being
-           dragged by the scrollbar. */
+        /* A LARGE DEBT IS DISCARDED, A SMALL ONE IS SPENT AS MOTION.
+        
+           Spending it was the whole rule here, on the argument that a
+           correction the reader watches happen is better than one that snaps.
+           That holds for a fraction of a turn. It does not hold for the case it
+           was actually written for: a reader who flings the page arrives with
+           the model still downloading, stands in front of a still that cannot
+           move, and then watches the bull spin most of a revolution to catch up
+           with a scroll position they reached seconds ago. The motion is not
+           reading as arrival, it is reading as the section waking up late.
+        
+           Above the threshold the debt is written off instead, so the model
+           appears at the pose the scroll position calls for and the section
+           looks like it was always there. Below it the tween still runs, which
+           is every ordinary hand-off: the model lands while the reader is a
+           section or two away and the correction is a few degrees.
+        
+           Capped duration for the same reason as before: the model is never
+           still turning by the time the reader has moved on. The house curve,
+           because this is a thing arriving rather than a thing being dragged by
+           the scrollbar. */
+        if (debt > SNAP_DEBT) {
+          offset.value = 0;
+          write();
+          return;
+        }
+
         catchUp = gsap.to(offset, {
           value: 0,
           duration: Math.min(1.1, 0.3 + (debt / (Math.PI * 2)) * 0.9),

@@ -142,6 +142,90 @@ The site runs the product's design system in two registers, and the alternation 
 
 ---
 
+## Taste pass · what runs before a new component is designed
+
+Visual composition goes through **taste-skill**, installed user-wide as a Claude Code plugin from
+`Leonxlnx/taste-skill`. Invoke it as `taste-skill:taste-skill`. It is the anti-slop layer: layout
+variance, section rhythm, hierarchy, what earns emphasis, and where motion is actually motivated. It
+is not, and must never become, a second design system.
+
+**Invoke it for:** a new page or section composition, a new marketing surface, a statement-register
+scene, a redesign of something already shipping.
+
+**Do not invoke it for:** a token refresh, an icon port, a copy edit, a bug fix, or a data-bearing
+Instrument-register frame whose construction `docs/SURFACES.md` already specifies. The skill says in
+its own first line that it is for landing pages and not for dashboards or data tables, and the
+Instrument register is exactly that. It also costs roughly 34k tokens to load, so pulling it in for a
+two-line change is a real waste rather than a rounding error.
+
+**The other twelve skills in that plugin are out of scope here.** `minimalist-ui`,
+`industrial-brutalist-ui`, `high-end-visual-design` and `stitch-design-taste` each impose a whole
+visual language, and this site already has one, read from Figma. `redesign-existing-projects` audits
+and rewrites against its own standard rather than ours. The three `imagegen-*` skills and `brandkit`
+produce reference imagery, which is not how assets arrive on this project. Do not invoke them.
+
+### Precedence
+
+taste-skill is advisory on **composition**. This repository is binding on **material**. Where the two
+disagree the repository wins, every time, without a conversation.
+
+| taste-skill decides | This repo decides, and overrides |
+|---|---|
+| Section structure, layout variance, asymmetry, rhythm | The two registers, and the ~30% statement cap |
+| Hierarchy, scale relationships, what earns emphasis | Type scale and family, from `--ds-font-size-*` |
+| Where motion is motivated, and where a section stays still | Which library animates it, and through which API |
+| Spacing rhythm and whitespace strategy | `max-w-content`, the measure, the geometry in `docs/SURFACES.md` |
+| Anti-slop review: AI tells, generic patterns, lazy defaults | Everything under `src/design-system/`, without exception |
+
+### The seven hard overrides
+
+Each of these is a place where following taste-skill verbatim produces code that fails
+`npm run verify` or breaks silently at runtime. They are worth reading before the skill, not after.
+
+1. **Type is Inter, always.** taste-skill §4.1 and §9 discourage Inter as a default and name Geist,
+   Satoshi and Cabinet Grotesk instead. Ignore that. Every type variable in the live Figma file says
+   Inter, so the family is not a taste decision here. See `docs/DECISIONS.md` 002.
+2. **No hex, ever.** The skill ships literal palettes (§4.2), including a whole warm-paper family.
+   Colour is `--ds-*` and nothing else. `npm run check:surfaces` fails on a raw hex in a component,
+   and it is right to.
+3. **GSAP comes from `@/lib/gsap`.** The skill's code skeletons import from `"gsap"` and register
+   ScrollTrigger themselves. That produces a second plugin instance after a bundler split, and then
+   `ScrollTrigger.getAll()` returns half the triggers. Use the repo entry point, and `useGSAP` with a
+   `scope` rather than a hand-rolled `gsap.context`.
+4. **Content enters through `<Reveal>`.** The skill prefers Motion's `whileInView` for simple
+   reveals. We have one reveal vocabulary in `components/motion/reveal`, with `<SplitWords>` as the
+   statement-register variant. A hand-rolled reveal re-declares the trigger point and the curve,
+   which is the thing the vocabulary exists to prevent.
+5. **Durations, easings and distances come from `@/design-system/extensions/motion`.** The skill
+   quotes spring constants inline. Never retype one.
+6. **The dials are set here, not by the skill.** taste-skill's baseline is `8 / 6 / 4`. This site runs
+   **`DESIGN_VARIANCE 6 · MOTION_INTENSITY 4 · VISUAL_DENSITY 7`**: the Instrument register is dense
+   on purpose, the statement register is rationed, and the performance budget in doc 04 §5 (LCP under
+   2.0s, at most 40 ScrollTriggers with at most 4 scrubbed) binds harder than any dial. Declare the
+   dials in the design read anyway, so the deviation from the skill's baseline stays visible.
+7. **taste-skill never writes customer-facing copy.** Not a headline, not an eyebrow, not a CTA
+   label, not alt text, not a meta description. Copy comes verbatim from doc 05 §5 into
+   `src/lib/site.ts`, and it sits inside the SEBI Research Analyst perimeter described in doc 01 §8.
+   A generated headline is a compliance event, not a first draft. The skill's own em-dash and emoji
+   bans happen to match doc 01 §7; that agreement is a coincidence, not a licence to let it author
+   strings.
+
+### Where the two already agree
+
+Most of the file, which is why it is worth having: zero em-dashes, no emoji, one theme for the whole
+page, one accent used identically across sections, one radius system, WCAG AA on every interactive
+state, no `window.addEventListener("scroll")`, and motion that is either motivated or absent. None of
+that needs an override.
+
+### The gate
+
+None of this rests on trust. `npm run verify` runs `check:copy`, `check:motion` and `check:surfaces`,
+and those catch the raw hex, the banned word, the animated layout property and the uncomposited blur
+mechanically. Run it before every commit, exactly as before. A taste-skill suggestion that cannot
+survive `verify` is a wrong suggestion.
+
+---
+
 ## Building a component · the surface rules
 
 The construction language is `docs/SURFACES.md`. It governs material, strokes, elevation, glass,

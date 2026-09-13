@@ -414,6 +414,20 @@
     background-image: var(--hero-veil);
   }
 
+  /* The close scene's still layer, and its colour channel.
+     
+     `background-image` is the glow, which never animates and is therefore the
+     whole scene wherever WebGL does not run. `color` is not for text: nothing
+     inside this element has any. It is how --close-dust reaches the shader,
+     because a custom property read back from JavaScript returns the unresolved
+     `color-mix(...)` and a resolved `rgb()` is the only thing three can parse.
+     Reading `color` off a real element makes the browser do that resolving.
+     See components/site/close-scene. */
+  .close-scene {
+    background-image: var(--close-glow);
+    color: var(--close-dust);
+  }
+
   /* The same, for the close. It hems at both ends rather than one: nothing
      hides its top edge the way the nav hides the hero's. See --close-veil. */
   .close-veil {
@@ -934,6 +948,26 @@
     );
   }
 
+  /* The same run, neutral, for a group header INSIDE a section.
+     
+     The accent stop belongs to the section opener, where it is the one coloured
+     mark that says a new argument starts here. The toolkit draws two more rules
+     under that opener, one per lifecycle group, and repeating the accent on
+     them would spend the section's single accent three times on one screen: the
+     eyebrow stops being the thing that is different and becomes the pattern.
+     
+     So the geometry is kept and the colour is dropped. Same 1px, same fade to
+     nothing, ending on border/default rather than on green. */
+  .group-rule {
+    height: 1px;
+    background-image: linear-gradient(
+      to left,
+      transparent 0%,
+      var(--ds-border-subtle) 40%,
+      var(--ds-border-default) 100%
+    );
+  }
+
   /* The bloom under the label. Wide and very low alpha: at this size anything
      legible as a colour has become a badge. */
   /* Four stops and a blur, rather than one stop and a hard stop.
@@ -1050,9 +1084,14 @@
 /* =============================================================================
    STAGE SHOWCASE
 
-   Three panels, one per lifecycle stage. Pointing at one widens it, dims the
-   other two, and brings up a second line of copy inside it. No clicks: the
-   panels are not links and there is nothing behind them to open.
+   One panel per lifecycle stage that is switched on, which is two of the three
+   today. Pointing at one widens it, dims the others, and brings up a second line
+   of copy inside it. No clicks: the panels are not links and there is nothing
+   behind them to open.
+
+   NOTHING HERE COUNTS THE PANELS. Each is `flex: 1 1 0%` and every hover rule is
+   written with `:has()` against siblings, so the row is whatever length the data
+   gives it. See VISIBLE_SHOWCASE_STAGES in lib/site.
 
    PURE CSS, no state hook and nothing to hydrate. `:has()` is what makes that
    possible: the row can style its own children based on which one is hovered,
@@ -1614,6 +1653,35 @@
       place-items: center;
       height: 100vh;
       padding-top: var(--orbit-nav-inset);
+
+      /* THE ONE PLACE ON THIS PATH THAT MAY CLIP, and it is not a contradiction
+         of the warning at the top of this block.
+
+         That warning is about ANCESTORS of a sticky element. This IS the sticky
+         element, and an element clipping its own children has nothing to say
+         about where it sticks. `clip` rather than `hidden` besides: `hidden`
+         would make this a scroll container, and `clip` does not, which is the
+         same distinction the hero's section relies on.
+
+         WHAT IT CONTAINS. The entry animation starts each card thrown outward
+         from its slot, up to 26 per cent of its own width (ENTRY_FROM in
+         components/site/engineering-orbit.tsx), and a scrubbed timeline sits at
+         its start state for the whole of the page above this section. So six
+         invisible cards stood outside the window from first paint, and an
+         `opacity: 0` element still has a box: measured at 1280 the rightmost
+         reached x=1338, and at 1024, x=1097. The document was wider than the
+         window on every load and the whole page scrolled sideways, with nothing
+         visible out there to explain why.
+
+         Clipping at the stage costs nothing, because the stage is exactly as
+         wide as the window: a card out there was already outside the glass. The
+         choreography is untouched, and the numbers in it stay the numbers the
+         section was designed with.
+
+         X ONLY. `overflow-y` stays visible, which `clip` permits and the other
+         values do not, and it has to: the model is centred in this box and the
+         section above and below it is one continuous scroll. */
+      overflow-x: clip;
     }
 
     .orbit-bull {

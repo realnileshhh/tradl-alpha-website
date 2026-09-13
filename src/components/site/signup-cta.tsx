@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Tooltip } from "@/components/ui/overlay";
+import { Tooltip, TooltipCaret } from "@/components/ui/overlay";
 import { ALPHA_NOTICE, SIGN_UP_HREF, SIGN_UP_LABEL } from "@/lib/site";
 
 /**
@@ -40,6 +40,53 @@ import { ALPHA_NOTICE, SIGN_UP_HREF, SIGN_UP_LABEL } from "@/lib/site";
 const APPEAR_DELAY_MS = 600;
 const HOLD_MS = 6000;
 const NOTICE_ID = "alpha-notice";
+
+/**
+ * WHERE THE NOTICE HANGS, and why it is right-aligned rather than centred.
+ *
+ * The chip is 276px wide and the button it describes is 61px, sitting at the
+ * right end of a nav pane that is capped at the measure. Centred on the button,
+ * the chip's right edge lands 138px past the button's centre, which is past the
+ * page's right gutter on every viewport this site serves. Measured: at 1440 it
+ * reached x=1410 against a 1416 limit, six pixels of clearance; at 1280 it
+ * reached 1330 against a 1256 limit; at 1024, 1090 against 1000. On the last
+ * two the notice was visibly cut off by the edge of the window, and on the
+ * first it was one type change away from being.
+ *
+ * Right-aligning the chip to the button's own right edge fixes it at every
+ * width at once, because the button already sits inside the gutter by
+ * construction: the chip can never reach further right than the control it
+ * belongs to.
+ *
+ * THE CARET IS THEN A SEPARATE ELEMENT, and it has to be. `arrow` centres the
+ * caret on the CHIP, and the chip is no longer centred on the button, so the
+ * point would land about 100px to the left of the control. Rendered here
+ * instead, as a sibling inside the button's own positioning context, it takes
+ * `left-1/2` off the BUTTON and lands on its middle whatever the label is. No
+ * measured button width anywhere, so nothing here drifts if the label changes.
+ *
+ * The two drops below are 6px apart, which is CARET_OVERLAP in
+ * components/ui/overlay and is derived there: it lands the caret's base line on
+ * the chip's top edge, with the skirt that covers the chip's border 2px inside
+ * it. The caret is drawn rather than folded out of a rotated square now, which
+ * is what let the stroke stop at the boundary while the fill carries on past
+ * it. Both halves of that are what a join with no break needs.
+ *
+ * AND THE CARET IS RENDERED AFTER THE CHIP, which is not a formatting choice.
+ * Neither element carries a z-index, so paint order is document order: the
+ * caret has to be painted last or the chip's own top border draws across its
+ * base and the point reads as a separate object stuck to a line. Written first,
+ * that is exactly what it did.
+ *
+ * Both are written out in full rather than built from a shared fragment.
+ * Tailwind reads source as text, so a class assembled in a template literal is
+ * a class it never sees, and the utility is silently never emitted.
+ */
+const NOTICE_TOP = "top-[calc(100%_+_var(--ds-item-spacing-10))]";
+const CARET_TOP = "top-[calc(100%_+_var(--ds-item-spacing-10)_-_6px)]";
+
+/** Both pieces fade and rise together, as one object. */
+const NOTICE_MOTION = "transition-[opacity,translate] duration-[var(--motion-chrome)] ease-house";
 
 export function SignUpCta() {
   const [announced, setAnnounced] = useState(false);
@@ -85,16 +132,26 @@ export function SignUpCta() {
         id={NOTICE_ID}
         size="lg"
         tone="accent"
-        arrow
         aria-hidden={!open}
         className={[
-          "pointer-events-none absolute top-[calc(100%+var(--ds-item-spacing-10))] left-1/2 -translate-x-1/2",
-          "transition-[opacity,translate] duration-[var(--motion-chrome)] ease-house",
+          "pointer-events-none absolute right-0",
+          NOTICE_TOP,
+          NOTICE_MOTION,
           open ? "opacity-100" : "-translate-y-[var(--ds-space-2)] opacity-0",
         ].join(" ")}
       >
         {ALPHA_NOTICE}
       </Tooltip>
+
+      <TooltipCaret
+        tone="accent"
+        className={[
+          "pointer-events-none left-1/2 -translate-x-1/2",
+          CARET_TOP,
+          NOTICE_MOTION,
+          open ? "opacity-100" : "-translate-y-[var(--ds-space-2)] opacity-0",
+        ].join(" ")}
+      />
     </div>
   );
 }

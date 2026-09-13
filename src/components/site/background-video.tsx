@@ -84,16 +84,27 @@ const IDLE_TIMEOUT_MS = 2000;
 const APPROACH_MARGIN = "150%";
 
 /**
- * The sound control's distance from the top of the hero section.
+ * The sound control's distance from the top of the hero section, for
+ * `controlPlacement="top-right"`.
  *
- * The hero is pinned by its scroll choreography, which means for one viewport
- * of scrolling the section's top edge sits under the sticky nav. The nav pane
- * ends 68px down (12px of header padding plus its own 56px), the header keeps
- * another 32px below it for the alpha notice that hangs off the sign-up button,
- * and 16px of air after that clears both. A control that slid under a blurred
- * nav pane for the length of the pin would read as a bug.
+ * That placement exists for a pinned hero: while the scroll choreography holds
+ * the section, its top edge sits under the sticky nav for a viewport of
+ * scrolling. The nav pane ends 68px down (12px of header padding plus its own
+ * 56px), the header keeps another 32px below it for the alpha notice that hangs
+ * off the sign-up button, and 16px of air after that clears both. A control that
+ * slid under a blurred nav pane for the length of the pin would read as a bug.
  */
 const CONTROL_TOP = "116px";
+
+/**
+ * The same control's distance from the BOTTOM of its section, for
+ * `controlPlacement="bottom-left"`.
+ *
+ * Derived rather than chosen: the section's bottom padding is `--section-gap`,
+ * 56px, and the control is 36px, so 10px centres it in the band the padding
+ * leaves under the content.
+ */
+const CONTROL_BOTTOM = "10px";
 
 export type VideoSource = { src: string; type: string };
 
@@ -106,6 +117,7 @@ export function BackgroundVideo({
   fill,
   gate,
   sound = false,
+  controlPlacement = "top-right",
 }: {
   /** Path to the hand-encoded webp of the video's opening frame. */
   still: string;
@@ -138,6 +150,18 @@ export function BackgroundVideo({
    * page.
    */
   sound?: boolean;
+  /**
+   * Which corner of the measure the mute control takes.
+   *
+   * `top-right` is the pin-safe one and the default: it stays on screen for the
+   * whole of a pinned section, because the section's bottom edge is a viewport
+   * or more below the fold while the pin holds.
+   *
+   * `bottom-left` is for a scene whose top-right corner is already spoken for.
+   * It is anchored to the section's bottom, so it is only correct where the
+   * section is about a screen tall and nothing pins it.
+   */
+  controlPlacement?: "top-right" | "bottom-left";
 }) {
   const prefersReducedMotion = useReducedMotion();
   const layer = useRef<HTMLDivElement>(null);
@@ -288,24 +312,47 @@ export function BackgroundVideo({
         </div>
       </div>
 
-      {/* The control, on the measure's right edge so it lands on the same
+      {/* The control, on one of the measure's edges so it lands on the same
           vertical as the nav pane above it rather than 24px outside it. The
           rail is inert and only the button takes the pointer, so it can never
           swallow a click meant for the headline behind it. */}
       {sound && wanted ? (
         <div
           className="pointer-events-none absolute inset-x-0 z-10 px-[var(--content-gutter)]"
-          style={{ top: CONTROL_TOP }}
+          style={
+            controlPlacement === "top-right"
+              ? { top: CONTROL_TOP }
+              : { bottom: CONTROL_BOTTOM }
+          }
         >
-          <div className="mx-auto flex max-w-content justify-end">
+          <div
+            className={cn(
+              "mx-auto flex max-w-content",
+              controlPlacement === "top-right" ? "justify-end" : "justify-start"
+            )}
+          >
+            {/* THE GLYPH ALONE, which is a reversal and a deliberate one.
+                
+                It carried its label on screen for a while, on the argument that
+                a bare speaker icon asks a visitor to know what it does before
+                deciding whether to press it. The founder took the label back
+                off on 13 Sep 2026: at the bottom corner of a statement scene a
+                138px pill is an object competing with the hero, and the icon is
+                a convention old enough that it does not need words.
+                
+                The label is still there for anyone who cannot see the glyph.
+                `sr-only` carries it, `aria-pressed` carries the state, and
+                `touch-target` holds the 44px hit area doc 04 §7 requires around
+                a 36px control.
+                
+                No backdrop blur, deliberately. Doc 04 §5 allows two blurred
+                surfaces per viewport and the nav pane already spends one; a
+                36px control is not worth the second. bg/elevated over a dark
+                video reads the same and costs nothing. */}
             <button
               type="button"
               onClick={toggleSound}
               aria-pressed={!muted}
-              /* No backdrop blur, deliberately. Doc 04 §5 allows two blurred
-                 surfaces per viewport and the nav pane already spends one; a
-                 36px control is not worth the second. bg/elevated over a dark
-                 video reads the same and costs nothing. */
               className={cn(
                 "press touch-target pointer-events-auto grid size-9 place-items-center",
                 "rounded-full border border-line bg-elevated text-fg-2 shadow-spec",
