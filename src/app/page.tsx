@@ -36,6 +36,7 @@
  * Browse the system at /dev/design-system. See /dev/stack for the animation
  * stack, and CLAUDE.md for the rules that bind the copy and the budget.
  */
+import { SHOW_PEEK_SECTION } from "@/lib/flags";
 import { AnnouncementBar } from "@/components/site/announcement-bar";
 import { Hero } from "@/components/site/hero";
 import { CloseSection } from "@/components/site/close-section";
@@ -55,7 +56,10 @@ export default function HomePage() {
       <main>
         <Hero />
         <ToolkitSection />
-        <PeekSection />
+        {/* H6, the sneak peek. Off: see SHOW_PEEK_SECTION in lib/flags. The
+            section and its carousel are intact and unmounted, so none of their
+            scroll triggers are created and the page is a screen shorter. */}
+        {SHOW_PEEK_SECTION && <PeekSection />}
         <FoundersSection />
         <EngineeringSection />
         <FaqSection />

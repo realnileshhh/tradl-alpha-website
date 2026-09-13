@@ -80,6 +80,102 @@
   --section-gap: 56px;
 
   /* ---------------------------------------------------------------------------
+     The chrome above the hero
+
+     What stands between the top of the page and the top of the first section,
+     so the hero can be given the rest of the screen and the section after it
+     can be kept off the first paint entirely.
+
+     MEASURED, at 1440x900, rather than composed from the parts. The three
+     pieces are:
+
+       announcement bar   45px   min-h-11 plus its border-b
+       header             100px  space/4 of padding, a 56px pane, space/7 under
+                                 it for the notice that hangs off the CTA
+       market strip       34px   border-y plus space/3 top and bottom around a
+                                 text/sm line
+
+     The header is the only one of the three that is exactly its tokens. The
+     other two are a minimum height and a line box, and a line box is a function
+     of the font, so writing this as a sum of variables would look derived while
+     being just as much of a measurement, with more places to be wrong.
+
+     It is used as a MINIMUM, so nothing breaks if a piece changes height: the
+     hero stops landing exactly on the fold and nothing else moves. Re-measure
+     if the announcement bar or the strip is rebuilt.
+
+     Added 13 Sep 2026.
+     ------------------------------------------------------------------------- */
+  --hero-chrome: 179px;
+
+  /* ---------------------------------------------------------------------------
+     The toolkit tile
+
+     ONE NUMBER, TWO STEPS, and it replaces five hand-set tile heights.
+
+     The bento's tiles were sized by typing a min-height next to each column
+     span: 360 for the feature, 280 for the pair, 220 for the row of three, 260
+     for the halves. Nothing related those figures to each other, so the wells
+     inside them came out anywhere between 2.4:1 and 5:1 and the smallest tile
+     ended up with more text in it than picture. Worse, it was not a system a
+     new tool could join: adding one meant guessing a sixth number.
+
+     So height is derived instead. A tile is a well plus a text block of fixed
+     height, the text block is identical on every tile, and the ONLY thing
+     authored is which step the well takes. Every standard tile is therefore
+     exactly the same height whatever its width, and the feature tile is exactly
+     one step taller. Width is the variable; height is the constant.
+
+     WHY 180. Taken from the hardest case rather than from taste: the narrowest
+     tile the grid ever draws is a third of the measure at 1024, the narrowest
+     viewport the site serves, which is 315px. 16:9 of 315 is 177. So a tile
+     that narrow gets a well at roughly the ratio a screen capture wants, and
+     every wider tile gets a progressively longer band from the same height,
+     which is what a wide tile wants anyway.
+
+     The tall step is 2x rather than a second figure, so the two can never drift
+     apart. At the full measure it puts the feature tile's well at about 3.3:1.
+
+     Added 13 Sep 2026.
+     ------------------------------------------------------------------------- */
+  --tile-well: 180px;
+  --tile-well-tall: calc(var(--tile-well) * 2);
+
+  /* ---------------------------------------------------------------------------
+     The close scene
+
+     The last scene on the page is a shaft of green light with dust turning in
+     it. It used to be a video; it is drawn now, and the two values it needs are
+     here because they are site-only by definition: no product surface has an
+     ambient scene and Figma has nothing to say about one.
+
+     THE GLOW IS CSS, THE DUST IS WEBGL, and the split is the whole reason the
+     scene is cheap. The glow never moves, so painting it in a shader would mean
+     running a fragment pass every frame to produce the same pixels; as a
+     background image it is composited once and costs nothing after that. It is
+     also what the section falls back to when WebGL is refused or reduced motion
+     is asked for, so there is no state in which the scene is missing rather
+     than simply still.
+
+     Two stops and a wide radius: anything tighter reads as a spotlight with an
+     edge, and the reference is light bleeding through from somewhere above the
+     frame. It sits above the centre because the headline does, and the brightest
+     part of the field should be behind the thing being read.
+     ------------------------------------------------------------------------- */
+  --close-glow: radial-gradient(
+    120% 90% at 50% 8%,
+    color-mix(in srgb, var(--ds-accent-secondary) 13%, transparent) 0%,
+    color-mix(in srgb, var(--ds-accent-secondary) 5%, transparent) 38%,
+    transparent 72%
+  );
+
+  /* The dust. Read by the scene at runtime off the wrapper's resolved `color`,
+     never hard-coded in the shader, so the one place this is decided is here.
+     Mostly white with enough of the accent in it to belong to the light it is
+     drifting through. */
+  --close-dust: color-mix(in srgb, var(--ds-accent-secondary) 22%, #ffffff);
+
+  /* ---------------------------------------------------------------------------
      Hero video veil
 
      The hero runs a background video. Site-only by definition: no product

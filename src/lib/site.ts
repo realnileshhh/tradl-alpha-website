@@ -15,7 +15,13 @@
  * is later thinking but it is unresolved against the brief on ten points and it
  * violates the em-dash ban throughout. See the open rulings noted in
  * docs/DECISIONS.md.
+ *
+ * ONE IMPORT, and it is a switch rather than a value. Nothing here reads data
+ * from anywhere else; SHOW_ACT_STAGE decides which of two supplied wordings the
+ * toolkit dek ships and which rows the VISIBLE_* views below carry. Both
+ * wordings are in this file, and both are linted by `npm run check:copy`.
  */
+import { SHOW_ACT_STAGE } from "./flags";
 
 /** Doc 01 §4: "Tradl AI" in full on first mention, "Tradl" thereafter. */
 export const SITE_NAME = "Tradl AI";
@@ -151,30 +157,50 @@ export const ANNOUNCEMENT_HREF = "/press/seed-round";
    -------------------------------------------------------------------------- */
 
 /**
- * The headline, in two spans so the last word can carry the accent.
+ * The headline, in three spans so one word can carry the accent.
  *
- * Joined with a space the two halves are LAUNCH_LINE character for character,
- * which is doc 05 §5.1's locked H1. The split is a type treatment, not an edit:
- * the rendered text node is the locked string.
+ * Concatenated as the hero renders them, lead + " " + beat + tail, the three
+ * are the supplied line character for character. The split is a type treatment
+ * and not an edit: the rendered text node is the string as given.
+ *
+ * SUPPLIED DIRECTLY, and it REPLACES a locked string. This was doc 05 §5.1's
+ * locked H1, "Agentic trading starts here.", which LAUNCH_LINE still holds
+ * verbatim. Founder-supplied copy outranks the copy library, so it ships as
+ * given; the deviation is recorded here rather than quietly absorbed, because a
+ * locked string that gets replaced without a note is indistinguishable
+ * afterwards from one that drifted.
+ *
+ * NEEDS SIGN-OFF against doc 05 §5.
  */
-export const HERO_TITLE_LEAD = "Agentic trading starts";
-export const HERO_TITLE_BEAT = "here.";
+export const HERO_TITLE_LEAD = "Trade on";
+export const HERO_TITLE_BEAT = "proof";
+export const HERO_TITLE_TAIL = ", not guesswork.";
 
 /**
- * The dek, trimmed to 16 words.
+ * The dek. SUPPLIED DIRECTLY, and it REPLACES doc 05 §5.1's locked dek.
  *
- * Doc 05 §5.1's dek runs 24 words: "Ask in plain language. Tradl writes the
- * analysis as code, runs it on live market data, and shows you every number it
- * computed." This is that sentence with the middle clause deleted, not a new
- * one written beside it, so every surviving word is still the approved word and
- * the claim is strictly weaker rather than different. The dropped clause, "runs
- * it on live market data", is the one the hero can afford to lose because the
- * ticker strip above it is already making that point.
+ * TWO LEXICON CONFLICTS, shipped as given and flagged rather than resolved by
+ * rewriting founder copy. The precedent is ANNOUNCEMENT_TEXT above, which
+ * carries USD on a page that bans it for the same reason.
  *
- * NEEDS SIGN-OFF as a variant of a locked string.
+ *   "accurate"      doc 01 §7 bans it as a bare adjective; it is allowed only
+ *                   with a number attached. `npm run check:copy` reports it as a
+ *                   warning, by design, for a person to decide on. The fix, if
+ *                   one is wanted, is a figure rather than a deletion: what the
+ *                   backtest window is, or what the engine measured.
+ *   "ultra-precise" doc 01 §7 bans a superlative without a number attached. The
+ *                   linter's superlative list does not catch this form, so it
+ *                   passes silently. It is the same rule.
+ *
+ * Neither is a compliance rail. Doc 01 §8's perimeter is about recommendations,
+ * price targets and buy/sell language, and this sentence makes none of those
+ * claims: it describes what the engine computes, which is exactly the side of
+ * the line the RA perimeter allows.
+ *
+ * NEEDS SIGN-OFF against doc 05 §5 and doc 01 §7.
  */
 export const HERO_DEK =
-  "Ask in plain language. Tradl writes the analysis as code and shows every number it computed.";
+  "Your complex trading workflows are now a simple English prompt. Tradl's ultra-precise quant engine crunches the data to give you accurate & backtested outputs, based on years of market data.";
 
 /** Under the email row. Two short declaratives, both checkable. */
 export const HERO_NOTE = "Free while in alpha. No card required.";
@@ -212,6 +238,19 @@ export const SOUND_OFF_LABEL = "Turn sound off";
 export const DEMO_LABEL = "THE PLAYGROUND";
 
 export const DEMO_PLACEHOLDER = "Demo recording lands here.";
+
+/* -----------------------------------------------------------------------------
+   The hero's media pane.
+
+   Deliberately named for the slot rather than for its contents. The asset that
+   lands here is not decided: an interface still, a rendered mockup, a short
+   silent loop and a device shot are all live options, and a constant called
+   SCREENSHOT_PLACEHOLDER would have to be renamed the moment one of the others
+   won. The copy is ambiguous for the same reason, and for one more: a visitor
+   who sees it before the asset arrives should not be told what is coming.
+   -------------------------------------------------------------------------- */
+
+export const HERO_MEDIA_PLACEHOLDER = "Interface still lands here.";
 
 
 /* -----------------------------------------------------------------------------
@@ -255,8 +294,28 @@ export const TOOLKIT_TITLE_BEAT = "zero.";
  * start of a line reads as a bullet point rather than as punctuation, and this
  * line breaks in exactly that place at the measure it is set on.
  */
-export const TOOLKIT_DEK =
+const TOOLKIT_DEK_FULL =
   "Eleven instruments, one memory. Ask once\u00a0· every tool already knows the context.";
+
+/**
+ * The same line with the count corrected for the state the page is actually in.
+ *
+ * Act is hidden (SHOW_ACT_STAGE in lib/flags), which takes Strategy Copilot and
+ * Position Co-pilot off the explorer and leaves TEN instruments on screen. The
+ * supplied line claims eleven, and unlike the mismatch noted above this one is
+ * countable on the same screen that makes the claim: a visitor can tab through
+ * Discover and Analyse and reach ten.
+ *
+ * So the number moves with the flag rather than the sentence being left to go
+ * stale. Everything else in the line is untouched, including the non-breaking
+ * space, and the full wording is one flag away.
+ *
+ * NEEDS SIGN-OFF as a variant of a supplied string.
+ */
+const TOOLKIT_DEK_WITHOUT_ACT =
+  "Ten instruments, one memory. Ask once\u00a0· every tool already knows the context.";
+
+export const TOOLKIT_DEK = SHOW_ACT_STAGE ? TOOLKIT_DEK_FULL : TOOLKIT_DEK_WITHOUT_ACT;
 
 
 /* -----------------------------------------------------------------------------
@@ -331,6 +390,23 @@ export const STAGE_LABEL: Record<ToolStage, string> = {
   analyse: "Analyse",
   act: "Act",
 };
+
+/**
+ * The stages the toolkit actually offers, which is not the same list.
+ *
+ * THE DATA ABOVE IS COMPLETE AND STAYS COMPLETE. All three stages, all their
+ * labels, and every tool's own `stage` are the lifecycle doc 05 §7 freezes, and
+ * a view of the page is not a reason to edit a frozen list. What ships is a
+ * filtered view of it, so the thing that changes when Act comes back is one
+ * boolean rather than three arrays that have to be reassembled correctly.
+ *
+ * Read these, not TOOL_STAGES and TOOLS, anywhere the toolkit renders. Reading
+ * the raw list would put an empty Act tab or two orphaned rows back on the page
+ * and nothing would fail to tell you.
+ */
+export const VISIBLE_TOOL_STAGES = TOOL_STAGES.filter(
+  (stage) => SHOW_ACT_STAGE || stage.value !== "act"
+);
 
 export type Tool = {
   name: string;
@@ -435,8 +511,29 @@ export const TOOLS: Tool[] = [
   },
 ];
 
+/**
+ * The tools the toolkit actually walks. See the note on VISIBLE_TOOL_STAGES.
+ *
+ * Order is preserved, which matters more here than it looks: the explorer's
+ * scroll length, every tool's place in it and the target of every click are all
+ * derived from this array's indices, so filtering it shortens the pinned range
+ * and re-seats the whole sequence with no other edit.
+ */
+export const VISIBLE_TOOLS = TOOLS.filter((tool) => SHOW_ACT_STAGE || tool.stage !== "act");
+
 /** The frame on the right, until the real interface captures exist. */
 export const TOOL_PREVIEW_PLACEHOLDER = "Interface preview lands here.";
+
+/**
+ * "6 tools", and the singular when a stage ever holds one.
+ *
+ * A function rather than a constant, and in the copy module rather than in the
+ * component that shows it, for the same reason every other string here is: it
+ * is customer-facing, and `npm run check:copy` reads this file. Both the grid's
+ * group headers and the explorer's stage control call it, so the two can never
+ * count the same list in two different words.
+ */
+export const toolCountLabel = (count: number) => `${count} ${count === 1 ? "tool" : "tools"}`;
 
 
 /* -----------------------------------------------------------------------------
@@ -902,6 +999,16 @@ export const FOOTER_LEGAL = `© ${new Date().getFullYear()} Tradl AI`;
    -------------------------------------------------------------------------- */
 
 export type ShowcaseStage = {
+  /**
+   * Which lifecycle stage this panel introduces.
+   *
+   * Here so the panel can be matched to the toolkit below it by key rather than
+   * by reading `title`. A string compare against a piece of copy is a filter
+   * that breaks silently the first time the copy is edited, and the copy here
+   * is the frozen lifecycle wording, which is exactly the kind of string that
+   * eventually gets a capital or a full stop changed.
+   */
+  stage: ToolStage;
   index: string;
   title: string;
   headline: string;
@@ -914,6 +1021,7 @@ export type ShowcaseStage = {
 
 export const SHOWCASE_STAGES: ShowcaseStage[] = [
   {
+    stage: "discover",
     index: "01",
     title: "Discover",
     headline: "Start with the whole market.",
@@ -922,6 +1030,7 @@ export const SHOWCASE_STAGES: ShowcaseStage[] = [
     placeholder: "Screener run",
   },
   {
+    stage: "analyse",
     index: "02",
     title: "Analyse",
     headline: "Test it before it costs you.",
@@ -930,6 +1039,7 @@ export const SHOWCASE_STAGES: ShowcaseStage[] = [
     placeholder: "Backtest result",
   },
   {
+    stage: "act",
     index: "03",
     title: "Act",
     headline: "Carry the read into the position.",
@@ -938,6 +1048,17 @@ export const SHOWCASE_STAGES: ShowcaseStage[] = [
     placeholder: "Position ledger",
   },
 ];
+
+/**
+ * The panels the lifecycle band actually shows. See VISIBLE_TOOL_STAGES.
+ *
+ * The row's CSS is count-agnostic: each panel is `flex: 1 1 0%` and the hover
+ * rules are written with `:has()` against siblings, so two panels share the
+ * measure the way three did and the widen-and-dim gesture is unchanged.
+ */
+export const VISIBLE_SHOWCASE_STAGES = SHOWCASE_STAGES.filter(
+  (panel) => SHOW_ACT_STAGE || panel.stage !== "act"
+);
 
 /** Inside each showcase panel until the recordings exist. */
 export const SHOWCASE_PLACEHOLDER_NOTE = "Recording lands here.";

@@ -1,7 +1,13 @@
-import { SHOWCASE_PLACEHOLDER_NOTE, SHOWCASE_STAGES } from "@/lib/site";
+import { SHOWCASE_PLACEHOLDER_NOTE, VISIBLE_SHOWCASE_STAGES } from "@/lib/site";
 
 /**
- * The lifecycle band, doc 03 §3 H5: Discover, Analyse, Act, one panel each.
+ * The lifecycle band, doc 03 §3 H5: one panel per lifecycle stage.
+ *
+ * It reads VISIBLE_SHOWCASE_STAGES rather than SHOWCASE_STAGES, so a stage that
+ * is switched off in lib/flags takes its panel with it. Act is off, so the row
+ * is Discover and Analyse; the panels are `flex: 1 1 0%` and the widen-and-dim
+ * is written with `:has()` against siblings, so two share the measure the way
+ * three did and nothing about the gesture changes.
  *
  * Pointing at a panel widens it, dims the other two and brings up a second line
  * of copy inside it. Nothing here is clickable, and that is a decision rather
@@ -25,7 +31,7 @@ export function StageShowcase() {
   return (
     <div className="px-[var(--content-gutter)]">
       <div className="stage-panels mx-auto flex max-w-content flex-col gap-[var(--ds-space-5)] lg:flex-row">
-        {SHOWCASE_STAGES.map((stage) => (
+        {VISIBLE_SHOWCASE_STAGES.map((stage) => (
           <article
             key={stage.index}
             className="stage-panel glass surface-lit flex min-w-0 flex-col rounded-container border border-line p-[var(--ds-padding-card-lg)] shadow-card backdrop-blur-panel"

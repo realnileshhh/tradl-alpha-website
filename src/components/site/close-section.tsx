@@ -9,7 +9,9 @@ import {
   HERO_NOTE,
   START_FREE_LABEL,
 } from "@/lib/site";
+import { SHOW_CLOSE_VIDEO } from "@/lib/flags";
 import { EmailCapture } from "./email-capture";
+import { CloseScene } from "./close-scene";
 import { CloseVideo } from "./close-video";
 
 /**
@@ -43,11 +45,11 @@ import { CloseVideo } from "./close-video";
 export function CloseSection() {
   return (
     <section className="relative isolate overflow-hidden py-[var(--section-pad-statement)] text-center">
-      {/* The scene's one ambient element. It used to be the dot field; the
-          video's own dust is doing that job now, and doc 02 §2.3 allows one per
-          viewport. <ParticleField> is untouched but now has no call sites.
-          See components/site/close-video. */}
-      <CloseVideo />
+      {/* The scene's one ambient element, doc 02 §2.3 allowing exactly one per
+          viewport. It was the dot field, then the video's own dust; it is drawn
+          now. <ParticleField> and <CloseVideo> are both untouched and both have
+          no call site while this stands. See SHOW_CLOSE_VIDEO in lib/flags. */}
+      {SHOW_CLOSE_VIDEO ? <CloseVideo /> : <CloseScene />}
 
       <div className="divider-fade absolute inset-x-0 top-0" aria-hidden="true" />
 

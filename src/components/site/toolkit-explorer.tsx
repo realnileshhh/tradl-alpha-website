@@ -1,31 +1,19 @@
 "use client";
 
-import { useRef, useState, type ComponentType, type SVGProps } from "react";
+import { useRef, useState } from "react";
 import { gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
 import { StatusPill } from "@/components/ui/badge";
-import {
-  IconArrowNavigate,
-  IconArrowPointRight,
-  IconCalendar,
-  IconCandleChart,
-  IconDashboard,
-  IconExplore,
-  IconHistory,
-  IconInsightsFeed,
-  IconLiveSignals,
-  IconMorningDecode,
-  IconPatternSniper,
-  IconSearch,
-  IconTableView,
-} from "@/components/ui/icons";
+import { IconArrowPointRight } from "@/components/ui/icons";
+import { TOOL_ICONS } from "./tool-icons";
 import { SegmentedControl } from "@/components/ui/segmented-control";
 import { Frame, FrameInner } from "@/components/ui/surface";
 import { scrollTo } from "@/lib/scroll";
 import { useReducedMotion } from "@/lib/use-reduced-motion";
 import {
-  TOOLS,
-  TOOL_STAGES,
+  VISIBLE_TOOLS,
+  VISIBLE_TOOL_STAGES,
   TOOL_PREVIEW_PLACEHOLDER,
+  toolCountLabel,
   type ToolStage,
   type ToolStatus,
 } from "@/lib/site";
@@ -35,10 +23,16 @@ import { cn } from "@/lib/utils";
  * The toolkit body: the lifecycle as a scroll.
  *
  * WHAT IT DOES. The section pins and one gesture walks the whole toolkit, from
- * AI Screener at the top of Discover to Position Co-pilot at the end of Act.
+ * AI Screener at the top of the first stage to the last tool of the last one.
  * The stage control follows the tool rather than the other way round, the list
  * on the left swaps as the stage changes, and each tool's card rises from below
  * the frame and stacks on the ones already seen.
+ *
+ * IT READS VISIBLE_TOOLS, NOT TOOLS. A stage switched off in lib/flags takes
+ * its tools, its tab and its share of the pinned scroll with it, because every
+ * length and every index in this file is derived from that array rather than
+ * written down. Act is off, so the walk currently ends at Smart Chain. Nothing
+ * here needs editing when it comes back.
  *
  * WHY STAGE IS THE AXIS AND STATUS IS NOT. Doc 03 §1.4 bans pressure tactics
  * and doc 04 §4.2 says Private Access ships in full colour, never greyed out.
@@ -47,16 +41,17 @@ import { cn } from "@/lib/utils";
  * the status still shows on every card as a fact rather than a gate.
  *
  * This paragraph described the intent for a while and the code did the opposite:
- * it filtered on `status` while the tabs wore the lifecycle words, so Act held
- * Pattern Sniper and the counts read 5, 1 and 5. Corrected 2 Sep 2026 on the
- * founder's note; they are the wireframe's 6, 4 and 2 now.
+ * it filtered on `status` while the tabs wore the lifecycle words, so the third
+ * tab held Pattern Sniper and the counts read 5, 1 and 5. Corrected 2 Sep 2026
+ * on the founder's note; the stages carry the wireframe's 6, 4 and 2 now, and
+ * the tabs show whichever of them are switched on.
  *
  * ONE TRIGGER, AND IT IS NOT SCRUBBED. Doc 04 §5 allows four scrubbed triggers
  * a page and the hero already owns one. This one reads `progress` in `onUpdate`
- * and sets an integer, so React re-renders eleven times across the whole
+ * and sets an integer, so React re-renders once per tool across the whole
  * section rather than sixty times a second, and the movement between states is
  * a CSS transition on transform and opacity. A scrubbed timeline here would
- * animate the same eleven steps at sixty times the cost.
+ * animate the same handful of steps at sixty times the cost.
  *
  * IT IS STILL CLICKABLE. Every control moves the page rather than only the
  * state: picking a stage or a tool scrolls to that tool's place in the pinned
@@ -65,31 +60,16 @@ import { cn } from "@/lib/utils";
  * the state directly, which leaves a plain, fully operable filter.
  */
 
-const TOOL_ICONS: Record<string, ComponentType<SVGProps<SVGSVGElement>>> = {
-  search: IconSearch,
-  "morning-decode": IconMorningDecode,
-  calendar: IconCalendar,
-  history: IconHistory,
-  dashboard: IconDashboard,
-  "candle-chart": IconCandleChart,
-  "pattern-sniper": IconPatternSniper,
-  "insights-feed": IconInsightsFeed,
-  explore: IconExplore,
-  "table-view": IconTableView,
-  "live-signals": IconLiveSignals,
-  "arrow-navigate": IconArrowNavigate,
-};
-
-/** Viewport heights of scrolling per tool. Eleven tools, so the section runs
-    about five screens: enough that each card is read, short enough that a
-    visitor who wants the next section is not held hostage. */
+/** Viewport heights of scrolling per tool. At ten tools the section runs about
+    four and a half screens: enough that each card is read, short enough that a
+    visitor who wants the next section is not held hostage. It is per tool and
+    not a total, so switching a stage off shortens the range rather than
+    stretching the same scroll over fewer cards. */
 const SCROLL_PER_TOOL = 45;
 
-const countLabel = (n: number) => `${n} ${n === 1 ? "tool" : "tools"}`;
+const toolsIn = (stage: ToolStage) => VISIBLE_TOOLS.filter((tool) => tool.stage === stage);
 
-const toolsIn = (stage: ToolStage) => TOOLS.filter((tool) => tool.stage === stage);
-
-const firstIndexOf = (stage: ToolStage) => TOOLS.findIndex((tool) => tool.stage === stage);
+const firstIndexOf = (stage: ToolStage) => VISIBLE_TOOLS.findIndex((tool) => tool.stage === stage);
 
 /**
  * The chevron on the selected row takes the tool's own build state, and it is
@@ -133,9 +113,11 @@ export function ToolkitExplorer() {
   const prefersReducedMotion = useReducedMotion();
   const [index, setIndex] = useState(0);
 
-  /* TOOLS is a non-empty literal, but the index signature does not know that
+  /* VISIBLE_TOOLS comes off a filter, so its type says it could be empty. It
+     cannot: the flags in lib/flags never switch off every stage, and the index
+     signature does not know that
      and a fallback is cheaper than an assertion that could go stale. */
-  const current = TOOLS[index] ?? TOOLS[0]!;
+  const current = VISIBLE_TOOLS[index] ?? VISIBLE_TOOLS[0]!;
   const stage = current.stage;
   const stageTools = toolsIn(stage);
 
@@ -166,12 +148,12 @@ export function ToolkitExplorer() {
              settled in the middle of the screen rather than the moment its top
              edge arrives. */
           start: "center center",
-          end: `+=${TOOLS.length * SCROLL_PER_TOOL}%`,
+          end: `+=${VISIBLE_TOOLS.length * SCROLL_PER_TOOL}%`,
           pin: true,
           anticipatePin: 1,
           invalidateOnRefresh: true,
           onUpdate: (self) => {
-            const next = Math.min(TOOLS.length - 1, Math.floor(self.progress * TOOLS.length));
+            const next = Math.min(VISIBLE_TOOLS.length - 1, Math.floor(self.progress * VISIBLE_TOOLS.length));
             setIndex((currentIndex) => (currentIndex === next ? currentIndex : next));
           },
         });
@@ -198,7 +180,7 @@ export function ToolkitExplorer() {
     const instance = trigger.current;
     if (!instance) return;
     const span = instance.end - instance.start;
-    scrollTo(instance.start + ((nextIndex + 0.5) / TOOLS.length) * span);
+    scrollTo(instance.start + ((nextIndex + 0.5) / VISIBLE_TOOLS.length) * span);
   };
 
   return (
@@ -213,10 +195,10 @@ export function ToolkitExplorer() {
             value={stage}
             onValueChange={(next) => goTo(firstIndexOf(next as ToolStage))}
             className="w-full max-w-[520px]"
-            options={TOOL_STAGES.map((option) => ({
+            options={VISIBLE_TOOL_STAGES.map((option) => ({
               value: option.value,
               label: option.label,
-              hint: countLabel(toolsIn(option.value).length),
+              hint: toolCountLabel(toolsIn(option.value).length),
             }))}
           />
         </div>
@@ -239,7 +221,7 @@ export function ToolkitExplorer() {
                   <button
                     type="button"
                     aria-current={isActive || undefined}
-                    onClick={() => goTo(TOOLS.findIndex((t) => t.name === tool.name))}
+                    onClick={() => goTo(VISIBLE_TOOLS.findIndex((t) => t.name === tool.name))}
                     className={cn(
                       "press group flex w-full items-center gap-[var(--ds-space-5)] rounded-md text-left",
                       "border p-[var(--ds-space-3)]",
@@ -293,7 +275,7 @@ export function ToolkitExplorer() {
               build status and its one line rather than sitting empty. */}
           <Frame size="bezel" className="w-full">
             <FrameInner size="bezel" className="relative aspect-[16/10] overflow-hidden">
-              {TOOLS.map((tool, position) => (
+              {VISIBLE_TOOLS.map((tool, position) => (
                 <div key={tool.name} className="tool-card" style={cardStyle(position - index)}>
                   {/* An opaque card, not a transparent slide. The fill is
                       bg/surface resolved against the ground rather than layered

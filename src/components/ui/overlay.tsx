@@ -64,6 +64,10 @@ const TOOLTIP_SIZE: Record<TooltipSize, string> = {
 const ACCENT_FILL =
   "[background-color:color-mix(in_srgb,var(--ds-color-white)_6%,var(--page-ground))]";
 
+/** The same resolved colour as an SVG paint, for the caret. */
+const ACCENT_CARET_FILL =
+  "fill-[color-mix(in_srgb,var(--ds-color-white)_6%,var(--page-ground))]";
+
 const TOOLTIP_TONE: Record<TooltipTone, string> = {
   default:
     "border-line text-fg [background-image:linear-gradient(90deg,var(--ds-color-grey-700),var(--ds-color-grey-750))]",
@@ -86,17 +90,138 @@ const TOOLTIP_TONE: Record<TooltipTone, string> = {
  * caret transparent. The default caret takes the gradient's right-hand stop,
  * which is the value the gradient is nearest at the centre of the chip.
  *
- * The caret positions against the chip, so a chip that uses `arrow` has to be
- * positioned itself: place it absolutely, as the nav notice does, or pass
- * `relative`. The base deliberately does NOT set `relative` for you. Tailwind
- * emits `.relative` after `.absolute`, so a base `relative` would beat an
- * `absolute` passed in through className and drop the chip back into the flow,
- * which is a silent layout bug rather than a visible one.
+ * `arrow` positions the caret against the CHIP, which is right whenever the
+ * chip is centred on what it describes. Where it is not, render <TooltipCaret>
+ * yourself as a sibling of the chip inside the control's own positioning
+ * context, and leave `arrow` off. The nav notice does exactly that: its chip is
+ * right-aligned so it cannot leave the viewport, and the caret still has to
+ * land on the middle of the button.
+ *
+ * A SIBLING CARET MUST COME AFTER THE CHIP IN THE MARKUP. Neither carries a
+ * z-index, so paint order is document order, and the caret's job is to cover
+ * the chip's top border where the two overlap: that hidden half is what makes
+ * one outline run around the point instead of a hairline running across its
+ * base. Rendered before the chip it is painted over, and the chip's own border
+ * draws straight through the caret. As `arrow` the caret is a child and paints
+ * after its parent's background and border for free, which is why the bug only
+ * exists for the sibling form.
+ *
+ * HOW FAR IT OVERLAPS IS GEOMETRY, NOT TASTE. See CARET_OVERLAP below.
+ *
+ * A chip that uses `arrow` has to be positioned itself: place it absolutely, as
+ * the nav notice does, or pass `relative`. The base deliberately does NOT set
+ * `relative` for you. Tailwind emits `.relative` after `.absolute`, so a base
+ * `relative` would beat an `absolute` passed in through className and drop the
+ * chip back into the flow, which is a silent layout bug rather than a visible
+ * one.
  */
 const CARET_TONE: Record<TooltipTone, string> = {
-  default: "border-line [background-color:var(--ds-color-grey-750)]",
-  accent: `border-line-2 ${ACCENT_FILL}`,
+  default: "fill-[var(--ds-color-grey-750)] stroke-[var(--ds-border-subtle)]",
+  accent: `stroke-[var(--ds-border-default)] ${ACCENT_CARET_FILL}`,
 };
+
+/* -----------------------------------------------------------------------------
+   The caret's geometry, and every number in it is doing a job.
+
+   It was a 7px square turned 45 degrees with two of its four borders drawn, and
+   that construction cannot join a chip cleanly. The square's stroked facets run
+   its whole length, so wherever the chip's border crosses them the stroke keeps
+   going underneath into the chip: two short stubs descending from the base of
+   the arrow. Pull the square up until the stubs are gone and the shoulders come
+   out above the chip, the border crosses the two BARE facets instead, and the
+   outline breaks the other way. There is no offset that does both, because one
+   shape cannot stop its stroke at the boundary while its fill carries on past
+   it, and that is exactly what a seamless join requires.
+
+   So it is drawn instead, as two paths in one SVG:
+
+     the skirt   filled, not stroked, and it continues 2px BELOW the chip's top
+                 edge. This is what covers the chip's own border across the base
+                 of the arrow, which is what removes the line through it.
+     the chevron stroked, not filled, and it STOPS on that edge. Its two ends
+                 land exactly where the chip's border arrives from either side,
+                 so the three strokes read as one line turning a corner.
+
+   The viewBox is in CSS pixels, so the numbers below are the picture: an 11 wide
+   box, the base at y=6, the apex at y=1, the skirt to y=8. Five across and five
+   up is the same 45 degrees the rotated square drew, and a 5px rise is the
+   weight the old caret had before any of this was corrected.
+
+   Half-pixel inset on x and y: a 1px stroke centres on the path, so a path on
+   a whole pixel straddles two device pixels and renders as a soft 2px line.
+   ----------------------------------------------------------------------------- */
+
+const CARET_WIDTH = 11;
+const CARET_HEIGHT = 8;
+/** Where the chip's top edge falls inside the box. */
+const CARET_BASE = 6;
+const CARET_APEX = 1;
+const CARET_INSET = 0.5;
+
+const CARET_CHEVRON = `M${CARET_INSET} ${CARET_BASE} L${CARET_WIDTH / 2} ${CARET_APEX} L${
+  CARET_WIDTH - CARET_INSET
+} ${CARET_BASE}`;
+
+const CARET_SKIRT = `${CARET_CHEVRON} L${CARET_WIDTH - CARET_INSET} ${CARET_HEIGHT} L${CARET_INSET} ${CARET_HEIGHT} Z`;
+
+/**
+ * How far the caret's box sits above the chip's top edge.
+ *
+ * Derived, not chosen: the base line is at y=6 in a box that is 8 tall, so
+ * hanging the box 6px above the chip puts that line exactly on the chip's top
+ * edge and leaves the skirt 2px inside it.
+ *
+ * Written out rather than built from CARET_BASE, because Tailwind reads source
+ * as text: a class assembled in a template literal is one it never sees, and
+ * the utility is silently never emitted. Keep the two in step by hand.
+ */
+const CARET_OVERLAP = "-top-[6px]";
+
+/**
+ * The caret on its own, for a chip that is not centred on its control.
+ *
+ * Carries no position of its own beyond `absolute`: the caller places it,
+ * because the whole reason to reach for this rather than `arrow` is that the
+ * caret and the chip need different anchors.
+ */
+export function TooltipCaret({
+  tone = "default",
+  className,
+  ...props
+}: HTMLAttributes<HTMLSpanElement> & { tone?: TooltipTone }) {
+  return (
+    <span
+      aria-hidden="true"
+      className={cn("pointer-events-none absolute", className)}
+      {...props}
+    >
+      <svg
+        width={CARET_WIDTH}
+        height={CARET_HEIGHT}
+        viewBox={`0 0 ${CARET_WIDTH} ${CARET_HEIGHT}`}
+        className={cn("block", CARET_TONE[tone])}
+      >
+        {/* Fill first, stroke over it: the chevron's line has to sit on top of
+            the skirt's edge rather than under it.
+
+            Square caps, not butt. A butt cap ends the stroke square across its
+            own direction, which at 45 degrees leaves a tiny wedge unpainted
+            where it meets the chip's horizontal border: two dark specks at the
+            base corners, visible at 8x and faintly at 1x. A square cap carries
+            the stroke half its width further along, which fills the wedge and
+            costs a third of a pixel below a line the border already occupies. */}
+        <path d={CARET_SKIRT} stroke="none" />
+        <path
+          d={CARET_CHEVRON}
+          fill="none"
+          strokeWidth={1}
+          strokeLinejoin="round"
+          strokeLinecap="square"
+        />
+      </svg>
+    </span>
+  );
+}
 
 export function Tooltip({
   size = "sm",
@@ -123,16 +248,7 @@ export function Tooltip({
       )}
       {...props}
     >
-      {arrow ? (
-        <span
-          aria-hidden="true"
-          className={cn(
-            "pointer-events-none absolute -top-[4px] left-1/2 size-[7px]",
-            "-translate-x-1/2 rotate-45 rounded-tl-[2px] border-t border-l",
-            CARET_TONE[tone]
-          )}
-        />
-      ) : null}
+      {arrow ? <TooltipCaret tone={tone} className={`${CARET_OVERLAP} left-1/2 -translate-x-1/2`} /> : null}
       {children}
     </span>
   );

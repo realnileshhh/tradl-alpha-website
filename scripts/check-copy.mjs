@@ -81,7 +81,14 @@ function walk(dir, out = []) {
     const full = join(dir, entry);
     const rel = relative(ROOT, full);
     if (EXCLUDE.some((x) => rel === x || rel.startsWith(x + "/"))) continue;
-    if (statSync(full).isDirectory()) walk(full, out);
+    let stats;
+    try {
+      stats = statSync(full);
+    } catch {
+      /* A dangling symlink: it resolves to nothing, so there is nothing to read. */
+      continue;
+    }
+    if (stats.isDirectory()) walk(full, out);
     else if (EXTENSIONS.some((e) => entry.endsWith(e))) out.push(full);
   }
   return out;

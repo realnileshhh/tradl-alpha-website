@@ -1,17 +1,31 @@
 import { AccentWord } from "@/components/ui/accent-word";
+import { SHOW_LIFECYCLE_BAND, SHOW_TOOLKIT_EXPLORER } from "@/lib/flags";
 import { SectionOpener } from "./section-opener";
 import { StageShowcase } from "./stage-showcase";
 import { ToolkitExplorer } from "./toolkit-explorer";
+import { ToolkitGrid } from "./toolkit-grid";
 import { TOOLKIT_DEK, TOOLKIT_EYEBROW, TOOLKIT_TITLE_BEAT, TOOLKIT_TITLE_LEAD } from "@/lib/site";
 
 /**
- * H4 · The toolkit, doc 03 §3. The opener, the status filter and the tool list;
- * the lifecycle band and the real interface captures land on top of this later.
+ * H4 · The toolkit, doc 03 §3. The opener and the explorer: the stage control,
+ * the tool list and the frame the real interface captures land in later.
  *
- * The headline no longer repeats the lifecycle triple, because the control
- * directly below it now carries those three words. It makes the section's claim
+ * The headline no longer repeats the lifecycle wording, because the control
+ * directly below it carries those words itself. It makes the section's claim
  * instead, and its last word takes the same brand gradient the hero's does,
  * through the shared <AccentWord>.
+ *
+ * THREE FLAGS FROM lib/flags REACH THIS SECTION.
+ *
+ *   SHOW_LIFECYCLE_BAND    off, so the numbered panel row that sat between the
+ *                          opener and the tools does not render at all.
+ *                          <StageShowcase> and everything under it is intact.
+ *   SHOW_TOOLKIT_EXPLORER  off, so the tools are the bento grid rather than the
+ *                          pinned tabbed explorer. A toggle, not a hide: one of
+ *                          the two is always on the page.
+ *   SHOW_ACT_STAGE         off, so whichever presentation is showing carries
+ *                          Discover and Analyse only, and the dek's instrument
+ *                          count follows it.
  *
  * No particle field. The dots belong to the hero, where they give the call to
  * action something to stand in; repeated behind every section they stop being
@@ -40,12 +54,17 @@ export function ToolkitSection() {
         }
       />
 
-      <div className="mt-[var(--section-gap)]">
-        <StageShowcase />
-      </div>
+      {/* The lifecycle band. Off, and its spacing goes with it: the wrapper is
+          inside the condition rather than around it, so the explorer moves up
+          to sit one gap under the opener instead of two. */}
+      {SHOW_LIFECYCLE_BAND && (
+        <div className="mt-[var(--section-gap)]">
+          <StageShowcase />
+        </div>
+      )}
 
       <div className="mt-[var(--section-gap)]">
-        <ToolkitExplorer />
+        {SHOW_TOOLKIT_EXPLORER ? <ToolkitExplorer /> : <ToolkitGrid />}
       </div>
     </section>
   );

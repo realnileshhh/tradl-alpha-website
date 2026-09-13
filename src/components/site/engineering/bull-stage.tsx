@@ -11,7 +11,7 @@ import type { BullPalette } from "./bull-scene";
 import { useBullTurntable } from "./use-bull-turntable";
 
 /**
- * The stage the bull turns on, and the four gates that keep it cheap.
+ * The stage the bull turns on, and the three gates that keep it cheap.
  *
  * 1 · THE LAZY BOUNDARY. three + drei + postprocessing is about 600KB gzipped
  *     and the model is another 968KB. `next/dynamic` with `ssr: false` is what
@@ -19,13 +19,11 @@ import { useBullTurntable } from "./use-bull-turntable";
  *     to live in a client component because opting out of SSR is a decision the
  *     server cannot make.
  *
- * 2 · THE VIEWPORT GATE. The boundary alone is not enough: `next/dynamic`
- *     fetches its chunk when the component mounts, and this component mounts
- *     with the page. So the scene is not rendered at all until the section is
- *     within a viewport and a half of the fold, at which point the chunk, the
- *     model and the decode all happen while the visitor is still reading the
- *     founders. By the time they arrive it is already standing there. The
- *     observer disconnects on the first hit; there is nothing to watch after.
+ * 2 · THE IDLE GATE. Everything after the boundary happens on one idle callback
+ *     taken at mount, from the top of the page: the tokens are read, the scene
+ *     renders, the chunk is fetched, the model follows it, the context is made
+ *     and the materials compile. By the time a reader reaches this section,
+ *     however fast they got here, the bull is already standing there.
  *
  * 3 · THE STILL IS THE FIRST FRAME. Doc 04 §5 wants a painted static of the
  *     finished state, never a spinner, so `bull-still.webp` is rendered from
@@ -34,11 +32,6 @@ import { useBullTurntable } from "./use-bull-turntable";
  *     cross-fade: see the note on `.bull-still` in globals.css. If the scene
  *     never arrives at all, what stays on screen is a picture of a bull rather
  *     than a hole in the layout.
- *
- * 4 · THE HEAD START. The gate decides when WebGL mounts, not when the bytes
- *     start moving. Those are started after `load` and an idle callback, from
- *     the top of the page, so the model is already in cache by the time the
- *     gate opens. The long note on the effect says why.
  *
  * Under `prefers-reduced-motion`, and wherever the caller passes `live={false}`,
  * the still is the whole component: the chunk is never requested and WebGL is
@@ -68,6 +61,22 @@ const BullScene = dynamic(() => import("./bull-scene").then((m) => m.BullScene),
   loading: () => null,
 });
 
+/**
+ * The ceiling on waiting for an idle moment, in milliseconds.
+ *
+ * 1200, not 3000. A ceiling is only a floor while it is never reached, and on a
+ * page being hydrated and flung at the same time it was reached every time.
+ */
+const IDLE_TIMEOUT_MS = 1200;
+
+/**
+ * How close the section has to be at mount to skip the wait entirely, in
+ * viewports. A restored reload or a deep link can land here with no scroll
+ * coming, and idle is the wrong signal for a reader who is already looking at
+ * the section.
+ */
+const NEAR_VIEWPORTS = 4;
+
 /** The mirrored tokens the scene is lit with. Names, not values. */
 const PALETTE_TOKENS = {
   base: "--ds-color-grey-750",
@@ -75,21 +84,6 @@ const PALETTE_TOKENS = {
   deep: "--ds-accent-primary",
   fill: "--ds-color-grey-300",
 } as const;
-
-/**
- * How early the scene starts loading, as a share of the viewport height.
- *
- * 400, not 150, and the difference is measured rather than guessed. The chunk is
- * about 600KB and the model another 968KB; on the mid-range Android over 4G that
- * doc 04 §5 names as the binding device, the model lands about five and a half
- * seconds after the request. 150 per cent of a 900px viewport is 1350px of lead,
- * which a reader covers in a second or two, so the scene was routinely still
- * downloading well after the track had started. 400 per cent starts it around
- * the sneak peek, several sections earlier, which is enough on that connection
- * and still tied to a reader who is actually heading this way rather than being
- * spent on everyone who opens the page.
- */
-const PRELOAD_MARGIN = "400%";
 
 export function BullStage({
   live: wantsLive = true,
@@ -111,108 +105,111 @@ export function BullStage({
   const [live, setLive] = useState(false);
 
   /**
-   * One effect, one external system, one state write, and the write happens in
-   * the observer's callback rather than in the effect body. Reading the tokens
-   * here rather than on mount also means `getComputedStyle`, which forces a
-   * style recalculation, is never paid for on a page the visitor does not
-   * scroll this far down.
-   */
-  useEffect(() => {
-    if (!wantsLive || prefersReducedMotion || !host.current) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (!entries.some((entry) => entry.isIntersecting)) return;
-        observer.disconnect();
-
-        const styles = getComputedStyle(document.documentElement);
-        const read = (token: string) => styles.getPropertyValue(token).trim();
-
-        setPalette({
-          base: read(PALETTE_TOKENS.base),
-          accent: read(PALETTE_TOKENS.accent),
-          deep: read(PALETTE_TOKENS.deep),
-          fill: read(PALETTE_TOKENS.fill),
-        });
-      },
-      { rootMargin: `${PRELOAD_MARGIN} 0px` },
-    );
-
-    observer.observe(host.current);
-    return () => observer.disconnect();
-  }, [wantsLive, prefersReducedMotion]);
-
-  /**
-   * 4 · THE HEAD START, which is the one that decides whether the bull turns at
-   *     all on a first visit.
+   * THE GATE. Whichever of three signals arrives first, and all three are here
+   * because each one covers a case the others miss.
    *
-   * The viewport gate above is the right shape and the wrong clock. It starts
-   * the download when the reader is a few viewports away, and on a hard refresh
-   * the chunk and the model together are about 1.5MB, so the reader routinely
-   * arrives first. While they wait, the bull on screen is the still, the still
-   * is one fixed pose, and the section's timeline holds the written angle at
-   * zero: measured on a throttled cold load, the timeline advanced 2.5 radians,
-   * two fifths of its whole revolution, with nothing on screen moving. That is
-   * the "the bull is stuck" report, and the catch-up in `engineering-orbit.tsx`
-   * repays it as a spin afterwards rather than preventing it.
+   * WHAT IT USED TO BE, AND WHY EACH VERSION FAILED.
    *
-   * So the fetch is started from the top of the page instead, and the gate above
-   * is left as the gate on mounting WebGL.
+   * First an IntersectionObserver four viewports out, which also read the
+   * palette and so also gated the WebGL mount. A reader who flings covers four
+   * viewports in well under a second, so the observer fired with them almost on
+   * top of the section and the whole chain ran while they watched.
    *
-   * IT DOES NOT WAIT FOR `load`, AND THAT WAS THE WHOLE PROBLEM. It used to.
-   * Measured on a throttled cold load with the reader sitting still: LCP landed
-   * at 1.0s, DOMContentLoaded at 1.5s, `load` at 5.2s, and the model did not
-   * start until 13.3s and finished at 17.0s. Three things in series, only one of
-   * them useful. `load` waits on every image and the hero video; then the
-   * dynamic import fetches 600KB of chunk; and only when that chunk evaluates
-   * does its `useGLTF.preload` begin the 968KB model. A reader who flings the
-   * page reaches the orbit in about two seconds and finds a photograph, which is
-   * exactly the report.
+   * Then a single idle callback at mount, which fixed the ordinary case and not
+   * the one being reported. Measured on a throttled cold load with an immediate
+   * fling: at 1.9 seconds there was still no canvas at all. `requestIdleCallback`
+   * does not fire while the main thread is busy, and hydrating a page while
+   * someone flings it is exactly busy; the 3s timeout, meant as a floor, became
+   * the actual start time. Three seconds of nothing, before a byte was asked for.
    *
-   * So the import is taken on an idle callback at mount rather than after
-   * `load`, which is the one link in that chain that was pure waiting. The rest
-   * of the chain is real: the chunk has to arrive before its `useGLTF.preload`
-   * can ask for the model, and trying to overlap the two by fetching the model
-   * here as well downloaded it twice. See the note at the call.
+   * SO THE SIGNALS ARE THREE, AND THE FIRST ONE WINS.
    *
-   * The LCP budget is still what governs the timing, and the idle callback is
-   * what respects it: doc 04 §5 binds the 2.0s figure to the LCP element, and an
-   * idle callback by construction runs when nothing more urgent is pending. The
-   * 3s timeout is a floor for a main thread that never idles, not a target.
-   * Measured after this change, LCP was unmoved.
+   *   near    the section is already within reach at mount. A reload restores
+   *           mid-page and a deep link lands there, and in both cases there is
+   *           no scroll coming and no reason to wait for idle.
+   *   scroll  the first one, whatever its size. It is the cheapest possible
+   *           read on intent: a reader who has moved the page at all is heading
+   *           somewhere, and nothing on this page is more urgent than the 1.5MB
+   *           this section needs. It fires within a frame of a fling.
+   *   idle    for the reader who has not moved and is not near, which is the
+   *           case the LCP budget is about. Doc 04 §5 binds 2.0s to the LCP
+   *           element and an idle callback runs when nothing more urgent is
+   *           pending; the timeout is now 1200ms rather than 3000, because a
+   *           ceiling that high stopped being a floor and became the behaviour.
+   *
+   * The rest of the chain is unchanged and still serial: setting the palette is
+   * what renders <BullScene>, `next/dynamic` asks for the chunk on that render,
+   * the chunk evaluates, and its own `useGLTF.preload` starts the model. There
+   * is no second request to make. An earlier pass fetched the model here as
+   * well, to overlap it, and production returned two entries in resource timing
+   * at 777KB each: a response the origin marks `max-age=0` cannot be shared
+   * between an in-flight fetch and the loader's own.
+   *
+   * MEASURED. On a fast machine none of this shows: the chunk starts at 296ms
+   * with no scroll and 317ms with a fling, because idle is free and fires at
+   * once. The signal earns its place under pressure. At a 6x CPU throttle with
+   * an immediate fling it starts at 1580ms, bounded by hydration rather than by
+   * the ceiling, where the old 3000ms timeout was the start time and a probe at
+   * 1.9s found no canvas at all.
+   *
+   * What none of the three can do is make 1.5MB arrive faster than the link
+   * allows. On a throttled 4G cold load a flinging reader still gets there
+   * first and sees the still, which is the state this component is built to sit
+   * in; what changes is how the model behaves when it lands, and that is
+   * SNAP_DEBT in engineering-orbit.
+   *
+   * Reading the tokens in the callback rather than at mount also keeps
+   * `getComputedStyle`, which forces a style recalculation, off the critical
+   * path.
    */
   useEffect(() => {
     if (!wantsLive || prefersReducedMotion) return;
 
-    let cancelled = false;
-    let idle = 0;
+    let done = false;
+    const teardown: Array<() => void> = [];
 
     const start = () => {
-      if (cancelled) return;
+      if (done) return;
+      done = true;
+      for (const off of teardown) off();
 
-      /* One request, not two. An earlier pass fetched the model here as well,
-         to overlap it with the chunk, and production said what that actually
-         costs: two entries in resource timing, 777KB each, because a response
-         the origin marks `max-age=0` cannot be shared between an in-flight
-         fetch and the loader's own. Overlapping two downloads that add up to
-         double the bytes is not an optimisation. The import alone it is: the
-         chunk arrives, evaluates, and its `useGLTF.preload` starts the model. */
-      void import("./bull-scene");
+      const styles = getComputedStyle(document.documentElement);
+      const read = (token: string) => styles.getPropertyValue(token).trim();
+
+      setPalette({
+        base: read(PALETTE_TOKENS.base),
+        accent: read(PALETTE_TOKENS.accent),
+        deep: read(PALETTE_TOKENS.deep),
+        fill: read(PALETTE_TOKENS.fill),
+      });
     };
 
-    /* Safari only shipped requestIdleCallback in 17. A short timeout is the
-       same intent on the versions that predate it: after the current work, not
-       during it. */
-    idle =
-      typeof requestIdleCallback === "function"
-        ? requestIdleCallback(start, { timeout: 3000 })
-        : window.setTimeout(start, 1200);
+    /* 1 · already near. Cheap enough to do inline: one rect on an element that
+       has just been laid out. */
+    const el = host.current;
+    if (el && el.getBoundingClientRect().top < window.innerHeight * NEAR_VIEWPORTS) {
+      start();
+      return;
+    }
+
+    /* 2 · the first scroll. Passive and once: it never blocks the gesture and
+       it never runs twice. */
+    window.addEventListener("scroll", start, { passive: true, once: true });
+    teardown.push(() => window.removeEventListener("scroll", start));
+
+    /* 3 · idle. Safari only shipped requestIdleCallback in 17; a short timeout
+       is the same intent on the versions that predate it. */
+    if (typeof requestIdleCallback === "function") {
+      const idle = requestIdleCallback(start, { timeout: IDLE_TIMEOUT_MS });
+      teardown.push(() => cancelIdleCallback(idle));
+    } else {
+      const idle = window.setTimeout(start, IDLE_TIMEOUT_MS);
+      teardown.push(() => clearTimeout(idle));
+    }
 
     return () => {
-      cancelled = true;
-      if (!idle) return;
-      if (typeof cancelIdleCallback === "function") cancelIdleCallback(idle);
-      else clearTimeout(idle);
+      done = true;
+      for (const off of teardown) off();
     };
   }, [wantsLive, prefersReducedMotion]);
 
@@ -228,6 +225,57 @@ export function BullStage({
      the timeline on the next page would bank an angle against a bull that is
      not there, and the one after that would arrive already turned. */
   useEffect(() => () => useAppStore.getState().setBullLive(false), []);
+
+  /**
+   * A LOST CONTEXT PUTS THE STILL BACK.
+   *
+   * A browser can take a WebGL context away at any time and does: a GPU switch
+   * on a laptop with two of them, a driver reset, another tab claiming the
+   * device, too many contexts on one page. Nothing about it is an error and
+   * there is no exception to catch. What is left on screen without this is a
+   * canvas holding the last frame it managed, which is a bull that has stopped
+   * turning and will never start again.
+   *
+   * So a loss is treated as the scene simply not being there, which is a state
+   * this component already knows how to be in: `live` goes false, the still
+   * comes back over the dead canvas in one frame, and the store flag goes with
+   * it so the orbit's timeline stops writing angles at something that cannot
+   * receive them. `preventDefault` is what makes a restore possible at all;
+   * without it the browser never fires `webglcontextrestored`.
+   *
+   * On restore three rebuilds its own resources and the model is still in
+   * drei's cache, so there is nothing to re-fetch: the flag goes back up and
+   * the still steps aside again.
+   */
+  /* `live` is a dependency as well as `palette`, and it has to be: the palette
+     is set before the chunk has arrived, so on that first run there is no canvas
+     to listen to yet. The run that matters is the one after the scene reports
+     ready, which is the first moment the element exists. */
+  useEffect(() => {
+    if (!palette) return;
+
+    const canvas = host.current?.querySelector("canvas");
+    if (!canvas) return;
+
+    const onLost = (event: Event) => {
+      event.preventDefault();
+      useAppStore.getState().setBullLive(false);
+      setLive(false);
+    };
+
+    const onRestored = () => {
+      useAppStore.getState().setBullLive(true);
+      setLive(true);
+    };
+
+    canvas.addEventListener("webglcontextlost", onLost);
+    canvas.addEventListener("webglcontextrestored", onRestored);
+
+    return () => {
+      canvas.removeEventListener("webglcontextlost", onLost);
+      canvas.removeEventListener("webglcontextrestored", onRestored);
+    };
+  }, [palette, live]);
 
   useBullTurntable({ host, enabled: live });
 
