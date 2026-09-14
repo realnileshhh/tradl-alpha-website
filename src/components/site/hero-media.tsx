@@ -42,8 +42,8 @@ import { cn } from "@/lib/utils";
 export function HeroMedia({ className }: { className?: string }) {
   return (
     <Frame size="tight" className={cn("w-full", className)}>
-      <FrameInner size="tight" className="relative aspect-[16/10]">
-        <span className="absolute inset-0 grid place-items-center px-[var(--ds-space-6)] text-center">
+      <FrameInner size="tight" className="relative aspect-16/10">
+        <span className="absolute inset-0 grid place-items-center px-(--ds-space-6) text-center">
           <span className="text-sm text-fg-3">{HERO_MEDIA_PLACEHOLDER}</span>
         </span>
       </FrameInner>
